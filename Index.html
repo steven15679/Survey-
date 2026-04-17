@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Career Compass — Transition Survey</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1a1a2e; --paper: #faf8f5; --gold: #c9a84c; --gold-light: #e8d5a3;
+    --mid: #6b6b80; --line: #e2ddd6; --card: #ffffff; --radius: 12px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--paper); color: var(--ink); min-height: 100vh; padding-bottom: 80px; }
+
+header { background: var(–ink); color: #fff; padding: 48px 24px 40px; text-align: center; position: relative; overflow: hidden; }
+header::before { content: ‘’; position: absolute; inset: 0; background: radial-gradient(ellipse at 70% 0%, rgba(201,168,76,0.2) 0%, transparent 60%), radial-gradient(ellipse at 20% 100%, rgba(122,158,126,0.15) 0%, transparent 50%); }
+header h1 { font-family: ‘Playfair Display’, serif; font-size: clamp(28px,6vw,48px); letter-spacing: -0.5px; position: relative; }
+header h1 span { color: var(–gold); }
+header p { margin-top: 10px; color: rgba(255,255,255,0.65); font-size: 15px; font-weight: 300; position: relative; max-width: 480px; margin-left: auto; margin-right: auto; }
+
+.progress-wrap { background: var(–ink); padding: 0 24px 28px; }
+.progress-bar-bg { background: rgba(255,255,255,0.12); border-radius: 99px; height: 4px; max-width: 640px; margin: 0 auto; }
+.progress-bar-fill { background: var(–gold); height: 4px; border-radius: 99px; transition: width 0.5s ease; width: 12.5%; }
+.progress-label { text-align: center; color: rgba(255,255,255,0.5); font-size: 12px; margin-top: 8px; letter-spacing: 1px; text-transform: uppercase; }
+
+.container { max-width: 680px; margin: 0 auto; padding: 32px 20px; }
+.section { display: none; animation: fadeUp 0.4s ease both; }
+.section.active { display: block; }
+@keyframes fadeUp { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+
+.section-header { display: flex; align-items: center; gap: 14px; margin-bottom: 28px; }
+.section-num { width: 38px; height: 38px; background: var(–gold); color: var(–ink); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; flex-shrink: 0; }
+.section-header h2 { font-family: ‘Playfair Display’, serif; font-size: 22px; }
+.section-header p { font-size: 13px; color: var(–mid); margin-top: 2px; }
+
+.card { background: var(–card); border: 1px solid var(–line); border-radius: var(–radius); padding: 24px; margin-bottom: 16px; }
+.field { margin-bottom: 20px; }
+.field:last-child { margin-bottom: 0; }
+label { display: block; font-size: 13px; font-weight: 600; color: var(–mid); text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 8px; }
+input[type=text], input[type=number], select, textarea { width: 100%; padding: 12px 14px; border: 1.5px solid var(–line); border-radius: 8px; font-family: ‘DM Sans’, sans-serif; font-size: 15px; color: var(–ink); background: var(–paper); transition: border-color 0.2s; outline: none; }
+input:focus, select:focus, textarea:focus { border-color: var(–gold); }
+textarea { resize: vertical; min-height: 90px; }
+select { appearance: none; background-image: url(“data:image/svg+xml,%3Csvg xmlns=‘http://www.w3.org/2000/svg’ width=‘12’ height=‘8’ viewBox=‘0 0 12 8’%3E%3Cpath d=‘M1 1l5 5 5-5’ stroke=’%236b6b80’ stroke-width=‘1.5’ fill=‘none’ stroke-linecap=‘round’/%3E%3C/svg%3E”); background-repeat: no-repeat; background-position: right 14px center; }
+
+.rating-group { display: flex; flex-direction: column; gap: 14px; }
+.rating-row { display: flex; align-items: center; gap: 12px; }
+.rating-row span { flex: 1; font-size: 14px; }
+.stars { display: flex; gap: 4px; }
+.stars button { width: 32px; height: 32px; border: 1.5px solid var(–line); background: none; border-radius: 6px; cursor: pointer; font-size: 14px; color: #ccc; transition: all 0.15s; display: flex; align-items: center; justify-content: center; }
+.stars button:hover, .stars button.active { background: var(–gold); border-color: var(–gold); color: var(–ink); }
+
+.check-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px,1fr)); gap: 10px; }
+.check-item { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border: 1.5px solid var(–line); border-radius: 8px; cursor: pointer; transition: all 0.15s; font-size: 14px; }
+.check-item:hover { border-color: var(–gold-light); background: #fefdf8; }
+.check-item.checked { border-color: var(–gold); background: #fdf9ee; font-weight: 500; }
+.check-dot { width: 18px; height: 18px; border: 2px solid #ccc; border-radius: 4px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
+.check-item.checked .check-dot { background: var(–gold); border-color: var(–gold); }
+.check-item.checked .check-dot::after { content: ‘✓’; font-size: 11px; color: var(–ink); font-weight: 700; }
+
+.pill-group { display: flex; flex-wrap: wrap; gap: 10px; }
+.pill { padding: 9px 18px; border: 1.5px solid var(–line); border-radius: 99px; cursor: pointer; font-size: 14px; transition: all 0.15s; }
+.pill:hover { border-color: var(–gold-light); }
+.pill.selected { background: var(–gold); border-color: var(–gold); color: var(–ink); font-weight: 600; }
+
+.rank-list { display: flex; flex-direction: column; gap: 8px; }
+.rank-item { display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: var(–paper); border: 1.5px solid var(–line); border-radius: 8px; cursor: grab; font-size: 14px; }
+.rank-item:active { cursor: grabbing; box-shadow: 0 4px 16px rgba(0,0,0,0.1); }
+.rank-handle { color: #ccc; font-size: 16px; user-select: none; }
+.rank-num { width: 24px; height: 24px; background: var(–gold); color: var(–ink); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; }
+
+.tag-input-wrap { display: flex; gap: 8px; }
+.tag-input-wrap input { flex: 1; }
+.tag-input-wrap button { padding: 0 18px; background: var(–gold); color: var(–ink); border: none; border-radius: 8px; font-weight: 600; cursor: pointer; font-family: ‘DM Sans’, sans-serif; font-size: 14px; }
+.tags-display { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.tag { display: flex; align-items: center; gap: 6px; background: var(–ink); color: white; padding: 5px 12px; border-radius: 99px; font-size: 13px; }
+.tag button { background: none; border: none; color: rgba(255,255,255,0.6); cursor: pointer; font-size: 15px; line-height: 1; padding: 0; }
+
+.hint { font-size: 12px; color: var(–mid); margin-top: 6px; line-height: 1.5; }
+.salary-wrap { position: relative; }
+.salary-wrap::before { content: ‘$’; position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(–mid); font-size: 15px; }
+.salary-wrap input { padding-left: 28px; }
+.divider { height: 1px; background: var(–line); margin: 20px 0; }
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+@media(max-width:480px) { .two-col { grid-template-columns: 1fr; } }
+
+.btn-row { display: flex; gap: 12px; margin-top: 28px; }
+.btn { padding: 14px 28px; border-radius: 8px; font-family: ‘DM Sans’, sans-serif; font-size: 15px; font-weight: 600; cursor: pointer; border: none; transition: all 0.15s; }
+.btn-primary { background: var(–gold); color: var(–ink); flex: 1; }
+.btn-primary:hover { background: #b8952e; }
+.btn-secondary { background: none; border: 1.5px solid var(–line); color: var(–mid); }
+.btn-secondary:hover { border-color: var(–mid); }
+
+/* RESULTS */
+#result-section { display: none; }
+#result-section.active { display: block; }
+
+.result-hero { background: var(–ink); color: white; border-radius: var(–radius); padding: 36px 32px; text-align: center; margin-bottom: 24px; position: relative; overflow: hidden; }
+.result-hero::before { content: ‘’; position: absolute; inset: 0; background: radial-gradient(ellipse at 80% 20%, rgba(201,168,76,0.25) 0%, transparent 60%); }
+.result-hero h2 { font-family: ‘Playfair Display’, serif; font-size: 28px; position: relative; }
+.result-hero p { color: rgba(255,255,255,0.6); margin-top: 8px; font-size: 14px; position: relative; }
+
+.loading-card { background: var(–card); border: 1px solid var(–line); border-radius: var(–radius); padding: 48px 32px; text-align: center; margin-bottom: 16px; }
+.spinner { width: 48px; height: 48px; border: 3px solid var(–line); border-top-color: var(–gold); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 20px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-card h3 { font-family: ‘Playfair Display’, serif; font-size: 20px; margin-bottom: 8px; }
+.loading-card p { color: var(–mid); font-size: 14px; }
+.loading-dots::after { content: ‘.’; animation: dots 1.5s steps(3, end) infinite; }
+@keyframes dots { 0%{content:’.’} 33%{content:’..’} 66%,100%{content:’…’} }
+
+.ai-card { background: var(–card); border: 1px solid var(–line); border-radius: var(–radius); padding: 28px; margin-bottom: 16px; line-height: 1.7; font-size: 15px; }
+.ai-card h3 { font-family: ‘Playfair Display’, serif; font-size: 20px; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(–line); display: flex; align-items: center; gap: 10px; }
+.ai-card h3 .icon { font-size: 22px; }
+
+.career-grid { display: flex; flex-direction: column; gap: 16px; }
+.career-card { background: var(–paper); border: 1.5px solid var(–line); border-radius: 10px; padding: 20px; }
+.career-card-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
+.career-title { font-family: ‘Playfair Display’, serif; font-size: 18px; }
+.fit-badge { background: var(–gold); color: var(–ink); font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 99px; white-space: nowrap; flex-shrink: 0; }
+.career-body { font-size: 14px; color: var(–mid); line-height: 1.65; }
+.career-meta { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.meta-pill { font-size: 12px; background: white; border: 1px solid var(–line); border-radius: 99px; padding: 3px 12px; color: var(–ink); }
+
+.error-card { background: #fff5f5; border: 1.5px solid #fca5a5; border-radius: var(–radius); padding: 24px; margin-bottom: 16px; }
+.error-card h3 { color: #dc2626; margin-bottom: 8px; }
+.error-card p { font-size: 14px; color: #7f1d1d; line-height: 1.6; }
+
+.summary-toggle { width: 100%; background: none; border: 1.5px solid var(–line); border-radius: 8px; padding: 12px 16px; font-family: ‘DM Sans’, sans-serif; font-size: 14px; font-weight: 600; color: var(–mid); cursor: pointer; text-align: left; display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+.summary-body { display: none; }
+.summary-body.open { display: block; }
+.result-card { background: var(–card); border: 1px solid var(–line); border-radius: var(–radius); padding: 20px 24px; margin-bottom: 12px; }
+.result-card h3 { font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.6px; color: var(–mid); margin-bottom: 12px; }
+.result-row { display: flex; justify-content: space-between; align-items: flex-start; padding: 6px 0; border-bottom: 1px solid var(–line); font-size: 14px; gap: 12px; }
+.result-row:last-child { border-bottom: none; }
+.result-row strong { font-weight: 500; flex-shrink: 0; }
+.result-val { color: var(–mid); font-size: 13px; text-align: right; }
+.copy-btn { width: 100%; padding: 13px; background: none; border: 1.5px solid var(–gold); color: var(–gold); border-radius: 8px; font-family: ‘DM Sans’, sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; margin-top: 12px; transition: all 0.15s; }
+.copy-btn:hover { background: var(–gold); color: var(–ink); }
+</style>
+
+</head>
+<body>
+
+<header>
+  <h1>Career <span>Compass</span></h1>
+  <p>A guided survey to help map your next move — tailored for Sydney & Australia</p>
+</header>
+<div class="progress-wrap">
+  <div class="progress-bar-bg"><div class="progress-bar-fill" id="progressBar"></div></div>
+  <div class="progress-label" id="progressLabel">Step 1 of 8</div>
+</div>
+
+<div class="container">
+
+  <!-- S1 -->
+
+  <div class="section active" id="s1">
+    <div class="section-header"><div class="section-num">1</div><div><h2>Your Background</h2><p>Let's start with the basics</p></div></div>
+    <div class="card">
+      <div class="two-col">
+        <div class="field"><label>Current Job Title</label><input type="text" id="jobTitle" placeholder="e.g. Operations Manager"></div>
+        <div class="field"><label>Industry</label><input type="text" id="industry" placeholder="e.g. Financial Services"></div>
+      </div>
+      <div class="two-col">
+        <div class="field"><label>Years of Experience</label><input type="number" id="experience" placeholder="e.g. 7" min="0" max="50"></div>
+        <div class="field"><label>Education Level</label><select id="education"><option value="">Select…</option><option>High School / HSC</option><option>TAFE / Certificate / Diploma</option><option>Bachelor's Degree</option><option>Graduate Certificate / Diploma</option><option>Master's Degree</option><option>PhD / Doctorate</option></select></div>
+      </div>
+      <div class="two-col">
+        <div class="field"><label>Current Salary (optional)</label><div class="salary-wrap"><input type="number" id="salary" placeholder="e.g. 95000"></div></div>
+        <div class="field"><label>Work Eligibility</label><select id="eligibility"><option value="">Select…</option><option>Australian Citizen</option><option>Permanent Resident</option><option>Temporary Visa (work rights)</option><option>Other</option></select></div>
+      </div>
+      <div class="field"><label>Location</label><input type="text" id="location" placeholder="e.g. Sydney CBD, Parramatta, Newcastle…"><p class="hint">Are you open to relocating within NSW or interstate?</p></div>
+    </div>
+    <div class="btn-row"><button class="btn btn-primary" onclick="next(1)">Continue →</button></div>
+  </div>
+
+  <!-- S2 -->
+
+  <div class="section" id="s2">
+    <div class="section-header"><div class="section-num">2</div><div><h2>Career Satisfaction</h2><p>Rate honestly — there are no wrong answers</p></div></div>
+    <div class="card"><label style="margin-bottom:16px;">Rate each area (1 = poor, 5 = great)</label><div class="rating-group" id="ratings"></div></div>
+    <div class="card">
+      <div class="field"><label>What do you enjoy most about your current role?</label><textarea id="likeMost" placeholder="e.g. Solving complex problems, working with clients…"></textarea></div>
+      <div class="field"><label>What frustrates you most or drives you to consider a change?</label><textarea id="dislikeMost" placeholder="e.g. No creativity, no progression path, poor culture…"></textarea></div>
+      <div class="field"><label>Have you had a previous role you loved? If so, what was it?</label><textarea id="pastRole" placeholder="Optional — helps identify patterns in what energises you"></textarea></div>
+    </div>
+    <div class="btn-row"><button class="btn btn-secondary" onclick="prev(2)">← Back</button><button class="btn btn-primary" onclick="next(2)">Continue →</button></div>
+  </div>
+
+  <!-- S3 -->
+
+  <div class="section" id="s3">
+    <div class="section-header"><div class="section-num">3</div><div><h2>Skills & Experience</h2><p>What you're capable of — not just what's on your resume</p></div></div>
+    <div class="card">
+      <div class="field"><label>Your Top Skills</label><div class="tag-input-wrap"><input type="text" id="skillInput" placeholder="Type a skill and press Add" onkeydown="if(event.key==='Enter')addSkill()"><button onclick="addSkill()">Add</button></div><div class="tags-display" id="skillTags"></div><p class="hint">e.g. stakeholder management, Excel, data analysis, project delivery, sales, Python, copywriting, leadership…</p></div>
+    </div>
+    <div class="card"><label style="margin-bottom:14px;">Which areas have you worked in? (tick all that apply)</label><div class="check-grid" id="expAreas"></div></div>
+    <div class="card">
+      <div class="field"><label>Overall self-assessed skill level</label><div class="pill-group" id="skillLevel"></div></div>
+      <div class="field" style="margin-top:20px;"><label>Formal qualifications or licences relevant to future roles</label><textarea id="quals" placeholder="e.g. PMP, real estate licence, nursing registration, AWS cert… or 'none yet'"></textarea></div>
+    </div>
+    <div class="btn-row"><button class="btn btn-secondary" onclick="prev(3)">← Back</button><button class="btn btn-primary" onclick="next(3)">Continue →</button></div>
+  </div>
+
+  <!-- S4 -->
+
+  <div class="section" id="s4">
+    <div class="section-header"><div class="section-num">4</div><div><h2>Flexibility & Constraints</h2><p>What you can and can't compromise on</p></div></div>
+    <div class="card">
+      <div class="field"><label>Minimum acceptable salary in Year 1 of new career</label><div class="salary-wrap"><input type="number" id="minSalary" placeholder="e.g. 75000"></div><p class="hint">Be realistic — this helps filter out options that won't work financially.</p></div>
+      <div class="divider"></div>
+      <div class="field"><label>Open to stepping down a level to get into a new field?</label><div class="pill-group" id="stepDown"></div></div>
+      <div class="field" style="margin-top:18px;"><label>Willing to study or retrain (3–18 months)?</label><div class="pill-group" id="study"></div></div>
+      <div class="field" style="margin-top:18px;"><label>Willing to take a temporary pay cut during transition?</label><div class="pill-group" id="payCut"></div></div>
+    </div>
+    <div class="card">
+      <div class="field"><label>Work arrangement preferences</label><div class="check-grid" id="workArrangement"></div></div>
+      <div class="field" style="margin-top:18px;"><label>Any hard constraints we should know about?</label><textarea id="constraints" placeholder="e.g. Can't travel interstate regularly, need school-hour flexibility, caring responsibilities…"></textarea></div>
+    </div>
+    <div class="btn-row"><button class="btn btn-secondary" onclick="prev(4)">← Back</button><button class="btn btn-primary" onclick="next(4)">Continue →</button></div>
+  </div>
+
+  <!-- S5 -->
+
+  <div class="section" id="s5">
+    <div class="section-header"><div class="section-num">5</div><div><h2>Interests & Work Style</h2><p>What kind of work actually energises you</p></div></div>
+    <div class="card"><label style="margin-bottom:16px;">How much do you enjoy each type of work? (1 = not at all, 5 = love it)</label><div class="rating-group" id="workStyle"></div></div>
+    <div class="card">
+      <div class="field"><label>Industries you're curious about or drawn to</label><div class="check-grid" id="industries"></div><p class="hint">Pick as many as feel relevant — or none if you're genuinely open.</p></div>
+      <div class="field" style="margin-top:18px;"><label>Is there a specific role or job title you've had in mind?</label><input type="text" id="dreamRole" placeholder="e.g. UX Designer, Property Manager, Business Analyst — or 'not sure yet'"></div>
+      <div class="field" style="margin-top:18px;"><label>What does success look like in your next role?</label><textarea id="success" placeholder="e.g. Feeling challenged, having autonomy, earning X by year 3…"></textarea></div>
+    </div>
+    <div class="btn-row"><button class="btn btn-secondary" onclick="prev(5)">← Back</button><button class="btn btn-primary" onclick="next(5)">Continue →</button></div>
+  </div>
+
+  <!-- S6 -->
+
+  <div class="section" id="s6">
+    <div class="section-header"><div class="section-num">6</div><div><h2>Life Priorities</h2><p>Drag to rank — most important at the top</p></div></div>
+    <div class="card"><label style="margin-bottom:16px;">Rank these from most to least important to you right now</label><div class="rank-list" id="rankList"></div><p class="hint" style="margin-top:12px;">Drag items up or down to reorder.</p></div>
+    <div class="btn-row"><button class="btn btn-secondary" onclick="prev(6)">← Back</button><button class="btn btn-primary" onclick="next(6)">Continue →</button></div>
+  </div>
+
+  <!-- S7 -->
+
+  <div class="section" id="s7">
+    <div class="section-header"><div class="section-num">7</div><div><h2>Timeline & Risk</h2><p>How fast and how bold?</p></div></div>
+    <div class="card">
+      <div class="field"><label>When are you hoping to be in your new career?</label><div class="pill-group" id="timeline"></div></div>
+      <div class="field" style="margin-top:20px;"><label>What's driving the timeline?</label><textarea id="timelineDriver" placeholder="e.g. Made redundant, burnt out, have savings runway, just exploring…"></textarea></div>
+    </div>
+    <div class="card">
+      <div class="field"><label>How would you describe your risk appetite for this transition?</label><div class="pill-group" id="risk"></div></div>
+      <div class="field" style="margin-top:20px;"><label>Savings runway (how long could you live without income)?</label><div class="pill-group" id="runway"></div></div>
+      <div class="field" style="margin-top:20px;"><label>Have you spoken to anyone about this already?</label><textarea id="priorHelp" placeholder="e.g. Career coach, mentor, recruiter… or 'not yet'"></textarea></div>
+    </div>
+    <div class="btn-row"><button class="btn btn-secondary" onclick="prev(7)">← Back</button><button class="btn btn-primary" onclick="next(7)">Continue →</button></div>
+  </div>
+
+  <!-- S8 -->
+
+  <div class="section" id="s8">
+    <div class="section-header"><div class="section-num">8</div><div><h2>Experience Summary</h2><p>The fuller picture — in your own words</p></div></div>
+    <div class="card">
+      <div class="field"><label>Paste your CV, LinkedIn summary, or key roles & achievements</label><textarea id="cv" placeholder="Include job titles, companies, key responsibilities, major achievements, and anything you're proud of." style="min-height:200px;"></textarea><p class="hint">Don't worry about formatting — the more context, the better the career suggestions.</p></div>
+      <div class="field" style="margin-top:18px;"><label>Anything else you want the advisor to know?</label><textarea id="other" placeholder="e.g. Previous career change attempts, concerns, specific things to avoid, personal circumstances…"></textarea></div>
+    </div>
+    <div class="btn-row"><button class="btn btn-secondary" onclick="prev(8)">← Back</button><button class="btn btn-primary" onclick="finish()">Get My Career Recommendations →</button></div>
+  </div>
+
+  <!-- RESULTS -->
+
+  <div id="result-section">
+    <div class="result-hero">
+      <h2 id="resultTitle">Analysing your profile…</h2>
+      <p id="resultSubtitle">Claude is reviewing your answers and generating personalised career options</p>
+    </div>
+    <div class="loading-card" id="loadingCard">
+      <div class="spinner"></div>
+      <h3>Thinking through your options<span class="loading-dots"></span></h3>
+      <p>Matching your skills, constraints, and interests to careers in the Australian market</p>
+    </div>
+    <div id="aiOutput"></div>
+    <div id="summaryAccordion" style="display:none; margin-top:8px;">
+      <button class="summary-toggle" onclick="toggleSummary()"><span>📋 View your full survey responses</span><span id="summaryArrow">▾</span></button>
+      <div class="summary-body" id="summaryBody"></div>
+      <button class="copy-btn" onclick="copyAll()">📋 Copy All Responses as Text</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const ratingItems = ['Enjoyment of day-to-day work','Future career prospects in current field','Satisfaction with pay','Career progression opportunities','Work-life balance','Alignment with personal values'];
+const workStyleItems = ['Working closely with people / clients','Data, analysis and problem-solving','Creative or design-focused work','Structured, process-driven work','Fast-paced, varied environments','Independent / autonomous work','Mentoring, teaching or coaching others'];
+const expAreaOptions = ['Project management','Data analysis','Client / customer-facing','Sales & revenue','Operations & logistics','Technical / IT','Creative & content','Leadership & people management','Finance & budgeting','Strategy & planning','Marketing','HR & recruitment','Legal & compliance','Research','Events','Supply chain'];
+const industryOptions = ['Technology & SaaS','Healthcare & Allied Health','Education & Training','Government & Public Sector','Construction & Infrastructure','Property & Real Estate','Financial Services','Management Consulting','Marketing & Advertising','Non-profit / Social Impact','Legal','Mining & Resources','Retail & eCommerce','Media & Entertainment','Sustainability & Environment','Startups'];
+const rankItems = ['💰 High salary','🔒 Job security','⚖️ Work-life balance','📈 Career progression','❤️ Meaningful / purposeful work','🕐 Flexibility & autonomy','🌍 Social / environmental impact','🧠 Intellectual challenge'];
+
+const state = { ratings:{}, skills:[], expAreas:[], skillLevel:'', stepDown:'', study:'', payCut:'', workArrangements:[], workStyle:{}, industries:[], timeline:'', risk:'', runway:'', rankOrder:[...rankItems] };
+
+function buildRatings(cid, items, key) {
+  const el = document.getElementById(cid);
+  items.forEach(item => {
+    const row = document.createElement('div'); row.className='rating-row';
+    const safeItem = item.replace(/'/g,"\\'");
+    row.innerHTML = `<span>${item}</span><div class="stars">${[1,2,3,4,5].map(n=>`<button onclick="setRating('${key}','${safeItem}',${n},this.parentElement)">${n}</button>`).join('')}</div>`;
+    el.appendChild(row);
+  });
+}
+function setRating(key,item,val,container) { state[key][item]=val; container.querySelectorAll('button').forEach((b,i)=>b.classList.toggle('active',i<val)); }
+
+function buildChecks(cid,opts,arr) {
+  const el=document.getElementById(cid);
+  opts.forEach(opt=>{
+    const d=document.createElement('label'); d.className='check-item';
+    d.innerHTML=`<div class="check-dot"></div><span>${opt}</span>`;
+    d.onclick=()=>{ const c=!d.classList.contains('checked'); d.classList.toggle('checked',c); if(c)arr.push(opt); else{const i=arr.indexOf(opt);if(i>-1)arr.splice(i,1);} };
+    el.appendChild(d);
+  });
+}
+function buildPills(cid,opts,key) {
+  const el=document.getElementById(cid);
+  opts.forEach(opt=>{
+    const d=document.createElement('label'); d.className='pill'; d.textContent=opt;
+    d.onclick=()=>{ el.querySelectorAll('.pill').forEach(p=>p.classList.remove('selected')); d.classList.add('selected'); state[key]=opt; };
+    el.appendChild(d);
+  });
+}
+function addSkill() { const inp=document.getElementById('skillInput'),val=inp.value.trim(); if(!val||state.skills.includes(val)){inp.value='';return;} state.skills.push(val);inp.value='';renderTags(); }
+function removeSkill(s) { state.skills=state.skills.filter(x=>x!==s);renderTags(); }
+function renderTags() { document.getElementById('skillTags').innerHTML=state.skills.map(s=>`<div class="tag">${s}<button onclick="removeSkill('${s}')">×</button></div>`).join(''); }
+
+function buildRank() { renderRank(document.getElementById('rankList')); }
+function renderRank(el) {
+  el.innerHTML=state.rankOrder.map((item,i)=>`<div class="rank-item" draggable="true" data-index="${i}"><span class="rank-handle">⠿</span><div class="rank-num">${i+1}</div><span>${item}</span></div>`).join('');
+  el.querySelectorAll('.rank-item').forEach(item=>{
+    item.addEventListener('dragstart',e=>{e.dataTransfer.setData('text/plain',item.dataset.index);item.style.opacity='0.4';});
+    item.addEventListener('dragend',e=>{item.style.opacity='1';});
+    item.addEventListener('dragover',e=>e.preventDefault());
+    item.addEventListener('drop',e=>{e.preventDefault();const from=+e.dataTransfer.getData('text/plain'),to=+item.dataset.index,moved=state.rankOrder.splice(from,1)[0];state.rankOrder.splice(to,0,moved);renderRank(el);});
+  });
+}
+
+let current=1;const total=8;
+function next(n){document.getElementById('s'+n).classList.remove('active');current=n+1;if(current>total){showResult();return;}document.getElementById('s'+current).classList.add('active');updateProgress();window.scrollTo(0,0);}
+function prev(n){document.getElementById('s'+n).classList.remove('active');current=n-1;document.getElementById('s'+current).classList.add('active');updateProgress();window.scrollTo(0,0);}
+function updateProgress(){document.getElementById('progressBar').style.width=(current/total*100)+'%';document.getElementById('progressLabel').textContent=`Step ${current} of ${total}`;}
+function showResult(){document.getElementById('result-section').classList.add('active');document.getElementById('progressBar').style.width='100%';document.getElementById('progressLabel').textContent='Complete!';}
+function finish(){document.getElementById('s8').classList.remove('active');showResult();window.scrollTo(0,0);callAI();}
+
+function v(id){return(document.getElementById(id)||{}).value||'';}
+
+function collectSummary(){
+  return `CAREER TRANSITION SURVEY — RESPONSES
+
+== BACKGROUND ==
+Job Title: ${v('jobTitle')||'—'}
+Industry: ${v('industry')||'—'}
+Experience: ${v('experience')||'—'} years
+Education: ${v('education')||'—'}
+Current Salary: ${v('salary')? '$'+Number(v('salary')).toLocaleString():'Not provided'}
+Work Eligibility: ${v('eligibility')||'—'}
+Location: ${v('location')||'—'}
+
+== SATISFACTION RATINGS (out of 5) ==
+${Object.entries(state.ratings).map(([k,v])=>`${k}: ${v}/5`).join('\n')||'None provided'}
+
+Likes most: ${v('likeMost')||'—'}
+Dislikes most: ${v('dislikeMost')||'—'}
+Previous loved role: ${v('pastRole')||'—'}
+
+== SKILLS & EXPERIENCE ==
+Skills: ${state.skills.join(', ')||'—'}
+Experience areas: ${state.expAreas.join(', ')||'—'}
+Skill level: ${state.skillLevel||'—'}
+Qualifications: ${v('quals')||'—'}
+
+== FLEXIBILITY ==
+Min salary Year 1: ${v('minSalary')? '$'+Number(v('minSalary')).toLocaleString():'—'}
+Willing to step down: ${state.stepDown||'—'}
+Willing to study: ${state.study||'—'}
+Accept pay cut: ${state.payCut||'—'}
+Work arrangements: ${state.workArrangements.join(', ')||'—'}
+Hard constraints: ${v('constraints')||'—'}
+
+== WORK STYLE PREFERENCES (out of 5) ==
+${Object.entries(state.workStyle).map(([k,v])=>`${k}: ${v}/5`).join('\n')||'None provided'}
+Industries of interest: ${state.industries.join(', ')||'Open / unsure'}
+Dream role in mind: ${v('dreamRole')||'—'}
+Success looks like: ${v('success')||'—'}
+
+== PRIORITIES (ranked) ==
+${state.rankOrder.map((item,i)=>`${i+1}. ${item}`).join('\n')}
+
+== TIMELINE & RISK ==
+Target timeline: ${state.timeline||'—'}
+What's driving it: ${v('timelineDriver')||'—'}
+Risk appetite: ${state.risk||'—'}
+Savings runway: ${state.runway||'—'}
+Prior help: ${v('priorHelp')||'—'}
+
+== CV / EXPERIENCE ==
+${v('cv')||'—'}
+
+== OTHER NOTES ==
+${v('other')||'—'}`;
+}
+
+async function callAI(){
+  const summary=collectSummary();
+  const prompt=`You are an expert career transition advisor specialising in the Australian job market, particularly Sydney and NSW. You have deep knowledge of realistic career pathways, salary benchmarks, required qualifications, and current market demand across Australian industries.
+
+A person has completed a career transition survey. Here are their full responses:
+
+${summary}
+
+Please provide a thorough, personalised career transition analysis. Respond ONLY with a valid JSON object — no markdown fences, no preamble, just raw JSON:
+
+{
+  "summary": "2-3 sentence empathetic summary of their situation and key themes you noticed",
+  "careers": [
+    {
+      "title": "Career title",
+      "fit": "Strong fit",
+      "why": "2-3 sentences explaining specifically why this suits THEM based on their survey responses",
+      "transition": "Realistic pathway — what steps, timeframe, and any study or certs needed",
+      "salary": "Realistic Australian salary range for this role (Year 1 and established)",
+      "demand": "Current market demand in Sydney/Australia",
+      "tags": ["tag1", "tag2", "tag3"]
+    }
+  ],
+  "watchouts": "2-3 honest things they should be aware of or prepare for in their transition",
+  "nextSteps": ["Specific action 1", "Specific action 2", "Specific action 3", "Specific action 4"]
+}
+
+Provide 4-6 career options. fit must be one of: "Strong fit", "Good fit", or "Worth exploring". Be specific to their actual background. Tags should be short phrases like "Uses existing skills", "Requires study", "High demand", "Flexible work", "Good salary growth", "Entry-level available" etc.`;
+
+  try {
+    const response=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:3000,messages:[{role:'user',content:prompt}]})
+    });
+    if(!response.ok) throw new Error(`API error ${response.status}`);
+    const data=await response.json();
+    const text=data.content.filter(b=>b.type==='text').map(b=>b.text).join('');
+    const clean=text.replace(/```json|```/g,'').trim();
+    const parsed=JSON.parse(clean);
+    renderAIResult(parsed);
+  } catch(err) {
+    console.error(err);
+    renderError(err.message);
+  }
+}
+
+function renderAIResult(data){
+  document.getElementById('loadingCard').style.display='none';
+  document.getElementById('resultTitle').textContent='Your Career Recommendations';
+  document.getElementById('resultSubtitle').textContent='Personalised for your background, skills, and goals';
+
+  let html='';
+  html+=`<div class="ai-card"><h3><span class="icon">💬</span> Your Profile at a Glance</h3><p style="color:var(--mid);line-height:1.7;">${data.summary}</p></div>`;
+
+  html+=`<div class="ai-card"><h3><span class="icon">🎯</span> Recommended Career Paths</h3><div class="career-grid">`;
+  (data.careers||[]).forEach(c=>{
+    html+=`<div class="career-card">
+      <div class="career-card-header"><div class="career-title">${c.title}</div><div class="fit-badge">${c.fit}</div></div>
+      <div class="career-body">
+        <p style="margin-bottom:10px;">${c.why}</p>
+        <p style="margin-bottom:6px;"><strong>How to get there:</strong> ${c.transition}</p>
+        <p style="margin-bottom:6px;"><strong>Salary:</strong> ${c.salary}</p>
+        <p><strong>Market demand:</strong> ${c.demand}</p>
+      </div>
+      <div class="career-meta">${(c.tags||[]).map(t=>`<span class="meta-pill">${t}</span>`).join('')}</div>
+    </div>`;
+  });
+  html+=`</div></div>`;
+
+  html+=`<div class="ai-card"><h3><span class="icon">⚠️</span> Things to Be Aware Of</h3><p style="color:var(--mid);line-height:1.7;">${data.watchouts}</p></div>`;
+
+  html+=`<div class="ai-card"><h3><span class="icon">🚀</span> Suggested Next Steps</h3><div style="display:flex;flex-direction:column;gap:10px;">`;
+  (data.nextSteps||[]).forEach((step,i)=>{
+    html+=`<div style="display:flex;gap:12px;align-items:flex-start;"><div style="width:26px;height:26px;background:var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;">${i+1}</div><p style="font-size:14px;line-height:1.6;padding-top:3px;">${step}</p></div>`;
+  });
+  html+=`</div></div>`;
+
+  document.getElementById('aiOutput').innerHTML=html;
+  buildSummaryAccordion();
+  document.getElementById('summaryAccordion').style.display='block';
+}
+
+function renderError(msg){
+  document.getElementById('loadingCard').style.display='none';
+  document.getElementById('resultTitle').textContent='Almost there!';
+  document.getElementById('resultSubtitle').textContent='Use your responses below to get recommendations manually';
+  document.getElementById('aiOutput').innerHTML=`<div class="error-card"><h3>Couldn't generate AI recommendations</h3><p>Your survey is complete and captured below. Copy your responses and paste them into Claude.ai or ChatGPT and ask "What careers should I consider based on this?" — you'll get great results. (Technical detail: ${msg})</p></div>`;
+  buildSummaryAccordion();
+  document.getElementById('summaryAccordion').style.display='block';
+}
+
+function buildSummaryAccordion(){
+  const sections=[
+    {title:'1. Background',rows:[['Job Title',v('jobTitle')],['Industry',v('industry')],['Experience',v('experience')+' years'],['Education',v('education')],['Current Salary',v('salary')? '$'+Number(v('salary')).toLocaleString():'—'],['Work Eligibility',v('eligibility')],['Location',v('location')]]},
+    {title:'2. Satisfaction',rows:Object.entries(state.ratings).map(([k,vl])=>[k,'★'.repeat(vl)+'☆'.repeat(5-vl)])},
+    {title:'3. Skills',rows:[['Skills',state.skills.join(', ')||'—'],['Areas',state.expAreas.join(', ')||'—'],['Level',state.skillLevel||'—']]},
+    {title:'4. Flexibility',rows:[['Min Salary',v('minSalary')? '$'+Number(v('minSalary')).toLocaleString():'—'],['Step down',state.stepDown||'—'],['Study',state.study||'—'],['Pay cut',state.payCut||'—']]},
+    {title:'5. Interests',rows:[['Industries',state.industries.join(', ')||'Open'],['Dream role',v('dreamRole')]]},
+    {title:'6. Priorities',rows:state.rankOrder.map((item,i)=>[(i+1)+'.',item])},
+    {title:'7. Timeline',rows:[['Timeline',state.timeline||'—'],['Risk',state.risk||'—'],['Runway',state.runway||'—']]},
+  ];
+  document.getElementById('summaryBody').innerHTML=sections.map(s=>`<div class="result-card"><h3>${s.title}</h3>${s.rows.filter(r=>r[1]&&r[1]!=='—').map(r=>`<div class="result-row"><strong>${r[0]}</strong><span class="result-val">${r[1]}</span></div>`).join('')}</div>`).join('');
+}
+
+function toggleSummary(){const b=document.getElementById('summaryBody'),a=document.getElementById('summaryArrow');b.classList.toggle('open');a.textContent=b.classList.contains('open')?'▴':'▾';}
+function copyAll(){navigator.clipboard.writeText(collectSummary()).then(()=>{const btn=document.querySelector('.copy-btn');btn.textContent='✓ Copied!';setTimeout(()=>btn.textContent='📋 Copy All Responses as Text',2500);});}
+
+document.addEventListener('DOMContentLoaded',()=>{
+  buildRatings('ratings',ratingItems,'ratings');
+  buildChecks('expAreas',expAreaOptions,state.expAreas);
+  buildPills('skillLevel',['Beginner','Intermediate','Advanced','Mixed'],'skillLevel');
+  buildPills('stepDown',['Yes','No','Depends on the role'],'stepDown');
+  buildPills('study',['Yes — happy to','Maybe — if needed','Prefer not to','Already studying'],'study');
+  buildPills('payCut',['Yes','No','Depends on the offer'],'payCut');
+  buildChecks('workArrangement',['Full remote','Hybrid','On-site','Part-time','Flexible hours','Shift work OK','Travel OK'],state.workArrangements);
+  buildRatings('workStyle',workStyleItems,'workStyle');
+  buildChecks('industries',industryOptions,state.industries);
+  buildPills('timeline',['0–3 months','3–6 months','6–12 months','1–2 years','2–3 years','Just exploring'],'timeline');
+  buildPills('risk',['Low — want stability','Medium — balanced approach','High — willing to take a leap'],'risk');
+  buildPills('runway',['Under 1 month','1–3 months','3–6 months','6–12 months','12+ months'],'runway');
+  buildRank();
+  updateProgress();
+});
+</script>
+
+</body>
+</html>
