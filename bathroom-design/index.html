@@ -1,0 +1,795 @@
+<title>Unit 18D Bathroom</title>
+<meta name="description" content="Renovation design for the Unit 18D bathroom: green crackle-glaze and stone-look tiles, brushed brass fittings, walk-in shower.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gloock&family=Barlow+Condensed:wght@400;500;600&family=Public+Sans:wght@400;500;600&display=swap">
+<style>
+  :root {
+    --ground: #eef0ea;
+    --surface: #f8f9f5;
+    --ink: #1f2a22;
+    --muted: #5d685e;
+    --line: #d5dacf;
+    --green: #5f6d45;
+    --green-soft: #e1e6d6;
+    --brass: #94763f;
+    --warn-bg: #f6ecd6;
+    --warn-ink: #6e5323;
+    /* drawing sheets are "paper" in both themes */
+    --sheet: #fbfbf8;
+    --sheet-ink: #243029;
+    --display: "Gloock", "Georgia", "Times New Roman", serif;
+    --body: "Public Sans", "Segoe UI", system-ui, sans-serif;
+    --label: "Barlow Condensed", "Arial Narrow", "Roboto Condensed", sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --ground: #131915;
+      --surface: #1b221d;
+      --ink: #e4e8df;
+      --muted: #9ba699;
+      --line: #2e3830;
+      --green: #a9b98a;
+      --green-soft: #26301f;
+      --brass: #cfb27a;
+      --warn-bg: #33291a;
+      --warn-ink: #e7c98f;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --ground: #131915;
+    --surface: #1b221d;
+    --ink: #e4e8df;
+    --muted: #9ba699;
+    --line: #2e3830;
+    --green: #a9b98a;
+    --green-soft: #26301f;
+    --brass: #cfb27a;
+    --warn-bg: #33291a;
+    --warn-ink: #e7c98f;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    background: var(--ground);
+    color: var(--ink);
+    font-family: var(--body);
+    font-size: 15px;
+    line-height: 1.6;
+    padding-inline: 16px;
+    padding-block: 32px 72px;
+  }
+  .wrap { max-width: 1080px; margin: 0 auto; display: grid; gap: 64px; }
+  h1, h2, h3 { font-family: var(--display); font-weight: 400; text-wrap: balance; margin: 0; line-height: 1.15; }
+  h1 { font-size: clamp(34px, 6vw, 56px); letter-spacing: -0.5px; }
+  h2 { font-size: clamp(26px, 3.6vw, 34px); }
+  h3 { font-size: 20px; }
+  p { margin: 0; max-width: 68ch; }
+  .eyebrow {
+    font-family: var(--label); font-weight: 600; font-size: 13px;
+    text-transform: uppercase; letter-spacing: 1.6px; color: var(--green);
+  }
+  .muted { color: var(--muted); }
+  section { display: grid; gap: 24px; }
+  .sec-head { display: grid; gap: 8px; }
+
+  /* Title block */
+  .titleblock { display: grid; grid-template-columns: 1fr minmax(260px, 340px); gap: 32px; align-items: end; }
+  .titleblock .lede { font-size: 17px; margin-top: 16px; }
+  .tb-card { border: 1.5px solid var(--ink); background: var(--surface); font-family: var(--label); }
+  .tb-card .tb-top { background: var(--ink); color: var(--ground); padding: 14px 16px; }
+  .tb-card .tb-top b { display: block; font-size: 22px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; }
+  .tb-card .tb-top span { font-size: 13px; letter-spacing: 1px; text-transform: uppercase; opacity: .8; }
+  .tb-rows { display: grid; grid-template-columns: repeat(3, 1fr); }
+  .tb-rows div { padding: 8px 12px; border-top: 1px solid var(--line); border-right: 1px solid var(--line); }
+  .tb-rows div:nth-child(3n) { border-right: 0; }
+  .tb-rows small { display: block; font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); }
+  .tb-rows strong { font-size: 16px; font-weight: 600; }
+  .tb-status { margin: 12px; padding: 8px 12px; background: var(--warn-bg); color: var(--warn-ink); font-size: 14px; letter-spacing: .8px; text-transform: uppercase; font-weight: 600; }
+
+  /* Changes list */
+  .changes { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); border-top: 1px solid var(--line); }
+  .change { display: grid; grid-template-columns: 120px 1fr; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--line); padding-right: 24px; }
+  .change .k { font-family: var(--label); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; font-size: 13px; color: var(--muted); padding-top: 2px; }
+  .change .was { color: var(--muted); font-size: 13px; text-decoration: line-through; text-decoration-color: color-mix(in srgb, var(--muted) 60%, transparent); }
+  .change .now { font-weight: 500; }
+
+  /* Material board */
+  .board { display: grid; grid-template-columns: 1.1fr 1fr; gap: 24px; align-items: start; }
+  .board figure { margin: 0; }
+  .board figure img { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; object-position: 30% 40%; }
+  .board figcaption { font-size: 13px; color: var(--muted); margin-top: 8px; }
+  .swatches { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+  .sw { display: grid; gap: 8px; }
+  .sw .chip { aspect-ratio: 16 / 10; width: 100%; max-width: 100%; border: 1px solid var(--line); }
+  .sw b { font-weight: 600; font-size: 14px; display: block; }
+  .sw span { font-size: 13px; color: var(--muted); display: block; line-height: 1.45; }
+  .chip.green { background: #6b784d; }
+  .chip.green svg { display: block; width: 100%; height: 100%; }
+  .chip.stone {
+    background:
+      radial-gradient(circle at 20% 30%, rgba(120,110,95,.18) 0 1px, transparent 2px) 0 0 / 11px 13px,
+      radial-gradient(circle at 70% 60%, rgba(255,255,255,.35) 0 1px, transparent 2px) 0 0 / 17px 9px,
+      linear-gradient(90deg, transparent calc(50% - 1px), #b9b2a6 calc(50% - 1px) calc(50% + 1px), transparent calc(50% + 1px)),
+      linear-gradient(0deg, transparent calc(50% - 1px), #b9b2a6 calc(50% - 1px) calc(50% + 1px), transparent calc(50% + 1px)),
+      #d3cdc3;
+  }
+  .chip.brass { background: linear-gradient(100deg, #9c8250 0%, #c8ae78 28%, #b39862 45%, #d8c28f 62%, #a4894f 100%); }
+  .chip.brass::after { content: ""; display: block; height: 100%; background: repeating-linear-gradient(90deg, rgba(255,255,255,.06) 0 1px, transparent 1px 3px); }
+  .chip.white { background: radial-gradient(ellipse at 40% 35%, #ffffff, #eeeeea 70%); }
+  .chip.glass { background: linear-gradient(115deg, #e6eeee 0%, #f7fafa 35%, #d9e4e4 36%, #eef3f3 60%, #dde7e7 100%); }
+  .chip.led { background: radial-gradient(ellipse at 50% 50%, #243029 38%, transparent 39%), radial-gradient(ellipse at 50% 50%, #ffe3a3 30%, #f3d58c 45%, #3a4239 75%); }
+
+  /* Drawings */
+  .sheet { background: var(--sheet); color: var(--sheet-ink); border: 1px solid var(--line); }
+  .scroller { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .scroller svg { display: block; width: 100%; height: auto; }
+  .fig-head { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 16px; align-items: baseline; padding: 14px 18px 0; font-family: var(--label); }
+  .fig-head b { font-size: 17px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; }
+  .fig-head span { font-size: 13px; letter-spacing: .8px; text-transform: uppercase; color: #66706a; }
+  .fig-notes { padding: 4px 18px 16px; font-size: 13px; color: #4f5a53; display: grid; gap: 4px; }
+  .fig-notes li { margin-left: 16px; }
+  .fig-notes ul { margin: 0; padding: 0; }
+  .elev-grid { display: grid; grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.6fr); gap: 24px; }
+  .plan-wrap { display: grid; grid-template-columns: minmax(0, 1fr) 280px; }
+  .legend { border-left: 1px solid #dfe2da; padding: 18px; font-size: 13px; display: grid; gap: 10px; align-content: start; }
+  .legend .row { display: grid; grid-template-columns: 30px 1fr; gap: 10px; align-items: center; line-height: 1.35; }
+  .legend svg { width: 30px; height: 22px; }
+  .legend h4 { margin: 0; font-family: var(--label); font-size: 13px; letter-spacing: 1.2px; text-transform: uppercase; color: #66706a; font-weight: 600; }
+
+  /* Schedule table */
+  .table-wrap { overflow-x: auto; border: 1px solid var(--line); background: var(--surface); }
+  table { border-collapse: collapse; width: 100%; min-width: 720px; font-size: 14px; }
+  th, td { text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { font-family: var(--label); font-weight: 600; font-size: 12px; letter-spacing: 1.2px; text-transform: uppercase; color: var(--muted); background: var(--ground); }
+  td:first-child { font-weight: 600; white-space: nowrap; }
+  td.num { font-variant-numeric: tabular-nums; white-space: nowrap; }
+  tr:last-child td { border-bottom: 0; }
+  .tag { display: inline-block; font-family: var(--label); font-size: 12px; letter-spacing: .8px; text-transform: uppercase; padding: 1px 7px; border: 1px solid currentColor; color: var(--brass); white-space: nowrap; }
+
+  /* Notes */
+  .notes { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px 32px; }
+  .note { display: grid; gap: 6px; padding-top: 14px; border-top: 2px solid var(--ink); }
+  .note h3 { font-size: 18px; }
+  .note p { font-size: 14px; color: var(--muted); }
+  .confirm { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; border-top: 1px solid var(--line); }
+  .confirm li { display: grid; grid-template-columns: 22px 1fr; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--line); }
+  .confirm li::before { content: ""; width: 16px; height: 16px; border: 1.5px solid var(--brass); margin-top: 4px; }
+  .confirm b { font-weight: 600; }
+  .confirm span { color: var(--muted); }
+
+  .photos { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
+  .photos figure { margin: 0; }
+  .photos img { display: block; width: 100%; aspect-ratio: 3 / 4; object-fit: cover; border: 1px solid var(--line); }
+  .photos figcaption { font-size: 13px; color: var(--muted); margin-top: 6px; }
+  footer { font-size: 13px; color: var(--muted); border-top: 1px solid var(--line); padding-top: 16px; }
+
+  @media (max-width: 820px) {
+    .titleblock, .board, .elev-grid, .plan-wrap { grid-template-columns: minmax(0, 1fr); }
+    .legend { border-left: 0; border-top: 1px solid #dfe2da; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+    .legend h4 { grid-column: 1 / -1; }
+  }
+  @media (max-width: 480px) {
+    .change { grid-template-columns: 1fr; gap: 2px; }
+    .swatches { gap: 12px; }
+  }
+</style>
+
+<!-- shared SVG definitions (gradients, filters, patterns) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="glaze" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.28"/>
+      <stop offset="0.35" stop-color="#ffffff" stop-opacity="0.04"/>
+      <stop offset="0.7" stop-color="#000000" stop-opacity="0.06"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0.14"/>
+    </linearGradient>
+    <linearGradient id="brass" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#9a7f4b"/>
+      <stop offset="0.3" stop-color="#cdb37c"/>
+      <stop offset="0.55" stop-color="#b09560"/>
+      <stop offset="0.75" stop-color="#d9c492"/>
+      <stop offset="1" stop-color="#9f844f"/>
+    </linearGradient>
+    <linearGradient id="brassV" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#d4bd88"/>
+      <stop offset="0.5" stop-color="#b09560"/>
+      <stop offset="1" stop-color="#9a7f4b"/>
+    </linearGradient>
+    <linearGradient id="mirror" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#e9efef"/>
+      <stop offset="0.42" stop-color="#d3dddd"/>
+      <stop offset="0.43" stop-color="#f1f5f5"/>
+      <stop offset="0.52" stop-color="#dde5e5"/>
+      <stop offset="1" stop-color="#bfcbcc"/>
+    </linearGradient>
+    <linearGradient id="porcelain" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fbfbf9"/>
+      <stop offset="1" stop-color="#e7e7e2"/>
+    </linearGradient>
+    <linearGradient id="glassFill" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#cfe0e0" stop-opacity="0.35"/>
+      <stop offset="1" stop-color="#a9c3c4" stop-opacity="0.25"/>
+    </linearGradient>
+    <radialGradient id="niche" cx="0.5" cy="0" r="1">
+      <stop offset="0" stop-color="#000" stop-opacity="0.05"/>
+      <stop offset="1" stop-color="#000" stop-opacity="0.32"/>
+    </radialGradient>
+    <filter id="halo" x="-20%" y="-30%" width="140%" height="160%">
+      <feGaussianBlur stdDeviation="55"/>
+    </filter>
+    <pattern id="speckle" width="240" height="240" patternUnits="userSpaceOnUse">
+      <circle cx="30" cy="40" r="5" fill="#7d7466" opacity=".22"/>
+      <circle cx="140" cy="20" r="3" fill="#7d7466" opacity=".25"/>
+      <circle cx="200" cy="120" r="6" fill="#ffffff" opacity=".35"/>
+      <circle cx="80" cy="160" r="4" fill="#7d7466" opacity=".2"/>
+      <circle cx="170" cy="200" r="3" fill="#7d7466" opacity=".3"/>
+      <circle cx="60" cy="95" r="7" fill="#ffffff" opacity=".25"/>
+      <circle cx="110" cy="220" r="5" fill="#ffffff" opacity=".3"/>
+      <circle cx="220" cy="60" r="4" fill="#7d7466" opacity=".2"/>
+      <path d="M10 200 C 60 180, 90 210, 150 170" stroke="#9f978a" stroke-width="3" fill="none" opacity=".18"/>
+    </pattern>
+    <pattern id="stonePlan" width="36" height="36" patternUnits="userSpaceOnUse">
+      <rect width="36" height="36" fill="#e2ddd4"/>
+      <circle cx="7" cy="9" r=".9" fill="#9c9486" opacity=".5"/>
+      <circle cx="25" cy="21" r=".8" fill="#9c9486" opacity=".45"/>
+      <circle cx="14" cy="30" r="1" fill="#fff" opacity=".7"/>
+    </pattern>
+    <pattern id="hatch" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+      <rect width="8" height="8" fill="#e9ebe5"/>
+      <line x1="0" y1="0" x2="0" y2="8" stroke="#7d887f" stroke-width="1.2"/>
+    </pattern>
+  </defs>
+</svg>
+
+<div class="wrap">
+
+  <!-- ============ TITLE ============ -->
+  <header class="titleblock">
+    <div>
+      <div class="eyebrow">Bathroom renovation · Design concept</div>
+      <h1>Unit 18D Bathroom</h1>
+      <p class="lede">A green crackle-glaze tile from the ledge up, stone-look porcelain below and underfoot, and brushed brass for every fitting. One continuous tile line at 1000 mm ties the ledge, shower and towel wall together.</p>
+    </div>
+    <aside class="tb-card" aria-label="Drawing details">
+      <div class="tb-top"><b>Design Revision</b><span>82–94 Darlinghurst Rd, Potts Point NSW 2011</span></div>
+      <div class="tb-status">Concept · not for construction</div>
+      <div class="tb-rows">
+        <div><small>Scale</small><strong>NTS</strong></div>
+        <div><small>Units</small><strong>mm</strong></div>
+        <div><small>Ceiling</small><strong>2150</strong></div>
+        <div><small>Tile datum</small><strong>1000 AFFL</strong></div>
+        <div><small>Based on</small><strong>Rev 07</strong></div>
+        <div><small>Date</small><strong>Sep 2026</strong></div>
+      </div>
+    </aside>
+  </header>
+
+  <!-- ============ WHAT CHANGES ============ -->
+  <section aria-labelledby="changes-h">
+    <div class="sec-head">
+      <div class="eyebrow">Scope</div>
+      <h2 id="changes-h">What changes</h2>
+    </div>
+    <div class="changes">
+      <div class="change"><div class="k">Upper walls</div><div><div class="was">White gloss stacked tile</div><div class="now">Green crackle-glaze tile, 1000 mm to ceiling</div></div></div>
+      <div class="change"><div class="k">Floor + lower walls</div><div><div class="was">Brown porcelain floor</div><div class="now">Stone-look porcelain on floor and walls to 1000 mm</div></div></div>
+      <div class="change"><div class="k">Fittings</div><div><div class="was">Mixed chrome and brass</div><div class="now">Brushed brass throughout</div></div></div>
+      <div class="change"><div class="k">Toilet</div><div><div class="was">Floor-standing pan</div><div class="now">Wall-hung pan, cistern hidden in ledge, smart seat</div></div></div>
+      <div class="change"><div class="k">Basin</div><div><div class="was">Gloss white basin</div><div class="now">Matte white wall-hung basin</div></div></div>
+      <div class="change"><div class="k">Towels</div><div><div class="was">Double rail on the long wall</div><div class="now">Heated towel poles between door and shower</div></div></div>
+      <div class="change"><div class="k">Shower storage</div><div><div class="was">Wall-mounted shelf</div><div class="now">Tiled recess in the door-side shower wall</div></div></div>
+      <div class="change"><div class="k">Shower screen</div><div><div class="was">Framed hinged door + panel</div><div class="now">Single frameless fixed panel, walk-in</div></div></div>
+      <div class="change"><div class="k">Drains</div><div><div class="was">Round chrome grates</div><div class="now">Tile insert drains, tiled to match the floor</div></div></div>
+      <div class="change"><div class="k">Shaving cabinet</div><div><div class="was">Near full-width, to ceiling</div><div class="now">Smaller, with a gap each side and above, LED edge glow</div></div></div>
+      <div class="change"><div class="k">Hand towel</div><div><div class="was">Hand towel ring</div><div class="now">Brass robe hook to the right of the basin</div></div></div>
+    </div>
+  </section>
+
+  <!-- ============ MATERIALS ============ -->
+  <section aria-labelledby="mat-h">
+    <div class="sec-head">
+      <div class="eyebrow">Palette</div>
+      <h2 id="mat-h">Materials and finishes</h2>
+    </div>
+    <div class="board">
+      <figure>
+        <img src="img/tile-sample.jpg" alt="Showroom sample: green crackle-glaze vertical tiles beside a light grey stone-look porcelain, with a brushed brass tube and a white toilet model.">
+        <figcaption>Your showroom selection. The glaze pools darker at the edges and lighter in the centre, so no two tiles match.</figcaption>
+      </figure>
+      <div class="swatches">
+        <div class="sw">
+          <div class="chip green" id="chip-green" aria-hidden="true"></div>
+          <div><b>Green crackle-glaze tile</b><span>Gloss, vertical stack bond. Walls from 1000 mm to ceiling, including inside the shower and niche.</span></div>
+        </div>
+        <div class="sw">
+          <div class="chip stone" aria-hidden="true"></div>
+          <div><b>Stone-look porcelain</b><span>Matte, 600 × 600. Floor, shower floor, walls to 1000 mm and the ledge front.</span></div>
+        </div>
+        <div class="sw">
+          <div class="chip brass" aria-hidden="true"></div>
+          <div><b>Brushed brass</b><span>Tapware, shower, flush plate, drain frames, towel poles, robe hook, glass hardware.</span></div>
+        </div>
+        <div class="sw">
+          <div class="chip white" aria-hidden="true"></div>
+          <div><b>Matte white ceramic</b><span>Wall-hung basin. Toilet pan and smart seat in white.</span></div>
+        </div>
+        <div class="sw">
+          <div class="chip glass" aria-hidden="true"></div>
+          <div><b>Clear toughened glass</b><span>10 mm frameless fixed panel on brass channel and wall bar.</span></div>
+        </div>
+        <div class="sw">
+          <div class="chip led" aria-hidden="true"></div>
+          <div><b>Warm LED halo</b><span>Concealed strip behind the cabinet edges, washing light onto the glazed tile.</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FLOOR PLAN ============ -->
+  <section aria-labelledby="plan-h">
+    <div class="sec-head">
+      <div class="eyebrow">Drawing 01</div>
+      <h2 id="plan-h">Proposed floor plan</h2>
+      <p class="muted">Wall shape and dimensions follow your Rev 07 plan. Letters A–D mark the elevations below.</p>
+    </div>
+    <div class="sheet">
+      <div class="fig-head"><b>Floor plan · proposed</b><span>NTS · mm · verify on site</span></div>
+      <div class="plan-wrap">
+        <div class="scroller"><div id="plan" style="min-width:560px"></div></div>
+        <div class="legend">
+          <h4>Legend</h4>
+          <div class="row"><svg viewBox="0 0 30 22"><rect x="1" y="3" width="28" height="16" fill="url(#stonePlan)" stroke="#9c9486"/></svg><span>Stone-look porcelain floor, 600 × 600</span></div>
+          <div class="row"><svg viewBox="0 0 30 22"><rect x="1" y="6" width="28" height="10" fill="#d6d0c5" stroke="#243029"/></svg><span>Ledge, 1000 high × 200 deep, wall to wall</span></div>
+          <div class="row"><svg viewBox="0 0 30 22"><line x1="2" y1="11" x2="28" y2="11" stroke="#5a8f95" stroke-width="3"/></svg><span>Fixed frameless glass panel</span></div>
+          <div class="row"><svg viewBox="0 0 30 22"><rect x="4" y="5" width="22" height="12" fill="none" stroke="#a8884f" stroke-width="2" stroke-dasharray="3 2"/></svg><span>Recessed shower niche</span></div>
+          <div class="row"><svg viewBox="0 0 30 22"><rect x="3" y="8" width="24" height="6" fill="#d6d0c5" stroke="#a8884f" stroke-width="1.6"/></svg><span>Tile insert drain, brass frame</span></div>
+          <div class="row"><svg viewBox="0 0 30 22"><circle cx="10" cy="11" r="4" fill="url(#brass)" stroke="#7a6333"/><circle cx="21" cy="11" r="4" fill="url(#brass)" stroke="#7a6333"/></svg><span>Heated towel poles</span></div>
+          <div class="row"><svg viewBox="0 0 30 22"><rect x="2" y="5" width="26" height="12" fill="none" stroke="#243029" stroke-dasharray="4 3"/></svg><span>Mirror cabinet above (dashed)</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ ELEVATIONS ============ -->
+  <section aria-labelledby="elev-h">
+    <div class="sec-head">
+      <div class="eyebrow">Drawings 02–05</div>
+      <h2 id="elev-h">Wall elevations</h2>
+      <p class="muted">Each wall is drawn to scale in mm with the tile set-out shown. Heights are above finished floor level (AFFL).</p>
+    </div>
+
+    <figure class="sheet" style="margin:0">
+      <div class="fig-head"><b>A · Vanity and WC wall</b><span>2200 wide × 2150 high</span></div>
+      <div class="scroller"><div id="elevA" style="min-width:620px"></div></div>
+      <div class="fig-notes"><ul>
+        <li>Cabinet reduced to 1600 × 750, leaving 300 each side and 200 to the ceiling. The LED glow spills into those gaps.</li>
+        <li>In-wall cistern sits inside the ledge; brass flush plate on the ledge front above the pan.</li>
+        <li>Robe hook on the green tile to the right of the basin, clear of the cabinet door swing.</li>
+      </ul></div>
+    </figure>
+
+    <div class="elev-grid">
+      <figure class="sheet" style="margin:0">
+        <div class="fig-head"><b>B · Shower wall</b><span>620 wide</span></div>
+        <div class="scroller"><div id="elevB" style="min-width:250px"></div></div>
+        <div class="fig-notes"><ul>
+          <li>Twin shower: overhead rose on the rail plus hand shower, as in Rev 07.</li>
+          <li>Linear tile insert drain along the base of this wall.</li>
+        </ul></div>
+      </figure>
+      <figure class="sheet" style="margin:0">
+        <div class="fig-head"><b>C · Door-side wall</b><span>1600 wide, viewed from inside</span></div>
+        <div class="scroller"><div id="elevC" style="min-width:500px"></div></div>
+        <div class="fig-notes"><ul>
+          <li>Niche centred in the shower section of this wall, replacing the shelf.</li>
+          <li>Two heated towel poles on the dry side, next to the walk-in opening.</li>
+        </ul></div>
+      </figure>
+    </div>
+
+    <figure class="sheet" style="margin:0">
+      <div class="fig-head"><b>D · Long right wall</b><span>2300 wide</span></div>
+      <div class="scroller"><div id="elevD" style="min-width:620px"></div></div>
+      <div class="fig-notes"><ul>
+        <li>Towel rail removed; the wall is left clear so the tile does the work.</li>
+      </ul></div>
+    </figure>
+  </section>
+
+  <!-- ============ SCHEDULE ============ -->
+  <section aria-labelledby="sched-h">
+    <div class="sec-head">
+      <div class="eyebrow">Schedule</div>
+      <h2 id="sched-h">Fixtures and finishes</h2>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Item</th><th>Specification</th><th>Finish</th><th>Set-out</th><th>Location</th></tr></thead>
+        <tbody>
+          <tr><td>Wall tile, upper</td><td>Crackle-glaze ceramic, vertical stack bond (drawn as 65 × 200, confirm size)</td><td>Gloss green</td><td class="num">1000 → 2150</td><td>All walls, shower, niche lining</td></tr>
+          <tr><td>Wall tile, lower</td><td>Stone-look porcelain 600 × 600</td><td>Matte</td><td class="num">0 → 1000</td><td>All walls, ledge front</td></tr>
+          <tr><td>Floor tile</td><td>Stone-look porcelain 600 × 600, P3 floor / P4 shower</td><td>Matte</td><td class="num">—</td><td>Whole floor incl. shower</td></tr>
+          <tr><td>Ledge top</td><td>20 mm porcelain slab or natural stone, pencil edge</td><td>To match floor</td><td class="num">1000 AFFL × 200</td><td>Wall A, wall to wall</td></tr>
+          <tr><td>Toilet</td><td>Wall-hung rimless pan, low-height in-wall cistern frame, smart bidet seat</td><td>White <span class="tag">Brass plate</span></td><td class="num">Seat ≈ 420</td><td>Wall A, left end</td></tr>
+          <tr><td>Basin</td><td>Wall-hung ceramic, approx. 550 wide</td><td>Matte white</td><td class="num">Rim ≈ 850</td><td>Wall A, right of centre</td></tr>
+          <tr><td>Basin mixer</td><td>Tall deck mixer on the ledge; spout reach to suit basin</td><td><span class="tag">Brushed brass</span></td><td class="num">On ledge</td><td>Behind basin</td></tr>
+          <tr><td>Bottle trap</td><td>Exposed trap and wall flange</td><td><span class="tag">Brushed brass</span></td><td class="num">—</td><td>Under basin</td></tr>
+          <tr><td>Mirror cabinet</td><td>Shaving cabinet, 3 doors, concealed LED perimeter strip</td><td>Mirror, LED 3000 K</td><td class="num">1600 × 750 @ 1200</td><td>Wall A, centred</td></tr>
+          <tr><td>Robe hook</td><td>Single robe hook</td><td><span class="tag">Brushed brass</span></td><td class="num">≈ 1600</td><td>Wall A, right of basin</td></tr>
+          <tr><td>Shower</td><td>Twin rail shower (rose + hand shower), wall mixer</td><td><span class="tag">Brushed brass</span></td><td class="num">Rose ≈ 2050, mixer 1100</td><td>Wall B</td></tr>
+          <tr><td>Niche</td><td>Recessed, waterproofed, lined in green tile, sill falls inward</td><td>Green tile</td><td class="num">600 × 400 @ 1200</td><td>Wall C, shower side</td></tr>
+          <tr><td>Shower screen</td><td>10 mm toughened fixed panel, channel + wall stabiliser bar</td><td>Clear <span class="tag">Brass hardware</span></td><td class="num">Full height to 2000</td><td>Existing glass line</td></tr>
+          <tr><td>Heated towel poles</td><td>2 × single vertical heated poles, hard-wired, on a timer</td><td><span class="tag">Brushed brass</span></td><td class="num">400 → 1600</td><td>Wall C, dry side</td></tr>
+          <tr><td>Shower drain</td><td>Linear tile insert drain, approx. 600 long</td><td><span class="tag">Brass frame</span></td><td class="num">—</td><td>Base of wall B</td></tr>
+          <tr><td>Floor waste</td><td>Square tile insert drain</td><td><span class="tag">Brass frame</span></td><td class="num">—</td><td>Centre of main floor</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ============ TRADE NOTES ============ -->
+  <section aria-labelledby="notes-h">
+    <div class="sec-head">
+      <div class="eyebrow">For your builder</div>
+      <h2 id="notes-h">Set-out and trade notes</h2>
+    </div>
+    <div class="notes">
+      <div class="note"><h3>The 1000 mm tile line</h3><p>Start the green with a full tile at 1000 AFFL on every wall so the line reads cleanly, and cut at the ceiling. On the lower walls, lay a full 600 tile below the line and take the cut at the floor. A slim brushed brass trim at the change is optional.</p></div>
+      <div class="note"><h3>Crackle glaze</h3><p>Crackle-glaze tiles usually need sealing before grouting, or the grout stains the cracks. Order 10–15% extra and blend tiles from several boxes as they go up. Use a warm light grey grout.</p></div>
+      <div class="note"><h3>Walk-in shower falls</h3><p>With no door or hob, the shower floor falls to the linear drain at wall B and the main floor falls to its own waste. A linear drain lets 600 × 600 tiles fall in one plane without envelope cuts. Waterproofing to AS 3740 by a licensed waterproofer.</p></div>
+      <div class="note"><h3>Ledge top material</h3><p>Engineered stone has been banned in Australia since 1 July 2024. Use a porcelain slab, natural stone, or the floor tile mitred over the edge.</p></div>
+      <div class="note"><h3>Electrical</h3><p>New circuits for the smart seat (outlet within reach of the pan), the heated poles on a timer and the cabinet LED driver. Removing the shower door changes the wet-area zones under AS/NZS 3000, so the electrician should set outlet positions.</p></div>
+      <div class="note"><h3>Strata</h3><p>Bathroom works in a strata building usually need owners corporation approval, especially where waterproofing, plumbing or walls change. Check your by-laws before booking trades.</p></div>
+    </div>
+  </section>
+
+  <!-- ============ CONFIRM ============ -->
+  <section aria-labelledby="confirm-h">
+    <div class="sec-head">
+      <div class="eyebrow">Open items</div>
+      <h2 id="confirm-h">To confirm before ordering</h2>
+    </div>
+    <ul class="confirm">
+      <li><div><b>Green tile size.</b> <span>Drawn as 65 × 200. If that's right, a 600 × 400 niche lands on whole tiles (9 wide, 2 courses high). Rev 07 showed 300 high, which would split a course.</span></div></li>
+      <li><div><b>Niche wall construction.</b> <span>The door-side wall needs a stud cavity with no pipes or cables at the niche position. If it's masonry or a common wall, the niche needs strata sign-off or a new location.</span></div></li>
+      <li><div><b>Glass panel width.</b> <span>Rev 07 shows 600. The rose sprays toward the opening, so 800–900 would keep the dry side drier if the layout allows.</span></div></li>
+      <li><div><b>Cistern frame height.</b> <span>The ledge is 1000 high, so the frame must be a low-height model that fits inside it with access to the flush plate.</span></div></li>
+      <li><div><b>Basin and tap.</b> <span>Check that the mixer spout reaches the basin waste across the 200 ledge, and confirm basin and pan heights before rough-in.</span></div></li>
+      <li><div><b>Cabinet size and depth.</b> <span>1600 × 750 is the proposal. Confirm the LED strip is concealed on all four sides and the driver has an access point.</span></div></li>
+      <li><div><b>Towel pole height and spacing.</b> <span>Drawn 1200 tall, 300 apart. Check they clear the door swing and the door handle.</span></div></li>
+    </ul>
+  </section>
+
+  <!-- ============ EXISTING ============ -->
+  <section aria-labelledby="exist-h">
+    <div class="sec-head">
+      <div class="eyebrow">Reference</div>
+      <h2 id="exist-h">Existing bathroom</h2>
+    </div>
+    <div class="photos">
+      <figure><img src="img/existing-shower.jpg" alt="Existing bathroom: dark door on the left, framed glass shower with hinged door on the right, white stacked wall tiles and brown floor tiles."><figcaption>Door and shower, looking from the basin</figcaption></figure>
+      <figure><img src="img/existing-vanity.jpg" alt="Existing basin below a stone ledge and mirror cabinet, with a brass towel rail on the long tiled wall."><figcaption>Ledge, basin and the long right wall</figcaption></figure>
+      <figure><img src="img/existing-drawings.jpg" alt="Rev 07 floor plan and elevations drawing sheets."><figcaption>Rev 07 floor plan and elevations</figcaption></figure>
+    </div>
+  </section>
+
+  <footer>Concept design only. Dimensions from the Rev 07 drawings; verify all dimensions on site before ordering, fabrication or construction.</footer>
+</div>
+
+<script>
+(function () {
+  "use strict";
+  var INK = "#243029", DIM = "#5d685e", CEIL = 2150, DATUM = 1000;
+
+  // seeded random so the tile shading is identical on every load
+  function rng(seed) { return function () { seed = (seed * 16807) % 2147483647; return (seed - 1) / 2147483646; }; }
+  var GREENS = ["#5d6a43", "#6b784d", "#77845a", "#56633e", "#808c61", "#65724a", "#707d52", "#5a6841"];
+  var STONES = ["#d3cdc3", "#cfc9be", "#d6d1c7", "#cbc5ba"];
+  var GREEN_W = 65, GREEN_H = 200, GROUT = 2;
+
+  function f(n) { return Math.round(n * 10) / 10; }
+
+  function greenTiles(W, y0, y1, seed) {
+    var r = rng(seed), out = [], mod = GREEN_W + GROUT;
+    var cols = Math.ceil(W / mod) + 1, off = -((cols * mod - W) / 2);
+    out.push('<rect x="0" y="' + (CEIL - y1) + '" width="' + W + '" height="' + (y1 - y0) + '" fill="#bdb7a3"/>');
+    for (var c = 0; c < cols; c++) {
+      for (var h = y0; h < y1; h += GREEN_H + GROUT) {
+        var x = off + c * mod, top = Math.min(h + GREEN_H, y1);
+        var col = GREENS[Math.floor(r() * GREENS.length)];
+        var yy = CEIL - top, hh = top - h;
+        out.push('<rect x="' + f(x) + '" y="' + yy + '" width="' + GREEN_W + '" height="' + hh + '" fill="' + col + '"/>');
+        out.push('<rect x="' + f(x) + '" y="' + yy + '" width="' + GREEN_W + '" height="' + hh + '" fill="url(#glaze)"/>');
+      }
+    }
+    return out.join("");
+  }
+
+  function stoneTiles(W, y0, y1, seed) {
+    var r = rng(seed), out = [];
+    out.push('<rect x="0" y="' + (CEIL - y1) + '" width="' + W + '" height="' + (y1 - y0) + '" fill="#bcb5a9"/>');
+    // joints centred on the wall; full tile directly under the datum, cut at the floor
+    var start = W / 2 - 300 - Math.ceil((W / 2 - 300) / 600) * 600;
+    var rows = [[y1 - 600, y1], [y0, y1 - 600]];
+    for (var x = start; x < W; x += 600) {
+      rows.forEach(function (rw) {
+        var a = Math.max(rw[0], y0), b = rw[1];
+        if (b <= a) return;
+        var x0 = Math.max(x, 0), x1 = Math.min(x + 600, W);
+        out.push('<rect x="' + f(x0 + 1.5) + '" y="' + (CEIL - b + 1.5) + '" width="' + f(x1 - x0 - 3) + '" height="' + (b - a - 3) + '" fill="' + STONES[Math.floor(r() * STONES.length)] + '"/>');
+      });
+    }
+    out.push('<rect x="0" y="' + (CEIL - y1) + '" width="' + W + '" height="' + (y1 - y0) + '" fill="url(#speckle)"/>');
+    return out.join("");
+  }
+
+  function txt(x, y, s, o) {
+    o = o || {};
+    return '<text x="' + x + '" y="' + y + '" font-family="Barlow Condensed, Arial Narrow, sans-serif" font-size="' + (o.size || 52) +
+      '" font-weight="' + (o.weight || 500) + '" fill="' + (o.fill || INK) + '" text-anchor="' + (o.anchor || "middle") + '"' +
+      (o.rot ? ' transform="rotate(' + o.rot + ' ' + x + ' ' + y + ')"' : "") + (o.ls ? ' letter-spacing="' + o.ls + '"' : "") + ">" + s + "</text>";
+  }
+  function dimH(x1, x2, y, label) {
+    return '<g stroke="' + DIM + '" stroke-width="3" fill="none"><line x1="' + x1 + '" y1="' + y + '" x2="' + x2 + '" y2="' + y + '"/>' +
+      '<line x1="' + (x1 - 14) + '" y1="' + (y + 14) + '" x2="' + (x1 + 14) + '" y2="' + (y - 14) + '"/>' +
+      '<line x1="' + (x2 - 14) + '" y1="' + (y + 14) + '" x2="' + (x2 + 14) + '" y2="' + (y - 14) + '"/></g>' +
+      txt((x1 + x2) / 2, y - 18, label, { fill: DIM, size: 48 });
+  }
+  function dimV(y1, y2, x, label, side) {
+    // y1,y2 in AFFL heights
+    var a = CEIL - y1, b = CEIL - y2, tx = side === "r" ? x + 22 : x - 22;
+    return '<g stroke="' + DIM + '" stroke-width="3" fill="none"><line x1="' + x + '" y1="' + a + '" x2="' + x + '" y2="' + b + '"/>' +
+      '<line x1="' + (x - 14) + '" y1="' + (a + 14) + '" x2="' + (x + 14) + '" y2="' + (a - 14) + '"/>' +
+      '<line x1="' + (x - 14) + '" y1="' + (b + 14) + '" x2="' + (x + 14) + '" y2="' + (b - 14) + '"/></g>' +
+      txt(tx, (a + b) / 2 + 16, label, { fill: DIM, size: 46, rot: -90, anchor: "middle" });
+  }
+  function callout(x, y, lx, ly, label, anchor) {
+    return '<g><line x1="' + x + '" y1="' + y + '" x2="' + lx + '" y2="' + ly + '" stroke="' + INK + '" stroke-width="2.5"/>' +
+      '<circle cx="' + x + '" cy="' + y + '" r="8" fill="' + INK + '"/>' +
+      txt(lx + (anchor === "end" ? -10 : anchor === "start" ? 10 : 0), ly + (anchor === "middle" ? -14 : 16), label, { anchor: anchor || "start", size: 46, weight: 600, ls: 1 }) + "</g>";
+  }
+
+  function wallShell(W, content, extra, opts) {
+    opts = opts || {};
+    var L = opts.left || 330, R = opts.right || 330, T = opts.top || 190, B = opts.bottom || 170;
+    var s = '<svg viewBox="' + (-L) + " " + (-T) + " " + (W + L + R) + " " + (CEIL + T + B) + '" role="img" aria-label="' + opts.label + '">';
+    s += '<clipPath id="clip' + opts.id + '"><rect x="0" y="0" width="' + W + '" height="' + CEIL + '"/></clipPath>';
+    s += '<g clip-path="url(#clip' + opts.id + ')">' + greenTiles(W, DATUM, CEIL, opts.seed || 7) + stoneTiles(W, 0, DATUM, (opts.seed || 7) + 3) + "</g>";
+    // datum line
+    s += '<line x1="0" y1="' + (CEIL - DATUM) + '" x2="' + W + '" y2="' + (CEIL - DATUM) + '" stroke="#8f8a7c" stroke-width="3"/>';
+    s += content;
+    // wall outline, ceiling and floor
+    s += '<rect x="0" y="0" width="' + W + '" height="' + CEIL + '" fill="none" stroke="' + INK + '" stroke-width="7"/>';
+    s += '<line x1="-120" y1="' + CEIL + '" x2="' + (W + 120) + '" y2="' + CEIL + '" stroke="' + INK + '" stroke-width="9"/>';
+    s += '<line x1="-120" y1="0" x2="' + (W + 120) + '" y2="0" stroke="' + INK + '" stroke-width="4" stroke-dasharray="24 12"/>';
+    s += txt(-130, -8, "CEILING", { anchor: "end", size: 38, fill: DIM, ls: 2 });
+    s += dimV(0, CEIL, -230, "2150 CEILING");
+    s += dimV(0, DATUM, -110, "1000 TILE LINE");
+    s += dimH(0, W, CEIL + 110, String(W));
+    s += extra || "";
+    return s + "</svg>";
+  }
+
+  // ---------- Elevation A: vanity & WC ----------
+  (function () {
+    var W = 2200, c = "";
+    // ledge top slab
+    c += '<rect x="0" y="' + (CEIL - DATUM - 22) + '" width="' + W + '" height="24" fill="#ddd8cf" stroke="#9f978a" stroke-width="2"/>';
+    // cabinet halo + cabinet (1600 x 750 @ 1200)
+    var cx0 = 300, cx1 = 1900, cy0 = 1200, cy1 = 1950;
+    c += '<rect x="' + (cx0 - 30) + '" y="' + (CEIL - cy1 - 30) + '" width="' + (cx1 - cx0 + 60) + '" height="' + (cy1 - cy0 + 60) + '" fill="#ffe2a0" opacity=".95" filter="url(#halo)"/>';
+    c += '<rect x="' + cx0 + '" y="' + (CEIL - cy1) + '" width="' + (cx1 - cx0) + '" height="' + (cy1 - cy0) + '" fill="url(#mirror)" stroke="#6f7b76" stroke-width="4"/>';
+    for (var i = 1; i < 3; i++) { var dx = cx0 + i * (cx1 - cx0) / 3; c += '<line x1="' + dx + '" y1="' + (CEIL - cy1) + '" x2="' + dx + '" y2="' + (CEIL - cy0) + '" stroke="#8e9b98" stroke-width="3"/>'; }
+    c += '<line x1="' + (cx0 + 120) + '" y1="' + (CEIL - cy0 - 40) + '" x2="' + (cx0 + 520) + '" y2="' + (CEIL - cy1 + 60) + '" stroke="#ffffff" stroke-width="18" opacity=".45"/>';
+    c += '<line x1="' + (cx0 + 700) + '" y1="' + (CEIL - cy0 - 40) + '" x2="' + (cx0 + 1000) + '" y2="' + (CEIL - cy1 + 180) + '" stroke="#ffffff" stroke-width="10" opacity=".35"/>';
+    c += txt((cx0 + cx1) / 2, CEIL - 1560, "MIRRORED SHAVING CABINET", { size: 50, weight: 600, fill: "#44504b", ls: 2 });
+    c += txt((cx0 + cx1) / 2, CEIL - 1490, "LED halo concealed on all edges", { size: 42, fill: "#5d685e" });
+
+    // WC: flush plate on ledge face, wall-hung pan with smart seat
+    var wx = 450;
+    c += '<rect x="' + (wx - 110) + '" y="' + (CEIL - 950) + '" width="220" height="145" rx="8" fill="url(#brass)" stroke="#7a6333" stroke-width="3"/>';
+    c += '<line x1="' + wx + '" y1="' + (CEIL - 945) + '" x2="' + wx + '" y2="' + (CEIL - 810) + '" stroke="#7a6333" stroke-width="3"/>';
+    c += '<path d="M' + (wx - 180) + " " + (CEIL - 430) + " L" + (wx + 180) + " " + (CEIL - 430) + " L" + (wx + 170) + " " + (CEIL - 330) +
+      " Q" + (wx + 150) + " " + (CEIL - 270) + " " + (wx + 70) + " " + (CEIL - 262) + " L" + (wx - 70) + " " + (CEIL - 262) +
+      " Q" + (wx - 150) + " " + (CEIL - 270) + " " + (wx - 170) + " " + (CEIL - 330) + ' Z" fill="url(#porcelain)" stroke="#6d736f" stroke-width="3.5"/>';
+    c += '<rect x="' + (wx - 190) + '" y="' + (CEIL - 470) + '" width="380" height="42" rx="18" fill="#f4f4f1" stroke="#6d736f" stroke-width="3.5"/>';
+    c += '<rect x="' + (wx - 150) + '" y="' + (CEIL - 540) + '" width="300" height="72" rx="22" fill="#fafaf8" stroke="#6d736f" stroke-width="3.5"/>';
+    c += '<circle cx="' + (wx + 110) + '" cy="' + (CEIL - 505) + '" r="12" fill="#c9d1d3" stroke="#6d736f" stroke-width="2"/>';
+
+    // basin + tap + trap
+    var bx = 1500;
+    c += '<rect x="' + (bx - 22) + '" y="' + (CEIL - 1250) + '" width="44" height="250" rx="6" fill="url(#brass)" stroke="#7a6333" stroke-width="3"/>';
+    c += '<rect x="' + (bx - 70) + '" y="' + (CEIL - 1215) + '" width="48" height="18" rx="6" fill="url(#brass)" stroke="#7a6333" stroke-width="2"/>';
+    c += '<rect x="' + (bx - 18) + '" y="' + (CEIL - 1250) + '" width="36" height="120" fill="#fff" opacity=".18"/>';
+    c += '<path d="M' + (bx - 60) + " " + (CEIL - 700) + " L" + (bx + 60) + " " + (CEIL - 700) + " L" + (bx + 50) + " " + (CEIL - 480) + " L" + (bx - 50) + " " + (CEIL - 480) + ' Z" fill="url(#brass)" stroke="#7a6333" stroke-width="3"/>';
+    c += '<path d="M' + (bx - 20) + " " + (CEIL - 700) + " L" + (bx + 20) + " " + (CEIL - 700) + " L" + (bx + 20) + " " + (CEIL - 620) + " L" + (bx - 20) + " " + (CEIL - 620) + ' Z" fill="url(#brass)" stroke="#7a6333" stroke-width="2"/>';
+    c += '<path d="M' + (bx - 275) + " " + (CEIL - 850) + " L" + (bx + 275) + " " + (CEIL - 850) + " L" + (bx + 265) + " " + (CEIL - 760) +
+      " Q" + (bx + 240) + " " + (CEIL - 700) + " " + (bx + 160) + " " + (CEIL - 700) + " L" + (bx - 160) + " " + (CEIL - 700) +
+      " Q" + (bx - 240) + " " + (CEIL - 700) + " " + (bx - 265) + " " + (CEIL - 760) + ' Z" fill="#f2f2ef" stroke="#6d736f" stroke-width="3.5"/>';
+    c += '<line x1="' + (bx - 262) + '" y1="' + (CEIL - 835) + '" x2="' + (bx + 262) + '" y2="' + (CEIL - 835) + '" stroke="#d9d9d4" stroke-width="4"/>';
+
+    // robe hook
+    var hx = 2050, hy = 1600;
+    c += '<circle cx="' + hx + '" cy="' + (CEIL - hy) + '" r="26" fill="url(#brass)" stroke="#7a6333" stroke-width="3"/>';
+    c += '<path d="M' + hx + " " + (CEIL - hy) + " l0 60 q0 26 26 26" + '" fill="none" stroke="#a88d57" stroke-width="16" stroke-linecap="round"/>';
+
+    var x = "";
+    x += dimH(cx0, cx1, -60, "1600");
+    x += dimH(0, cx0, -60, "300") + dimH(cx1, W, -60, "300");
+    x += dimV(cy1, CEIL, W + 90, "200", "r");
+    x += dimV(cy0, cy1, W + 90, "750", "r");
+    x += dimV(0, cy0, W + 200, "1200 AFFL", "r");
+    x += txt(wx, CEIL - 120, "WALL-HUNG WC", { size: 44, weight: 600, ls: 1 }) + txt(wx, CEIL - 70, "+ SMART SEAT", { size: 44, weight: 600, ls: 1 });
+    x += txt(wx, CEIL - 740, "FLUSH PLATE", { size: 40, weight: 600, fill: "#6e5323", ls: 1 });
+    x += callout(bx + 150, CEIL - 780, W + 290, CEIL - 700, "MATTE WHITE BASIN", "start");
+    x += callout(bx + 22, CEIL - 1150, W + 290, CEIL - 1080, "BRASS MIXER", "start");
+    x += callout(hx + 20, CEIL - hy + 50, W + 290, CEIL - 1640, "ROBE HOOK", "start");
+    document.getElementById("elevA").innerHTML = wallShell(W, c, x, { id: "A", seed: 11, right: 820, top: 200, bottom: 190, label: "Elevation A: vanity and WC wall" });
+  })();
+
+  // ---------- Elevation B: shower wall 620 ----------
+  (function () {
+    var W = 620, c = "", mx = 310;
+    // rail
+    c += '<rect x="' + (mx - 11) + '" y="' + (CEIL - 1950) + '" width="22" height="850" rx="10" fill="url(#brass)" stroke="#7a6333" stroke-width="3"/>';
+    // arm & rose (rose seen edge-on)
+    c += '<rect x="' + (mx - 11) + '" y="' + (CEIL - 2060) + '" width="22" height="120" fill="url(#brass)" stroke="#7a6333" stroke-width="3"/>';
+    c += '<rect x="' + (mx - 125) + '" y="' + (CEIL - 2075) + '" width="250" height="26" rx="10" fill="url(#brass)" stroke="#7a6333" stroke-width="3"/>';
+    // hand shower on slider
+    c += '<rect x="' + (mx - 30) + '" y="' + (CEIL - 1560) + '" width="60" height="40" rx="8" fill="url(#brass)" stroke="#7a6333" stroke-width="3"/>';
+    c += '<rect x="' + (mx + 18) + '" y="' + (CEIL - 1700) + '" width="46" height="250" rx="22" fill="url(#brass)" stroke="#7a6333" stroke-width="3"/>';
+    c += '<path d="M' + (mx + 41) + " " + (CEIL - 1450) + " C" + (mx + 90) + " " + (CEIL - 1250) + ", " + (mx + 120) + " " + (CEIL - 1150) + ", " + (mx + 12) + " " + (CEIL - 1100) + '" fill="none" stroke="#a88d57" stroke-width="12"/>';
+    // mixer (diverter) plate
+    c += '<circle cx="' + mx + '" cy="' + (CEIL - 1100) + '" r="80" fill="url(#brass)" stroke="#7a6333" stroke-width="3"/>';
+    c += '<rect x="' + (mx - 12) + '" y="' + (CEIL - 1140) + '" width="24" height="80" rx="8" fill="#b89d66" stroke="#7a6333" stroke-width="2"/>';
+    c += '<rect x="' + (mx - 12) + '" y="' + (CEIL - 1140) + '" width="120" height="22" rx="8" fill="#c7ad75" stroke="#7a6333" stroke-width="2"/>';
+    // linear drain at base (shown as floor strip in section)
+    c += '<rect x="10" y="' + (CEIL - 8) + '" width="' + (W - 20) + '" height="16" fill="#cfc9bf" stroke="#a88d57" stroke-width="5"/>';
+    var x = "";
+    x += dimV(1100, 2050, W + 80, "2050 ROSE", "r");
+    x += dimV(0, 1100, W + 80, "1100 MIXER", "r");
+    x += txt(W / 2, CEIL + 150, "LINEAR TILE INSERT DRAIN", { size: 40, weight: 600, fill: "#7a6333", ls: 1 });
+    document.getElementById("elevB").innerHTML = wallShell(W, c, x, { id: "B", seed: 23, right: 240, bottom: 200, label: "Elevation B: shower wall with twin rail shower" });
+  })();
+
+  // ---------- Elevation C: door-side wall 1600 (viewed from inside; door return left, shower right) ----------
+  (function () {
+    var W = 1600, glassX = 650, c = "";
+    // niche 600 x 400 @ sill 1200, centred in shower zone (650-1600)
+    var nx0 = 825, nx1 = 1425, ny0 = 1200, ny1 = 1600;
+    c += '<rect x="' + nx0 + '" y="' + (CEIL - ny1) + '" width="' + (nx1 - nx0) + '" height="' + (ny1 - ny0) + '" fill="url(#niche)"/>';
+    c += '<rect x="' + nx0 + '" y="' + (CEIL - ny0 - 26) + '" width="' + (nx1 - nx0) + '" height="26" fill="#6b784d" opacity=".6"/>';
+    c += '<rect x="' + nx0 + '" y="' + (CEIL - ny1) + '" width="' + (nx1 - nx0) + '" height="' + (ny1 - ny0) + '" fill="none" stroke="#7a6333" stroke-width="6"/>';
+    c += txt((nx0 + nx1) / 2, CEIL - 1385, "NICHE", { size: 48, weight: 600, fill: "#f3f1e8", ls: 2 });
+    // glass line / walk-in opening marker
+    c += '<line x1="' + glassX + '" y1="' + (CEIL - 2000) + '" x2="' + glassX + '" y2="' + CEIL + '" stroke="#5a8f95" stroke-width="5" stroke-dasharray="26 14"/>';
+    // heated poles
+    [175, 475].forEach(function (px) {
+      c += '<rect x="' + (px - 17) + '" y="' + (CEIL - 1600) + '" width="34" height="1200" rx="17" fill="url(#brass)" stroke="#7a6333" stroke-width="3"/>';
+      c += '<rect x="' + (px - 9) + '" y="' + (CEIL - 1580) + '" width="10" height="1160" fill="#fff" opacity=".18"/>';
+      [1500, 500].forEach(function (h) { c += '<circle cx="' + px + '" cy="' + (CEIL - h) + '" r="30" fill="url(#brass)" stroke="#7a6333" stroke-width="3"/>'; });
+    });
+    var x = "";
+    x += dimH(0, glassX, -60, "650 DRY SIDE") + dimH(glassX, W, -60, "950 SHOWER");
+    x += txt((nx0 + nx1) / 2, CEIL - 1320, "600 × 400", { size: 42, fill: "#f3f1e8" });
+    x += dimV(0, ny0, W + 90, "1200 SILL", "r");
+    x += dimV(400, 1600, W + 200, "POLES 400–1600", "r");
+    x += txt(glassX, CEIL + 180, "GLASS LINE · WALK-IN OPENING", { size: 40, weight: 600, fill: "#3f7a80", ls: 1 });
+    x += txt(325, CEIL - 1700, "HEATED POLES", { size: 44, weight: 600, ls: 1.5 });
+    x += txt(-40, CEIL + 180, "DOOR ←", { size: 40, fill: DIM, anchor: "start", ls: 1 });
+    document.getElementById("elevC").innerHTML = wallShell(W, c, x, { id: "C", seed: 37, right: 360, bottom: 230, label: "Elevation C: door-side wall with niche and heated towel poles" });
+  })();
+
+  // ---------- Elevation D: long right wall 2300 ----------
+  (function () {
+    var W = 2300;
+    var x = txt(W / 2, CEIL - 1500, "CLEAR WALL", { size: 56, weight: 600, fill: "#f3f1e8", ls: 3 });
+    document.getElementById("elevD").innerHTML = wallShell(W, "", x, { id: "D", seed: 53, right: 140, label: "Elevation D: long right wall, tiled with no fittings" });
+  })();
+
+  // ---------- Floor plan (shape traced from Rev 07, NTS) ----------
+  (function () {
+    var P = { A: [135, 600], B: [135, 395], C: [302, 292], D: [290, 205], E: [673, 68], F: [700, 168], G: [700, 634], H: [618, 634], I: [506, 522], J2: [444, 636], J: [444, 600] };
+    function pt(k) { return P[k].join(","); }
+    var room = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J2", "J"].map(pt).join(" ");
+    var s = '<svg viewBox="40 10 790 720" role="img" aria-label="Proposed floor plan">';
+    s += '<clipPath id="roomClip"><polygon points="' + room + '"/></clipPath>';
+    s += '<polygon points="' + room + '" fill="url(#stonePlan)"/>';
+    // 600 grid on floor (approx, NTS) — rotated with the main walls
+    s += '<g clip-path="url(#roomClip)" stroke="#c4bdb1" stroke-width="1">';
+    for (var gx = 60; gx < 800; gx += 111) s += '<line x1="' + gx + '" y1="0" x2="' + gx + '" y2="720"/>';
+    for (var gy = 40; gy < 720; gy += 111) s += '<line x1="0" y1="' + gy + '" x2="820" y2="' + gy + '"/>';
+    s += "</g>";
+
+    // Wall A group: local mm coordinates along the 2200 wall, y into the room
+    s += '<g clip-path="url(#roomClip)"><g transform="translate(290,205) rotate(-19.7) scale(0.185)">';
+    s += '<rect x="0" y="0" width="2200" height="200" fill="#d6d0c5" stroke="#243029" stroke-width="7"/>';
+    s += '<rect x="300" y="-10" width="1600" height="150" fill="none" stroke="#243029" stroke-width="6" stroke-dasharray="30 20"/>';
+    // cistern in ledge
+    s += '<rect x="250" y="30" width="400" height="150" fill="none" stroke="#7d887f" stroke-width="5" stroke-dasharray="14 10"/>';
+    // WC pan + smart seat
+    s += '<rect x="270" y="200" width="360" height="90" rx="30" fill="#fafaf8" stroke="#243029" stroke-width="6"/>';
+    s += '<path d="M280 290 L620 290 L610 520 Q450 680 290 520 Z" fill="#ffffff" stroke="#243029" stroke-width="6"/>';
+    s += '<path d="M330 320 L570 320 L560 500 Q450 600 340 500 Z" fill="none" stroke="#7d887f" stroke-width="5"/>';
+    // basin
+    s += '<rect x="1225" y="200" width="550" height="400" rx="60" fill="#ffffff" stroke="#243029" stroke-width="6"/>';
+    s += '<rect x="1275" y="250" width="450" height="300" rx="50" fill="none" stroke="#7d887f" stroke-width="5"/>';
+    s += '<circle cx="1500" cy="420" r="22" fill="#b89d66" stroke="#243029" stroke-width="4"/>';
+    s += '<circle cx="1500" cy="110" r="32" fill="url(#brass)" stroke="#7a6333" stroke-width="5"/>';
+    s += '<rect x="1485" y="110" width="30" height="230" fill="url(#brass)" stroke="#7a6333" stroke-width="4"/>';
+    // robe hook
+    s += '<rect x="2020" y="200" width="60" height="45" fill="url(#brass)" stroke="#7a6333" stroke-width="5"/>';
+    s += "</g></g>";
+
+    // walls
+    s += '<polyline points="' + ["J2", "J", "A", "B", "C", "D", "E", "F", "G", "H", "I"].map(pt).join(" ") + '" fill="none" stroke="#243029" stroke-width="8" stroke-linejoin="miter"/>';
+
+    // shower: linear drain, rose, niche, glass
+    s += '<rect x="143" y="415" width="13" height="170" fill="#d6d0c5" stroke="#a8884f" stroke-width="2.2"/>';
+    s += '<circle cx="175" cy="497" r="16" fill="none" stroke="#243029" stroke-width="1.6"/>';
+    s += '<circle cx="175" cy="497" r="4" fill="url(#brass)" stroke="#7a6333"/>';
+    s += '<rect x="141" y="490" width="7" height="14" fill="url(#brass)" stroke="#7a6333"/>';
+    s += '<rect x="168" y="600" width="114" height="10" fill="#ecebe5" stroke="#a8884f" stroke-width="2" stroke-dasharray="5 3"/>';
+    s += '<line x1="315" y1="298" x2="315" y2="470" stroke="#5a8f95" stroke-width="5"/>';
+    s += '<line x1="315" y1="298" x2="315" y2="470" stroke="#dff0f1" stroke-width="1.5"/>';
+    s += '<line x1="315" y1="470" x2="315" y2="600" stroke="#5a8f95" stroke-width="1.2" stroke-dasharray="4 4"/>';
+    // heated poles
+    s += '<circle cx="349" cy="589" r="7" fill="url(#brass)" stroke="#7a6333" stroke-width="1.5"/>';
+    s += '<circle cx="406" cy="589" r="7" fill="url(#brass)" stroke="#7a6333" stroke-width="1.5"/>';
+    // floor waste
+    s += '<rect x="510" y="415" width="26" height="26" fill="#d6d0c5" stroke="#a8884f" stroke-width="2.2"/>';
+    // door swing
+    s += '<path d="M444 636 A 132 132 0 0 1 506 522" fill="none" stroke="#243029" stroke-width="1.2" stroke-dasharray="5 4"/>';
+    s += '<line x1="444" y1="636" x2="560" y2="572" stroke="#243029" stroke-width="3"/>';
+
+    // labels
+    function L(x, y, t, o) { o = o || {}; return '<text x="' + x + '" y="' + y + '" font-family="Barlow Condensed, Arial Narrow, sans-serif" font-size="' + (o.size || 13) + '" font-weight="' + (o.w || 600) + '" fill="' + (o.fill || "#243029") + '" text-anchor="' + (o.a || "start") + '" letter-spacing="0.6"' + (o.rot ? ' transform="rotate(' + o.rot + " " + x + " " + y + ')"' : "") + ">" + t + "</text>"; }
+    s += L(240, 505, "SHOWER", { size: 17, a: "middle" });
+    s += L(240, 522, "falls to linear drain", { size: 11, w: 400, fill: "#5d685e", a: "middle" });
+    s += L(160, 440, "LINEAR", { size: 10, fill: "#7a6333" }) + L(160, 452, "DRAIN", { size: 10, fill: "#7a6333" });
+    s += L(225, 630, "NICHE 600 × 400, SILL 1200", { size: 11, fill: "#7a6333", a: "middle" });
+    s += L(324, 380, "FIXED GLASS PANEL", { size: 11, fill: "#3f7a80", rot: 90 });
+    s += L(326, 530, "WALK-IN", { size: 11, fill: "#3f7a80" });
+    s += L(378, 572, "HEATED POLES", { size: 11, fill: "#7a6333", a: "middle" });
+    s += L(544, 460, "TILE INSERT", { size: 10, fill: "#7a6333", a: "middle" }) + L(544, 472, "FLOOR WASTE", { size: 10, fill: "#7a6333", a: "middle" });
+    s += L(395, 300, "WALL-HUNG WC", { size: 11, a: "middle" }) + L(395, 313, "+ SMART SEAT", { size: 11, a: "middle" }) + L(395, 326, "cistern in ledge", { size: 10, w: 400, fill: "#5d685e", a: "middle" });
+    s += L(610, 245, "MATTE WHITE BASIN", { size: 11, a: "middle" });
+    s += L(452, 182, "LEDGE 1000 H × 200 D", { size: 9.5, fill: "#3d4740", a: "middle", rot: -19.7 });
+    s += L(672, 142, "HOOK", { size: 10, fill: "#7a6333", a: "middle" });
+    s += L(530, 600, "ENTRY", { size: 12, fill: "#5d685e" });
+    // outside dims (from Rev 07)
+    s += L(470, 118, "2200", { size: 14, fill: "#5d685e", a: "middle", rot: -19.7 });
+    s += L(716, 110, "570", { size: 13, fill: "#5d685e" });
+    s += L(716, 400, "2300", { size: 14, fill: "#5d685e", rot: 90 });
+    s += L(290, 668, "1600", { size: 14, fill: "#5d685e", a: "middle" });
+    s += L(110, 500, "620", { size: 13, fill: "#5d685e", a: "middle", rot: -90 });
+    s += L(200, 322, "1070", { size: 13, fill: "#5d685e", a: "middle", rot: -31 });
+    s += L(276, 255, "460", { size: 12, fill: "#5d685e", a: "middle", rot: -82 });
+    // elevation markers
+    function mark(x, y, t, ang) {
+      return '<g transform="translate(' + x + " " + y + ') rotate(' + ang + ')"><circle r="13" fill="#243029"/><path d="M-7 -11 L0 -23 L7 -11 Z" fill="#243029"/><text y="5" text-anchor="middle" font-family="Barlow Condensed, Arial Narrow, sans-serif" font-size="14" font-weight="600" fill="#fbfbf8" transform="rotate(' + (-ang) + ')">' + t + "</text></g>";
+    }
+    s += mark(505, 300, "A", -19.7);
+    s += mark(225, 402, "B", -90);
+    s += mark(240, 568, "C", 180);
+    s += mark(640, 400, "D", 90);
+    // north-ish arrow omitted; NTS stamp
+    s += L(60, 710, "NTS · SHAPE AND DIMENSIONS FROM REV 07 · VERIFY ON SITE", { size: 11, w: 500, fill: "#5d685e" });
+    s += "</svg>";
+    document.getElementById("plan").innerHTML = s;
+  })();
+
+  // swatch: small green tile field
+  (function () {
+    var r = rng(5), s = '<svg viewBox="0 0 335 210" preserveAspectRatio="xMidYMid slice"><rect width="335" height="210" fill="#bdb7a3"/>';
+    for (var x = 0; x < 335; x += 34) for (var y = -40; y < 210; y += 102) {
+      var col = GREENS[Math.floor(r() * GREENS.length)];
+      s += '<rect x="' + x + '" y="' + y + '" width="32" height="100" fill="' + col + '"/><rect x="' + x + '" y="' + y + '" width="32" height="100" fill="url(#glaze)"/>';
+    }
+    document.getElementById("chip-green").innerHTML = s + "</svg>";
+  })();
+})();
+</script>
