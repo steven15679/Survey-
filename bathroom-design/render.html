@@ -1,0 +1,547 @@
+<title>Unit 18D Bathroom 3D</title>
+<meta name="description" content="Interactive 3D render of the proposed Unit 18D bathroom.">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gloock&family=Barlow+Condensed:wght@500;600&family=Public+Sans:wght@400;500&display=swap">
+<style>
+  :root {
+    color-scheme: dark;
+    --bg: #111612;
+    --ink: #eef0e8;
+    --muted: #b3bcb0;
+    --chip: rgba(20, 27, 22, 0.72);
+    --chip-on: #cfb27a;
+    --chip-on-ink: #1b1a14;
+  }
+  html, body { height: 100%; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: "Public Sans", "Segoe UI", system-ui, sans-serif; overflow: hidden; }
+  #stage { position: fixed; inset: 0; }
+  #stage canvas { display: block; width: 100%; height: 100%; touch-action: none; cursor: grab; }
+  #stage canvas:active { cursor: grabbing; }
+  .top {
+    position: fixed; left: 0; right: 0; top: 0;
+    padding: calc(env(safe-area-inset-top, 0px) + 14px) 16px 14px;
+    display: flex; flex-wrap: wrap; gap: 10px 20px; align-items: center; justify-content: space-between;
+    background: linear-gradient(rgba(10, 14, 11, 0.75), rgba(10, 14, 11, 0));
+    pointer-events: none;
+  }
+  .top > * { pointer-events: auto; }
+  h1 { font-family: "Gloock", Georgia, serif; font-weight: 400; font-size: 22px; margin: 0; line-height: 1.1; }
+  h1 small { display: block; font-family: "Barlow Condensed", "Arial Narrow", sans-serif; font-size: 12px; letter-spacing: 1.6px; text-transform: uppercase; color: var(--muted); margin-top: 4px; }
+  .views { display: flex; flex-wrap: wrap; gap: 6px; }
+  .views button {
+    font: 600 13px/1 "Barlow Condensed", "Arial Narrow", sans-serif; letter-spacing: 1px; text-transform: uppercase;
+    color: var(--ink); background: var(--chip); border: 1px solid rgba(255, 255, 255, 0.18);
+    padding: 9px 12px; border-radius: 999px; cursor: pointer; backdrop-filter: blur(6px);
+  }
+  .views button[aria-pressed="true"] { background: var(--chip-on); color: var(--chip-on-ink); border-color: var(--chip-on); }
+  .views button:focus-visible { outline: 2px solid var(--chip-on); outline-offset: 2px; }
+  .hint {
+    position: fixed; left: 16px; right: 16px; bottom: calc(env(safe-area-inset-bottom, 0px) + 14px);
+    font-size: 12px; color: var(--muted); text-shadow: 0 1px 2px #000; pointer-events: none;
+    display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+  }
+  #err[hidden] { display: none; }
+  #err { position: fixed; inset: 0; display: grid; place-items: center; padding: 24px; text-align: center; color: var(--muted); }
+</style>
+
+<div id="stage"></div>
+<div class="top">
+  <h1>Unit 18D Bathroom<small>3D concept render</small></h1>
+  <div class="views" role="group" aria-label="Camera views">
+    <button type="button" id="v-basin" data-view="basin" aria-pressed="true">From basin</button>
+    <button type="button" id="v-door" data-view="door" aria-pressed="false">From door</button>
+    <button type="button" id="v-shower" data-view="shower" aria-pressed="false">Shower</button>
+    <button type="button" id="v-vanity" data-view="vanity" aria-pressed="false">Vanity</button>
+  </div>
+</div>
+<div class="hint"><span>Drag to look around</span><span>Concept only · proportions from Rev 07 plan</span></div>
+<div id="err" hidden>The 3D view needs WebGL, which this browser has turned off.</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/objects/Reflector.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/environments/RoomEnvironment.js"></script>
+<script>
+(function () {
+  "use strict";
+  var T = THREE;
+  var CEIL = 2150, DATUM = 1000;
+
+  // ---------- plan (mm). x = east, z = south; polygon order gives inward normals ----------
+  var P = {
+    A: [0, 0], B: [0, -620], C: [910, -1183], D: [847, -1639], E: [2917, -2380],
+    F: [3066, -1830], G: [3066, 470], H: [2971, 470], I: [2080, -420], J2: [1600, 90], J: [1600, 0]
+  };
+  var ORDER = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J2", "J"];
+  var DOOR_EDGE = "I-J2";
+  var GLASS_X = 915, GLASS_Z0 = -1183, GLASS_Z1 = -583;
+
+  function edge(a, b) {
+    var p = P[a], q = P[b], dx = q[0] - p[0], dz = q[1] - p[1], L = Math.hypot(dx, dz);
+    dx /= L; dz /= L;
+    return { p: p, d: [dx, dz], n: [-dz, dx], L: L, theta: Math.atan2(-dz, dx) };
+  }
+  function place(obj, e, u, out) {
+    obj.position.set(e.p[0] + e.d[0] * u + e.n[0] * out, obj.position.y, e.p[1] + e.d[1] * u + e.n[1] * out);
+    obj.rotation.y = e.theta;
+    return obj;
+  }
+
+  // ---------- renderer ----------
+  var stage = document.getElementById("stage");
+  var renderer;
+  try {
+    renderer = new T.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+  } catch (e) {
+    document.getElementById("err").hidden = false;
+    return;
+  }
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  renderer.physicallyCorrectLights = true;
+  renderer.outputEncoding = T.sRGBEncoding;
+  renderer.toneMapping = T.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 0.8;
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = T.PCFSoftShadowMap;
+  stage.appendChild(renderer.domElement);
+
+  var scene = new T.Scene();
+  scene.background = new T.Color(0x1a1f1b);
+  var pmrem = new T.PMREMGenerator(renderer);
+  scene.environment = pmrem.fromScene(new T.RoomEnvironment(), 0.04).texture;
+
+  var root = new T.Group();
+  root.scale.setScalar(0.001); // model in mm, world in metres
+  scene.add(root);
+
+  // ---------- seeded random ----------
+  var seed = 20260926;
+  function rnd() { seed = (seed * 16807) % 2147483647; return (seed - 1) / 2147483646; }
+
+  // ---------- textures ----------
+  var maxAniso = renderer.capabilities.getMaxAnisotropy();
+  function tex(canvas, srgb) {
+    var t = new T.CanvasTexture(canvas);
+    t.wrapS = t.wrapT = T.RepeatWrapping;
+    t.anisotropy = maxAniso;
+    if (srgb) t.encoding = T.sRGBEncoding;
+    return t;
+  }
+
+  // Green crackle-glaze tile, 65 x 200 with 2.5 mm grout. Module: 12 cols x 5 rows.
+  var GW = 65, GH = 200, GG = 2.5, GCOLS = 12, GROWS = 5;
+  var GMW = GCOLS * (GW + GG), GMH = GROWS * (GH + GG);
+  var greenMap, greenBump;
+  (function () {
+    var s = 1.6, w = Math.round(GMW * s), h = Math.round(GMH * s);
+    var c = document.createElement("canvas"); c.width = w; c.height = h;
+    var b = document.createElement("canvas"); b.width = w; b.height = h;
+    var g = c.getContext("2d"), bg = b.getContext("2d");
+    g.fillStyle = "#b8b19d"; g.fillRect(0, 0, w, h);
+    bg.fillStyle = "#1a1a1a"; bg.fillRect(0, 0, w, h);
+    var greens = [[96, 102, 76], [106, 110, 82], [114, 118, 90], [86, 94, 70], [122, 124, 96], [100, 106, 80], [110, 112, 84], [90, 100, 76], [116, 116, 86]];
+    for (var cx = 0; cx < GCOLS; cx++) {
+      for (var ry = 0; ry < GROWS; ry++) {
+        var x = (cx * (GW + GG) + GG / 2) * s, y = (ry * (GH + GG) + GG / 2) * s, tw = GW * s, th = GH * s;
+        var base = greens[Math.floor(rnd() * greens.length)];
+        // glaze pools darker at the edges, lighter through the middle
+        var lg = g.createLinearGradient(x, 0, x + tw, 0);
+        var dk = function (k) { return "rgb(" + Math.round(base[0] * k) + "," + Math.round(base[1] * k) + "," + Math.round(base[2] * k) + ")"; };
+        lg.addColorStop(0, dk(0.72)); lg.addColorStop(0.18, dk(0.95)); lg.addColorStop(0.5, dk(1.06)); lg.addColorStop(0.82, dk(0.95)); lg.addColorStop(1, dk(0.7));
+        g.fillStyle = lg; g.fillRect(x, y, tw, th);
+        // mottled blooms
+        for (var k = 0; k < 7; k++) {
+          var bx = x + rnd() * tw, by = y + rnd() * th, br = (12 + rnd() * 30) * s;
+          var rg = g.createRadialGradient(bx, by, 0, bx, by, br);
+          var light = rnd() > 0.45;
+          rg.addColorStop(0, light ? "rgba(214,222,190,0.12)" : "rgba(40,48,26,0.14)");
+          rg.addColorStop(1, "rgba(0,0,0,0)");
+          g.fillStyle = rg; g.fillRect(x, y, tw, th);
+        }
+        // crackle network
+        g.save(); g.beginPath(); g.rect(x, y, tw, th); g.clip();
+        g.strokeStyle = "rgba(38,46,24,0.28)"; g.lineWidth = 0.6;
+        for (k = 0; k < 26; k++) {
+          var px = x + rnd() * tw, py = y + rnd() * th;
+          g.beginPath(); g.moveTo(px, py);
+          for (var m = 0; m < 4; m++) { px += (rnd() - 0.5) * 22 * s; py += (rnd() - 0.5) * 22 * s; g.lineTo(px, py); }
+          g.stroke();
+        }
+        g.restore();
+        // bump: raised tile, rounded edge, gentle undulation
+        var bgd = bg.createLinearGradient(x, 0, x + tw, 0);
+        bgd.addColorStop(0, "#6a6a6a"); bgd.addColorStop(0.08, "#c8c8c8"); bgd.addColorStop(0.92, "#c8c8c8"); bgd.addColorStop(1, "#6a6a6a");
+        bg.fillStyle = bgd; bg.fillRect(x, y, tw, th);
+        bg.fillStyle = "rgba(0,0,0,0.35)"; bg.fillRect(x, y, tw, 3 * s); bg.fillRect(x, y + th - 3 * s, tw, 3 * s);
+      }
+    }
+    greenMap = tex(c, true); greenBump = tex(b, false);
+    [greenMap, greenBump].forEach(function (t) { t.repeat.set(1 / GMW, 1 / GMH); t.offset.set(0, -DATUM / GMH); });
+  })();
+
+  // Stone-look porcelain 600 x 600, module 2 x 2 tiles.
+  var SM = 1200, stoneMap, stoneBump;
+  (function () {
+    var s = 0.9, w = Math.round(SM * s);
+    var c = document.createElement("canvas"); c.width = c.height = w;
+    var b = document.createElement("canvas"); b.width = b.height = w;
+    var g = c.getContext("2d"), bg = b.getContext("2d");
+    g.fillStyle = "#b3ab9e"; g.fillRect(0, 0, w, w);
+    bg.fillStyle = "#222"; bg.fillRect(0, 0, w, w);
+    var tones = ["#bdb7ad", "#b9b3a8", "#c1bbb1", "#b6b0a5"];
+    var gr = 2 * s, ts = 600 * s;
+    for (var i = 0; i < 2; i++) for (var j = 0; j < 2; j++) {
+      var x = i * ts + gr / 2, y = j * ts + gr / 2, t = ts - gr;
+      g.fillStyle = tones[i * 2 + j]; g.fillRect(x, y, t, t);
+      g.save(); g.beginPath(); g.rect(x, y, t, t); g.clip();
+      for (var k = 0; k < 40; k++) {
+        var bx = x + rnd() * t, by = y + rnd() * t, br = 30 + rnd() * 120;
+        var rg = g.createRadialGradient(bx, by, 0, bx, by, br);
+        rg.addColorStop(0, rnd() > 0.5 ? "rgba(255,255,250,0.07)" : "rgba(110,100,85,0.06)"); rg.addColorStop(1, "rgba(0,0,0,0)");
+        g.fillStyle = rg; g.fillRect(x, y, t, t);
+      }
+      for (k = 0; k < 900; k++) {
+        g.fillStyle = rnd() > 0.5 ? "rgba(120,110,96,0.35)" : "rgba(250,248,240,0.45)";
+        var r = rnd() * 1.4 + 0.3; g.fillRect(x + rnd() * t, y + rnd() * t, r, r);
+      }
+      g.strokeStyle = "rgba(150,140,125,0.18)"; g.lineWidth = 1.2;
+      for (k = 0; k < 3; k++) {
+        var vx = x + rnd() * t, vy = y + rnd() * t; g.beginPath(); g.moveTo(vx, vy);
+        for (var m = 0; m < 6; m++) { vx += (rnd() - 0.3) * 80; vy += (rnd() - 0.5) * 60; g.lineTo(vx, vy); }
+        g.stroke();
+      }
+      g.restore();
+      bg.fillStyle = "#9a9a9a"; bg.fillRect(x, y, t, t);
+    }
+    stoneMap = tex(c, true); stoneBump = tex(b, false);
+    [stoneMap, stoneBump].forEach(function (t) { t.repeat.set(1 / SM, 1 / SM); t.offset.set(0, -400 / SM); });
+  })();
+
+  // ---------- materials ----------
+  var M = {
+    green: new T.MeshStandardMaterial({ map: greenMap, bumpMap: greenBump, bumpScale: 0.025, roughness: 0.1, metalness: 0, envMapIntensity: 0.9 }),
+    stone: new T.MeshStandardMaterial({ map: stoneMap, bumpMap: stoneBump, bumpScale: 0.012, roughness: 0.82, envMapIntensity: 0.45 }),
+    ceiling: new T.MeshStandardMaterial({ color: 0xf1f0ec, roughness: 0.95, envMapIntensity: 0.4 }),
+    brass: new T.MeshStandardMaterial({ color: 0xc9a86a, metalness: 1, roughness: 0.34, envMapIntensity: 1.2 }),
+    matteWhite: new T.MeshStandardMaterial({ color: 0xf3f3ef, roughness: 0.62, envMapIntensity: 0.6 }),
+    gloss: new T.MeshStandardMaterial({ color: 0xf7f7f5, roughness: 0.18, envMapIntensity: 0.9 }),
+    cabinet: new T.MeshStandardMaterial({ color: 0xe9e9e4, roughness: 0.5 }),
+    gap: new T.MeshStandardMaterial({ color: 0x2b2f2c, roughness: 0.6 }),
+    door: new T.MeshStandardMaterial({ color: 0x3a3632, roughness: 0.55, envMapIntensity: 0.5 }),
+    glass: new T.MeshStandardMaterial({ color: 0xd8ecea, roughness: 0.03, metalness: 0.1, transparent: true, opacity: 0.16, depthWrite: false, envMapIntensity: 1.4 }),
+    glassEdge: new T.MeshStandardMaterial({ color: 0x9fc8c2, roughness: 0.1, transparent: true, opacity: 0.55 }),
+    grey: new T.MeshStandardMaterial({ color: 0xb9bebd, roughness: 0.4 }),
+    led: new T.MeshBasicMaterial({ color: 0xffe0a8 })
+  };
+  M.stoneNiche = M.green.clone();
+
+  function mesh(geo, mat, cast) {
+    var m = new T.Mesh(geo, mat);
+    m.castShadow = !!cast; m.receiveShadow = true;
+    return m;
+  }
+
+  // ---------- walls ----------
+  function rectShape(u0, v0, u1, v1) {
+    var s = new T.Shape(); s.moveTo(u0, v0); s.lineTo(u1, v0); s.lineTo(u1, v1); s.lineTo(u0, v1); s.closePath(); return s;
+  }
+  var EDGES = {};
+  for (var i = 0; i < ORDER.length; i++) {
+    var a = ORDER[i], b = ORDER[(i + 1) % ORDER.length], key = a + "-" + b;
+    var e = edge(a, b); EDGES[key] = e;
+    var bands;
+    if (key === DOOR_EDGE) {
+      bands = [[rectShape(0, 2040, e.L, CEIL), M.green]];
+    } else {
+      var up = rectShape(0, DATUM, e.L, CEIL);
+      if (key === "J-A") {
+        // recessed niche 600 x 400, sill 1200, centred in the shower (x = 457)
+        var h = new T.Path(); var u0 = 1600 - 457 - 300, u1 = u0 + 600;
+        h.moveTo(u0, 1200); h.lineTo(u0, 1600); h.lineTo(u1, 1600); h.lineTo(u1, 1200); h.closePath();
+        up.holes.push(h);
+      }
+      bands = [[rectShape(0, 0, e.L, DATUM), M.stone], [up, M.green]];
+    }
+    bands.forEach(function (bd) {
+      var m = mesh(new T.ShapeGeometry(bd[0]), bd[1]);
+      place(m, e, 0, 0); root.add(m);
+    });
+  }
+
+  // floor and ceiling
+  var floorShape = new T.Shape(), ceilShape = new T.Shape();
+  ORDER.forEach(function (k, idx) {
+    var p = P[k];
+    if (idx === 0) { floorShape.moveTo(p[0], -p[1]); ceilShape.moveTo(p[0], p[1]); }
+    else { floorShape.lineTo(p[0], -p[1]); ceilShape.lineTo(p[0], p[1]); }
+  });
+  var floor = mesh(new T.ShapeGeometry(floorShape), M.stone); floor.rotation.x = -Math.PI / 2; root.add(floor);
+  var ceil = mesh(new T.ShapeGeometry(ceilShape), M.ceiling); ceil.rotation.x = Math.PI / 2; ceil.position.y = CEIL; root.add(ceil);
+
+  // niche interior (open box seen from the room)
+  (function () {
+    var e = EDGES["J-A"];
+    var nMap = greenMap.clone(), nBump = greenBump.clone();
+    [nMap, nBump].forEach(function (t) { t.needsUpdate = true; t.repeat.set(600 / GMW, 400 / GMH); t.offset.set(0, 0); });
+    var nm = M.green.clone(); nm.map = nMap; nm.bumpMap = nBump; nm.side = T.BackSide;
+    var box = mesh(new T.BoxGeometry(600, 400, 200), nm);
+    box.position.y = 1400; place(box, e, 1600 - 457, -100); root.add(box);
+    var sill = mesh(new T.BoxGeometry(600, 12, 100), M.stone); sill.position.y = 1206; place(sill, e, 1600 - 457, -50); root.add(sill);
+    var bottle1 = mesh(new T.CylinderGeometry(28, 28, 190, 24), new T.MeshStandardMaterial({ color: 0xe9e2d4, roughness: 0.35 }), true);
+    bottle1.position.y = 1212 + 95; place(bottle1, e, 1600 - 457 - 150, -55); root.add(bottle1);
+    var bottle2 = mesh(new T.CylinderGeometry(30, 30, 220, 24), new T.MeshStandardMaterial({ color: 0x6f7e62, roughness: 0.3 }), true);
+    bottle2.position.y = 1212 + 110; place(bottle2, e, 1600 - 457 - 60, -55); root.add(bottle2);
+  })();
+
+  // ---------- ledge (clad in floor tile) ----------
+  var WALL_A = EDGES["D-E"];
+  (function () {
+    var g = new T.Group();
+    var front = mesh(new T.ShapeGeometry(rectShape(0, 0, 2200, 1000)), M.stone); front.position.z = 200; g.add(front);
+    var topS = new T.Shape(); topS.moveTo(0, 0); topS.lineTo(2200, 0); topS.lineTo(2200, -200); topS.lineTo(0, -200); topS.closePath();
+    var top = mesh(new T.ShapeGeometry(topS), M.stone); top.rotation.x = -Math.PI / 2; top.position.y = 1000; g.add(top);
+    place(g, WALL_A, 0, 0); root.add(g);
+  })();
+
+  function fixture(e, u, out) { var g = new T.Group(); place(g, e, u, out); root.add(g); return g; }
+
+  // ---------- wall-hung WC with smart seat ----------
+  (function () {
+    var g = fixture(WALL_A, 450, 200);
+    var body = mesh(new T.CylinderGeometry(1, 0.78, 1, 48), M.gloss, true);
+    body.scale.set(180, 230, 270); body.position.set(0, 285, 270); g.add(body);
+    var back = mesh(new T.BoxGeometry(300, 230, 120), M.gloss, true); back.position.set(0, 285, 60); g.add(back);
+    var seat = mesh(new T.CylinderGeometry(1, 1, 1, 48), M.gloss, true); seat.scale.set(186, 34, 272); seat.position.set(0, 417, 272); g.add(seat);
+    var lid = mesh(new T.CylinderGeometry(1, 1, 1, 48), M.gloss, true); lid.scale.set(178, 22, 262); lid.position.set(0, 445, 280); g.add(lid);
+    var housing = mesh(new T.BoxGeometry(380, 95, 140), M.gloss, true); housing.position.set(0, 450, 60); g.add(housing);
+    var knob = mesh(new T.CylinderGeometry(16, 16, 12, 24), M.grey); knob.rotation.x = Math.PI / 2; knob.position.set(140, 455, 132); g.add(knob);
+    var plate = mesh(new T.BoxGeometry(220, 145, 8), M.brass, true); plate.position.set(0, 880, 4); g.add(plate);
+    var split = mesh(new T.BoxGeometry(3, 140, 2), M.gap); split.position.set(0, 880, 9); g.add(split);
+  })();
+
+  // ---------- matte white basin, brass mixer, bottle trap ----------
+  (function () {
+    var g = fixture(WALL_A, 1500, 200);
+    function rrect(w, d, r, cx, cy) {
+      var s = new T.Shape(), x0 = cx - w / 2, y0 = cy - d / 2;
+      s.moveTo(x0 + r, y0); s.lineTo(x0 + w - r, y0); s.quadraticCurveTo(x0 + w, y0, x0 + w, y0 + r);
+      s.lineTo(x0 + w, y0 + d - r); s.quadraticCurveTo(x0 + w, y0 + d, x0 + w - r, y0 + d);
+      s.lineTo(x0 + r, y0 + d); s.quadraticCurveTo(x0, y0 + d, x0, y0 + d - r);
+      s.lineTo(x0, y0 + r); s.quadraticCurveTo(x0, y0, x0 + r, y0);
+      return s;
+    }
+    var outer = rrect(550, 420, 60, 0, -210);
+    var inner = rrect(490, 350, 60, 0, -220);
+    outer.holes.push(inner);
+    var bodyGeo = new T.ExtrudeGeometry(outer, { depth: 140, bevelEnabled: true, bevelThickness: 8, bevelSize: 8, bevelSegments: 4, curveSegments: 16 });
+    bodyGeo.rotateX(-Math.PI / 2);
+    var body = mesh(bodyGeo, M.matteWhite, true); body.position.y = 702; g.add(body);
+    var bowl = mesh(new T.SphereGeometry(1, 40, 20, 0, Math.PI * 2, Math.PI / 2, Math.PI / 2), M.matteWhite.clone(), true);
+    bowl.material.side = T.DoubleSide;
+    bowl.scale.set(243, 110, 173); bowl.position.set(0, 849, 220); g.add(bowl);
+    var waste = mesh(new T.CylinderGeometry(22, 22, 4, 24), M.brass); waste.position.set(0, 741, 220); g.add(waste);
+    // mixer on the ledge
+    var mx = mesh(new T.CylinderGeometry(22, 24, 190, 32), M.brass, true); mx.position.set(0, 1095, -100); g.add(mx);
+    var lever = mesh(new T.BoxGeometry(14, 14, 70), M.brass, true); lever.position.set(0, 1165, -145); lever.rotation.x = -0.2; g.add(lever);
+    var curve = new T.CatmullRomCurve3([new T.Vector3(0, 1180, -100), new T.Vector3(0, 1250, -80), new T.Vector3(0, 1260, 10), new T.Vector3(0, 1215, 110), new T.Vector3(0, 1150, 170)]);
+    var spout = mesh(new T.TubeGeometry(curve, 40, 11, 16, false), M.brass, true); g.add(spout);
+    // bottle trap
+    var tail = mesh(new T.CylinderGeometry(16, 16, 150, 20), M.brass, true); tail.position.set(0, 630, 225); g.add(tail);
+    var bottle = mesh(new T.CylinderGeometry(32, 32, 170, 24), M.brass, true); bottle.position.set(0, 490, 225); g.add(bottle);
+    var arm = mesh(new T.CylinderGeometry(16, 16, 225, 20), M.brass, true); arm.rotation.x = Math.PI / 2; arm.position.set(0, 530, 112); g.add(arm);
+    var flange = mesh(new T.CylinderGeometry(34, 34, 8, 24), M.brass); flange.rotation.x = Math.PI / 2; flange.position.set(0, 530, 4); g.add(flange);
+  })();
+
+  // ---------- robe hook ----------
+  (function () {
+    var g = fixture(WALL_A, 2050, 0);
+    var rose = mesh(new T.CylinderGeometry(24, 24, 10, 24), M.brass, true); rose.rotation.x = Math.PI / 2; rose.position.set(0, 1600, 5); g.add(rose);
+    var arm = mesh(new T.CylinderGeometry(8, 8, 60, 16), M.brass, true); arm.rotation.x = Math.PI / 2; arm.position.set(0, 1600, 38); g.add(arm);
+    var tip = mesh(new T.CylinderGeometry(8, 8, 36, 16), M.brass, true); tip.position.set(0, 1614, 66); g.add(tip);
+  })();
+
+  // ---------- mirror cabinet with LED halo ----------
+  (function () {
+    var g = fixture(WALL_A, 1100, 0);
+    var body = mesh(new T.BoxGeometry(1600, 750, 130), M.cabinet, true); body.position.set(0, 1575, 75); g.add(body);
+    var mirror = new T.Reflector(new T.PlaneGeometry(1590, 740), {
+      clipBias: 0.003, color: 0x9aa4a3,
+      textureWidth: Math.min(2048, window.innerWidth * renderer.getPixelRatio()),
+      textureHeight: Math.min(2048, window.innerHeight * renderer.getPixelRatio())
+    });
+    mirror.position.set(0, 1575, 141); g.add(mirror);
+    [-1600 / 6, 1600 / 6].forEach(function (x) { var s = mesh(new T.BoxGeometry(4, 740, 3), M.gap); s.position.set(x, 1575, 142); g.add(s); });
+    // hidden LED strip behind the edges, and its glow on the tile
+    var c = document.createElement("canvas"); c.width = 512; c.height = 256;
+    var cg = c.getContext("2d");
+    var pad = 70;
+    for (var k = 0; k < 28; k++) {
+      var a = (1 - k / 28);
+      cg.strokeStyle = "rgba(255,214,150," + (0.05 * a).toFixed(3) + ")";
+      cg.lineWidth = 6 + k * 5; cg.lineJoin = "round";
+      cg.strokeRect(pad, pad * 0.8, 512 - 2 * pad, 256 - 1.6 * pad);
+    }
+    var glowTex = new T.CanvasTexture(c); glowTex.encoding = T.sRGBEncoding;
+    var glow = new T.Mesh(new T.PlaneGeometry(2300, 1150), new T.MeshBasicMaterial({ map: glowTex, transparent: true, blending: T.AdditiveBlending, depthWrite: false }));
+    glow.position.set(0, 1575, 4); g.add(glow);
+    var stripV = new T.BoxGeometry(10, 730, 10), stripH = new T.BoxGeometry(1580, 10, 10);
+    [[-795, 1575, stripV], [795, 1575, stripV], [0, 1945, stripH], [0, 1205, stripH]].forEach(function (s) {
+      var m = new T.Mesh(s[2], M.led); m.position.set(s[0], s[1], 20); g.add(m);
+    });
+  })();
+
+  // ---------- shower: twin rail, mixer, linear drain ----------
+  (function () {
+    var e = EDGES["A-B"];
+    var g = fixture(e, 310, 0);
+    var rail = mesh(new T.CylinderGeometry(11, 11, 900, 20), M.brass, true); rail.position.set(0, 1500, 60); g.add(rail);
+    [1060, 1950].forEach(function (y) { var br = mesh(new T.CylinderGeometry(10, 10, 60, 16), M.brass, true); br.rotation.x = Math.PI / 2; br.position.set(0, y, 30); g.add(br); });
+    var arm = mesh(new T.CylinderGeometry(11, 11, 300, 20), M.brass, true); arm.rotation.x = Math.PI / 2; arm.position.set(0, 1950, 200); g.add(arm);
+    var rose = mesh(new T.CylinderGeometry(125, 125, 12, 48), M.brass, true); rose.position.set(0, 1935, 330); g.add(rose);
+    var slider = mesh(new T.BoxGeometry(50, 40, 40), M.brass, true); slider.position.set(0, 1480, 80); g.add(slider);
+    var hand = mesh(new T.CylinderGeometry(22, 16, 240, 20), M.brass, true); hand.position.set(0, 1560, 110); hand.rotation.x = 0.35; g.add(hand);
+    var hose = new T.CatmullRomCurve3([new T.Vector3(0, 1440, 108), new T.Vector3(60, 1300, 120), new T.Vector3(40, 1170, 60), new T.Vector3(0, 1120, 30)]);
+    g.add(mesh(new T.TubeGeometry(hose, 30, 7, 10, false), M.brass, true));
+    var mixer = mesh(new T.CylinderGeometry(80, 80, 10, 40), M.brass, true); mixer.rotation.x = Math.PI / 2; mixer.position.set(0, 1100, 5); g.add(mixer);
+    var mh = mesh(new T.CylinderGeometry(14, 14, 50, 16), M.brass, true); mh.rotation.x = Math.PI / 2; mh.position.set(0, 1100, 30); g.add(mh);
+    var ml = mesh(new T.BoxGeometry(110, 14, 16), M.brass, true); ml.position.set(50, 1100, 55); g.add(ml);
+    // linear tile insert drain along the base of this wall
+    var d = fixture(e, 310, 60);
+    var fr1 = mesh(new T.BoxGeometry(560, 3, 6), M.brass); fr1.position.set(0, 1.5, -22); d.add(fr1);
+    var fr2 = mesh(new T.BoxGeometry(560, 3, 6), M.brass); fr2.position.set(0, 1.5, 22); d.add(fr2);
+    var fr3 = mesh(new T.BoxGeometry(6, 3, 50), M.brass); fr3.position.set(-280, 1.5, 0); d.add(fr3);
+    var fr4 = mesh(new T.BoxGeometry(6, 3, 50), M.brass); fr4.position.set(280, 1.5, 0); d.add(fr4);
+  })();
+
+  // ---------- square tile insert floor waste ----------
+  (function () {
+    var g = new T.Group(); g.position.set(2350, 0, -1000); root.add(g);
+    [[0, -55, 116, 6], [0, 55, 116, 6]].forEach(function (s) { var m = mesh(new T.BoxGeometry(s[2], 3, s[3]), M.brass); m.position.set(s[0], 1.5, s[1]); g.add(m); });
+    [[-55, 0], [55, 0]].forEach(function (s) { var m = mesh(new T.BoxGeometry(6, 3, 116), M.brass); m.position.set(s[0], 1.5, s[1]); g.add(m); });
+  })();
+
+  // ---------- fixed glass panel ----------
+  (function () {
+    var len = GLASS_Z1 - GLASS_Z0, zc = (GLASS_Z0 + GLASS_Z1) / 2;
+    var gl = new T.Mesh(new T.BoxGeometry(10, 2000, len), M.glass); gl.position.set(GLASS_X, 1000, zc); gl.renderOrder = 2; root.add(gl);
+    var edgeFree = mesh(new T.BoxGeometry(11, 2000, 3), M.glassEdge); edgeFree.position.set(GLASS_X, 1000, GLASS_Z1); root.add(edgeFree);
+    var edgeTop = mesh(new T.BoxGeometry(11, 3, len), M.glassEdge); edgeTop.position.set(GLASS_X, 2000, zc); root.add(edgeTop);
+    var chan = mesh(new T.BoxGeometry(30, 30, len), M.brass, true); chan.position.set(GLASS_X, 15, zc); root.add(chan);
+    var wallCh = mesh(new T.BoxGeometry(24, 2000, 20), M.brass, true); wallCh.position.set(GLASS_X, 1000, GLASS_Z0 + 10); root.add(wallCh);
+    var bar = mesh(new T.CylinderGeometry(9, 9, -GLASS_Z1, 16), M.brass, true); bar.rotation.x = Math.PI / 2; bar.position.set(GLASS_X, 1960, GLASS_Z1 / 2); root.add(bar);
+  })();
+
+  // ---------- heated towel poles ----------
+  (function () {
+    var e = EDGES["J-A"];
+    [200, 500].forEach(function (u) {
+      var g = fixture(e, u, 0);
+      var pole = mesh(new T.CylinderGeometry(16, 16, 1200, 24), M.brass, true); pole.position.set(0, 1000, 60); g.add(pole);
+      [16, -16].forEach(function (s) {
+        var cap = mesh(new T.SphereGeometry(16, 20, 10), M.brass, true); cap.position.set(0, 1000 + s * 37.5, 60); g.add(cap);
+      });
+      [500, 1500].forEach(function (y) {
+        var so = mesh(new T.CylinderGeometry(12, 12, 60, 16), M.brass, true); so.rotation.x = Math.PI / 2; so.position.set(0, y, 30); g.add(so);
+        var fl = mesh(new T.CylinderGeometry(28, 28, 8, 20), M.brass); fl.rotation.x = Math.PI / 2; fl.position.set(0, y, 4); g.add(fl);
+      });
+    });
+    // towel on the far pole
+    var tg = fixture(e, 500, 0);
+    var towel = mesh(new T.BoxGeometry(240, 650, 26), new T.MeshStandardMaterial({ color: 0xcfc4b0, roughness: 1 }), true);
+    towel.position.set(0, 1160, 90); tg.add(towel);
+  })();
+
+  // ---------- door (existing, charcoal) ----------
+  (function () {
+    var e = EDGES[DOOR_EDGE];
+    var g = fixture(e, e.L / 2, -30);
+    var leaf = mesh(new T.BoxGeometry(e.L - 40, 2020, 40), M.door, true); leaf.position.set(0, 1010, 0); g.add(leaf);
+    var frame = new T.MeshStandardMaterial({ color: 0x2f2c29, roughness: 0.6 });
+    var jl = mesh(new T.BoxGeometry(40, 2060, 80), frame); jl.position.set(-e.L / 2 + 10, 1030, 10); g.add(jl);
+    var jr = mesh(new T.BoxGeometry(40, 2060, 80), frame); jr.position.set(e.L / 2 - 10, 1030, 10); g.add(jr);
+    var hd = mesh(new T.BoxGeometry(e.L, 40, 80), frame); hd.position.set(0, 2040, 10); g.add(hd);
+    var ros = mesh(new T.CylinderGeometry(26, 26, 10, 24), M.brass); ros.rotation.x = Math.PI / 2; ros.position.set(e.L / 2 - 90, 1020, 25); g.add(ros);
+    var lev = mesh(new T.CylinderGeometry(9, 9, 120, 16), M.brass, true); lev.rotation.z = Math.PI / 2; lev.position.set(e.L / 2 - 140, 1020, 50); g.add(lev);
+    var hook = mesh(new T.CylinderGeometry(10, 10, 40, 16), M.brass); hook.rotation.x = Math.PI / 2; hook.position.set(0, 1700, 40); g.add(hook);
+  })();
+
+  // ---------- lights ----------
+  scene.add(new T.HemisphereLight(0xfff6ea, 0x6d6456, 0.45));
+  function downlight(x, z, cd, shadow) {
+    var disc = new T.Mesh(new T.CircleGeometry(45, 32), new T.MeshBasicMaterial({ color: 0xfff4e0 }));
+    disc.rotation.x = Math.PI / 2; disc.position.set(x, CEIL - 2, z); root.add(disc);
+    var rim = new T.Mesh(new T.RingGeometry(45, 60, 32), M.brass); rim.rotation.x = Math.PI / 2; rim.position.set(x, CEIL - 3, z); root.add(rim);
+    var l = new T.PointLight(0xffe7c8, cd, 0, 2);
+    l.position.set(x / 1000, (CEIL - 80) / 1000, z / 1000);
+    if (shadow) { l.castShadow = true; l.shadow.mapSize.set(1024, 1024); l.shadow.bias = -0.002; l.shadow.radius = 4; l.shadow.camera.near = 0.05; }
+    scene.add(l);
+  }
+  downlight(2150, -900, 6, true);
+  downlight(450, -450, 3.5, false);
+  downlight(1850, -150, 3.5, false);
+  // LED halo light near the cabinet
+  (function () {
+    var p = new T.Vector3(); var g = new T.Group(); place(g, WALL_A, 1100, 60); g.position.y = 1575;
+    var l = new T.PointLight(0xffd59a, 2.2, 1.6, 2);
+    l.position.set(g.position.x / 1000, 1.99, g.position.z / 1000); scene.add(l);
+  })();
+  // exhaust fan
+  (function () {
+    var fan = new T.Mesh(new T.CylinderGeometry(110, 110, 8, 40), M.ceiling); fan.position.set(1500, CEIL - 4, -700); root.add(fan);
+  })();
+
+  // material colours are authored as sRGB hex
+  (function () {
+    var seen = new Set();
+    scene.traverse(function (o) {
+      var ms = o.material ? (Array.isArray(o.material) ? o.material : [o.material]) : [];
+      ms.forEach(function (m) { if (!seen.has(m) && m.color && !m.map && !(o instanceof T.Reflector)) { seen.add(m); m.color.convertSRGBToLinear(); } });
+    });
+  })();
+
+  // ---------- camera & views ----------
+  var camera = new T.PerspectiveCamera(68, 1, 0.02, 20);
+  var controls = new T.OrbitControls(camera, renderer.domElement);
+  controls.enableZoom = false; controls.enablePan = false; controls.enableDamping = true; controls.dampingFactor = 0.08;
+  controls.rotateSpeed = -0.35;
+  var VIEWS = {
+    basin:  { pos: [2750, 1600, -1500], look: [600, 1150, -150], fov: 70 },
+    door:   { pos: [1720, 1600, -420],  look: [1900, 1200, -2200], fov: 74 },
+    shower: { pos: [1500, 1550, -760],  look: [0, 1250, -330], fov: 68 },
+    vanity: { pos: [2450, 1650, -300],  look: [1650, 1150, -2050], fov: 64 }
+  };
+  function setView(name) {
+    var v = VIEWS[name] || VIEWS.basin;
+    var pos = new T.Vector3().fromArray(v.pos).multiplyScalar(0.001);
+    var look = new T.Vector3().fromArray(v.look).multiplyScalar(0.001);
+    camera.position.copy(pos);
+    camera.fov = v.fov; camera.updateProjectionMatrix();
+    controls.target.copy(pos).add(look.sub(pos).normalize().multiplyScalar(0.05));
+    controls.update();
+    document.querySelectorAll(".views button").forEach(function (bt) { bt.setAttribute("aria-pressed", String(bt.dataset.view === name)); });
+    dirty = true;
+  }
+  document.querySelectorAll(".views button").forEach(function (bt) {
+    bt.addEventListener("click", function () { setView(bt.dataset.view); });
+  });
+
+  function resize() {
+    var w = stage.clientWidth, h = stage.clientHeight;
+    renderer.setSize(w, h, false);
+    camera.aspect = w / h; camera.updateProjectionMatrix();
+    dirty = true;
+  }
+  var dirty = true;
+  controls.addEventListener("change", function () { dirty = true; });
+  window.addEventListener("resize", resize);
+  resize();
+  var initial = (location.hash || "").replace("#", "");
+  setView(VIEWS[initial] ? initial : "basin");
+
+  (function loop() {
+    requestAnimationFrame(loop);
+    controls.update();
+    if (dirty) { renderer.render(scene, camera); dirty = false; }
+  })();
+  window.__rendered = true;
+})();
+</script>

@@ -164,6 +164,14 @@
   .photos figure { margin: 0; }
   .photos img { display: block; width: 100%; aspect-ratio: 3 / 4; object-fit: cover; border: 1px solid var(--line); }
   .photos figcaption { font-size: 13px; color: var(--muted); margin-top: 6px; }
+  .renders { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+  .renders figure { margin: 0; }
+  .renders img { display: block; width: 100%; aspect-ratio: 1400 / 890; object-fit: cover; border: 1px solid var(--line); }
+  .renders figcaption { font-size: 13px; color: var(--muted); margin-top: 6px; }
+  .renders .lead { grid-column: 1 / -1; }
+  .open3d { justify-self: start; font-family: var(--label); font-weight: 600; font-size: 14px; letter-spacing: 1.2px; text-transform: uppercase; color: var(--ground); background: var(--ink); padding: 10px 16px; text-decoration: none; }
+  .open3d:focus-visible { outline: 2px solid var(--brass); outline-offset: 2px; }
+  @media (max-width: 600px) { .renders { grid-template-columns: minmax(0, 1fr); } }
   footer { font-size: 13px; color: var(--muted); border-top: 1px solid var(--line); padding-top: 16px; }
 
   @media (max-width: 820px) {
@@ -266,6 +274,22 @@
       </div>
     </aside>
   </header>
+
+  <!-- ============ RENDERS ============ -->
+  <section aria-labelledby="render-h">
+    <div class="sec-head">
+      <div class="eyebrow">Visualisation</div>
+      <h2 id="render-h">How it will look</h2>
+      <p class="muted">Rendered from a 3D model of the room built from the Rev 07 plan. Tile colour on screen is a guide only; judge the green from the physical sample.</p>
+    </div>
+    <div class="renders">
+      <figure class="lead"><img src="img/render-basin.jpg" alt="3D render looking from the basin toward the door and walk-in shower: green tile above a stone-look lower wall, brass heated towel poles, tiled niche, frameless glass panel and brass twin shower."><figcaption>From the basin, looking at the door and walk-in shower</figcaption></figure>
+      <figure><img src="img/render-vanity.jpg" alt="3D render of the vanity wall: tiled ledge, wall-hung toilet with brass flush plate, matte white basin with brass mixer, and a mirror cabinet with a warm LED glow."><figcaption>Vanity wall with the LED-lit cabinet</figcaption></figure>
+      <figure><img src="img/render-door.jpg" alt="3D render from the entry door toward the ledge and mirror cabinet, with the door reflected in the mirror."><figcaption>From the door</figcaption></figure>
+      <figure><img src="img/render-shower.jpg" alt="3D render inside the shower: tiled niche on the door-side wall, brass rail shower and wall mixer, fixed glass panel."><figcaption>Inside the shower</figcaption></figure>
+    </div>
+    <a class="open3d" href="https://claude.ai/artifact/V5webJeBKfnNm73N7bX9E8">Open the 3D view and look around</a>
+  </section>
 
   <!-- ============ WHAT CHANGES ============ -->
   <section aria-labelledby="changes-h">
