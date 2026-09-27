@@ -313,6 +313,14 @@
       <figure><img src="img/render-door-stone.jpg" alt="3D render from the door with stone-look tile on every wall."><figcaption>From the door</figcaption></figure>
       <figure><img src="img/render-shower-stone.jpg" alt="3D render inside the shower with stone-look tile on every wall and a stone-lined niche."><figcaption>Inside the shower</figcaption></figure>
     </div>
+    <h3>Option E · Beaumont sage tile above the ledge line</h3>
+    <p class="muted">Option A's layout with the Beaumont Tiles sage you sent: a washed mix of olive, khaki and grey-green with pale grout, from 1000 mm to the ceiling. Stone-look tile below and on the floor. Colour is matched by eye from the product photo; check a sample under your own lights.</p>
+    <div class="renders">
+      <figure class="lead"><img src="img/render-basin-sage.jpg" alt="3D render from the basin with washed sage-khaki vertical tiles above a stone-look lower wall, brass towel poles, niche and glass panel."><figcaption>From the basin</figcaption></figure>
+      <figure><img src="img/render-vanity-sage.jpg" alt="3D render of the vanity wall with sage tile above the stone-look ledge, LED-lit mirror cabinet, and the brass mixer mounted on the basin."><figcaption>Vanity wall</figcaption></figure>
+      <figure><img src="img/render-door-sage.jpg" alt="3D render from the door with sage tile above the ledge line."><figcaption>From the door</figcaption></figure>
+      <figure><img src="img/render-shower-sage.jpg" alt="3D render inside the shower with sage tile above 1000 mm and a sage-lined niche."><figcaption>Inside the shower</figcaption></figure>
+    </div>
     <a class="open3d" href="https://claude.ai/artifact/V5webJeBKfnNm73N7bX9E8">Open the 3D view and switch between the options</a>
   </section>
 
@@ -463,8 +471,8 @@
           <tr><td>Floor tile</td><td>Stone-look porcelain 600 × 600, P3 floor / P4 shower</td><td>Matte</td><td class="num">—</td><td>Whole floor incl. shower</td></tr>
           <tr><td>Ledge top</td><td>Floor tile (stone-look porcelain), mitred front edge</td><td>Matte, as floor</td><td class="num">1000 AFFL × 200</td><td>Wall A, wall to wall</td></tr>
           <tr><td>Toilet</td><td>Wall-hung rimless pan, low-height in-wall cistern frame, smart bidet seat</td><td>White <span class="tag">Brass plate</span></td><td class="num">Seat ≈ 420</td><td>Wall A, left end</td></tr>
-          <tr><td>Basin</td><td>Wall-hung ceramic, approx. 550 wide</td><td>Matte white</td><td class="num">Rim ≈ 850</td><td>Wall A, right of centre</td></tr>
-          <tr><td>Basin mixer</td><td>Tall deck mixer on the ledge; spout reach to suit basin</td><td><span class="tag">Brushed brass</span></td><td class="num">On ledge</td><td>Behind basin</td></tr>
+          <tr><td>Basin</td><td>Wall-hung ceramic with rear tap deck and one tap hole, approx. 550 wide</td><td>Matte white</td><td class="num">Rim ≈ 850</td><td>Wall A, right of centre</td></tr>
+          <tr><td>Basin mixer</td><td>Basin-mounted mixer on the basin tap deck (one tap-hole basin)</td><td><span class="tag">Brushed brass</span></td><td class="num">On basin</td><td>Back of basin</td></tr>
           <tr><td>Bottle trap</td><td>Exposed trap and wall flange</td><td><span class="tag">Brushed brass</span></td><td class="num">—</td><td>Under basin</td></tr>
           <tr><td>Mirror cabinet</td><td>Shaving cabinet, 3 doors, concealed LED perimeter strip</td><td>Mirror, LED 2700 K warm white</td><td class="num">1600 × 750 @ 1200</td><td>Wall A, centred</td></tr>
           <tr><td>Robe hook</td><td>Single robe hook</td><td><span class="tag">Brushed brass</span></td><td class="num">≈ 1600</td><td>Wall A, right of basin</td></tr>
@@ -508,7 +516,7 @@
       <li><div><b>Niche wall construction.</b> <span>The door-side wall needs a stud cavity with no pipes or cables at the niche position. If it's masonry or a common wall, the niche needs strata sign-off or a new location.</span></div></li>
       <li><div><b>Glass fixing with clamps only.</b> <span>Ask the glazier to confirm a 600 panel is rigid on wall and floor clamps alone, and whether the floor clamps need to be set before or after the tiles go down. If it needs more support, a brass clamp to the ceiling is less visible than a bar across the entry.</span></div></li>
       <li><div><b>Cistern frame height.</b> <span>The ledge is 1000 high, so the frame must be a low-height model that fits inside it with access to the flush plate.</span></div></li>
-      <li><div><b>Basin and tap.</b> <span>Check that the mixer spout reaches the basin waste across the 200 ledge, and confirm basin and pan heights before rough-in.</span></div></li>
+      <li><div><b>Basin and tap.</b> <span>Choose a basin with a rear tap deck and one pre-drilled tap hole so the mixer mounts on the basin itself. Confirm basin and pan heights before rough-in.</span></div></li>
       <li><div><b>Cabinet size and depth.</b> <span>1600 × 750 is the proposal. Confirm the LED strip is concealed on all four sides and the driver has an access point.</span></div></li>
       <li><div><b>Towel pole height and spacing.</b> <span>Drawn 1200 tall, 300 apart. Check they clear the door swing and the door handle.</span></div></li>
     </ul>
@@ -652,9 +660,10 @@
 
     // basin + tap + trap
     var bx = 1500;
-    c += '<rect x="' + (bx - 22) + '" y="' + (CEIL - 1250) + '" width="44" height="250" rx="6" fill="url(#brass)" stroke="#7a6333" stroke-width="3"/>';
-    c += '<rect x="' + (bx - 70) + '" y="' + (CEIL - 1215) + '" width="48" height="18" rx="6" fill="url(#brass)" stroke="#7a6333" stroke-width="2"/>';
-    c += '<rect x="' + (bx - 18) + '" y="' + (CEIL - 1250) + '" width="36" height="120" fill="#fff" opacity=".18"/>';
+    // basin mixer mounted on the basin's rear tap deck
+    c += '<rect x="' + (bx - 20) + '" y="' + (CEIL - 1030) + '" width="40" height="180" rx="6" fill="url(#brass)" stroke="#7a6333" stroke-width="3"/>';
+    c += '<rect x="' + (bx - 66) + '" y="' + (CEIL - 1005) + '" width="46" height="16" rx="6" fill="url(#brass)" stroke="#7a6333" stroke-width="2"/>';
+    c += '<rect x="' + (bx - 16) + '" y="' + (CEIL - 1030) + '" width="32" height="90" fill="#fff" opacity=".18"/>';
     c += '<path d="M' + (bx - 60) + " " + (CEIL - 700) + " L" + (bx + 60) + " " + (CEIL - 700) + " L" + (bx + 50) + " " + (CEIL - 480) + " L" + (bx - 50) + " " + (CEIL - 480) + ' Z" fill="url(#brass)" stroke="#7a6333" stroke-width="3"/>';
     c += '<path d="M' + (bx - 20) + " " + (CEIL - 700) + " L" + (bx + 20) + " " + (CEIL - 700) + " L" + (bx + 20) + " " + (CEIL - 620) + " L" + (bx - 20) + " " + (CEIL - 620) + ' Z" fill="url(#brass)" stroke="#7a6333" stroke-width="2"/>';
     c += '<path d="M' + (bx - 275) + " " + (CEIL - 850) + " L" + (bx + 275) + " " + (CEIL - 850) + " L" + (bx + 265) + " " + (CEIL - 760) +
@@ -676,7 +685,7 @@
     x += txt(wx, CEIL - 120, "WALL-HUNG WC", { size: 44, weight: 600, ls: 1 }) + txt(wx, CEIL - 70, "+ SMART SEAT", { size: 44, weight: 600, ls: 1 });
     x += txt(wx, CEIL - 740, "FLUSH PLATE", { size: 40, weight: 600, fill: "#6e5323", ls: 1 });
     x += callout(bx + 150, CEIL - 780, W + 290, CEIL - 700, "MATTE WHITE BASIN", "start");
-    x += callout(bx + 22, CEIL - 1150, W + 290, CEIL - 1080, "BRASS MIXER", "start");
+    x += callout(bx + 20, CEIL - 960, W + 290, CEIL - 1080, "MIXER ON BASIN", "start");
     x += callout(hx + 20, CEIL - hy + 50, W + 290, CEIL - 1640, "ROBE HOOK", "start");
     document.getElementById("elevA").innerHTML = wallShell(W, c, x, { id: "A", seed: 11, right: 820, top: 200, bottom: 190, label: "Elevation A: vanity and WC wall" });
   })();
@@ -767,10 +776,10 @@
     s += '<path d="M330 320 L570 320 L560 500 Q450 600 340 500 Z" fill="none" stroke="#7d887f" stroke-width="5"/>';
     // basin
     s += '<rect x="1225" y="200" width="550" height="400" rx="60" fill="#ffffff" stroke="#243029" stroke-width="6"/>';
-    s += '<rect x="1275" y="250" width="450" height="300" rx="50" fill="none" stroke="#7d887f" stroke-width="5"/>';
-    s += '<circle cx="1500" cy="420" r="22" fill="#b89d66" stroke="#243029" stroke-width="4"/>';
-    s += '<circle cx="1500" cy="110" r="32" fill="url(#brass)" stroke="#7a6333" stroke-width="5"/>';
-    s += '<rect x="1485" y="110" width="30" height="230" fill="url(#brass)" stroke="#7a6333" stroke-width="4"/>';
+    s += '<rect x="1285" y="310" width="430" height="250" rx="50" fill="none" stroke="#7d887f" stroke-width="5"/>';
+    s += '<circle cx="1500" cy="450" r="22" fill="#b89d66" stroke="#243029" stroke-width="4"/>';
+    s += '<circle cx="1500" cy="262" r="26" fill="url(#brass)" stroke="#7a6333" stroke-width="5"/>';
+    s += '<rect x="1488" y="262" width="24" height="150" fill="url(#brass)" stroke="#7a6333" stroke-width="4"/>';
     // robe hook
     s += '<rect x="2020" y="200" width="60" height="45" fill="url(#brass)" stroke="#7a6333" stroke-width="5"/>';
     s += "</g></g>";
