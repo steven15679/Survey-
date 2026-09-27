@@ -62,6 +62,7 @@
     <button type="button" id="t-split" data-tile="split" aria-pressed="true">Green above ledge</button>
     <button type="button" id="t-full" data-tile="full" aria-pressed="false">Green floor to ceiling</button>
     <button type="button" id="t-feature" data-tile="feature" aria-pressed="false">Green vanity wall only</button>
+    <button type="button" id="t-stone" data-tile="stone" aria-pressed="false">All stone-look</button>
   </div>
   </div>
 </div>
@@ -647,10 +648,10 @@
   window.addEventListener("resize", resize);
   resize();
   function setTile(mode) {
-    // split: green above 1000 · full: green everywhere · feature: green only on the vanity wall, stone-look elsewhere
+    // split: green above 1000 · full: green everywhere · feature: green only on the vanity wall · stone: no green at all
     LOWER.forEach(function (w) { w.mesh.material = (mode === "full" || (mode === "feature" && w.feature)) ? M.green : M.stone; });
-    UPPER.forEach(function (w) { w.mesh.material = (mode !== "feature" || w.feature) ? M.green : M.stone; });
-    NICHE.mesh.material = mode === "feature" ? NICHE.stone : NICHE.green;
+    UPPER.forEach(function (w) { w.mesh.material = (mode === "split" || mode === "full" || (mode === "feature" && w.feature)) ? M.green : M.stone; });
+    NICHE.mesh.material = (mode === "split" || mode === "full") ? NICHE.green : NICHE.stone;
     LEDGE_FRONT.material = mode === "feature" ? M.green : M.stone;
     document.querySelectorAll("[data-tile]").forEach(function (bt) { bt.setAttribute("aria-pressed", String(bt.dataset.tile === mode)); });
     dirty = true;
@@ -658,10 +659,10 @@
   document.querySelectorAll("[data-tile]").forEach(function (bt) {
     bt.addEventListener("click", function () { setTile(bt.dataset.tile); });
   });
-  // deep link: #door, #door-full or #door-feature
+  // deep link: #door, #door-full, #door-feature or #door-stone
   var hash = (location.hash || "").replace("#", "").split("-");
   setView(VIEWS[hash[0]] ? hash[0] : "basin");
-  setTile(hash[1] === "full" || hash[1] === "feature" ? hash[1] : "split");
+  setTile(["full", "feature", "stone"].indexOf(hash[1]) >= 0 ? hash[1] : "split");
 
   (function loop() {
     requestAnimationFrame(loop);
