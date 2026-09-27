@@ -743,9 +743,9 @@
 
   // ---------- Floor plan (shape traced from Rev 07, NTS) ----------
   (function () {
-    var P = { A: [135, 600], B: [135, 395], C: [302, 292], D: [290, 205], E: [673, 68], F: [700, 168], G: [700, 634], H: [618, 634], I: [506, 522], J2: [444, 636], J: [444, 600] };
+    var P = { A: [135, 600], B: [135, 395], C: [302, 292], D: [290, 205], E: [673, 68], F: [700, 168], G: [700, 636], I: [592, 636], J2: [444, 636], J: [444, 600] };
     function pt(k) { return P[k].join(","); }
-    var room = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J2", "J"].map(pt).join(" ");
+    var room = ["A", "B", "C", "D", "E", "F", "G", "I", "J2", "J"].map(pt).join(" ");
     var s = '<svg viewBox="40 10 790 720" role="img" aria-label="Proposed floor plan">';
     s += '<clipPath id="roomClip"><polygon points="' + room + '"/></clipPath>';
     s += '<polygon points="' + room + '" fill="url(#stonePlan)"/>';
@@ -776,7 +776,7 @@
     s += "</g></g>";
 
     // walls
-    s += '<polyline points="' + ["J2", "J", "A", "B", "C", "D", "E", "F", "G", "H", "I"].map(pt).join(" ") + '" fill="none" stroke="#243029" stroke-width="8" stroke-linejoin="miter"/>';
+    s += '<polyline points="' + ["J2", "J", "A", "B", "C", "D", "E", "F", "G", "I"].map(pt).join(" ") + '" fill="none" stroke="#243029" stroke-width="8" stroke-linejoin="miter"/>';
 
     // shower: linear drain, rose, niche, glass
     s += '<rect x="143" y="415" width="13" height="170" fill="#d6d0c5" stroke="#a8884f" stroke-width="2.2"/>';
@@ -793,8 +793,9 @@
     // floor waste
     s += '<rect x="510" y="415" width="26" height="26" fill="#d6d0c5" stroke="#a8884f" stroke-width="2.2"/>';
     // door swing
-    s += '<path d="M444 636 A 132 132 0 0 1 506 522" fill="none" stroke="#243029" stroke-width="1.2" stroke-dasharray="5 4"/>';
-    s += '<line x1="444" y1="636" x2="560" y2="572" stroke="#243029" stroke-width="3"/>';
+    // door in line with the shower-side wall, hinged on the right, opening in
+    s += '<path d="M444 636 A 148 148 0 0 1 592 488" fill="none" stroke="#243029" stroke-width="1.2" stroke-dasharray="5 4"/>';
+    s += '<line x1="592" y1="636" x2="592" y2="488" stroke="#243029" stroke-width="3"/>';
 
     // labels
     function L(x, y, t, o) { o = o || {}; return '<text x="' + x + '" y="' + y + '" font-family="Barlow Condensed, Arial Narrow, sans-serif" font-size="' + (o.size || 13) + '" font-weight="' + (o.w || 600) + '" fill="' + (o.fill || "#243029") + '" text-anchor="' + (o.a || "start") + '" letter-spacing="0.6"' + (o.rot ? ' transform="rotate(' + o.rot + " " + x + " " + y + ')"' : "") + ">" + t + "</text>"; }
@@ -810,7 +811,7 @@
     s += L(610, 245, "MATTE WHITE BASIN", { size: 11, a: "middle" });
     s += L(452, 182, "LEDGE 1000 H × 200 D", { size: 9.5, fill: "#3d4740", a: "middle", rot: -19.7 });
     s += L(672, 142, "HOOK", { size: 10, fill: "#7a6333", a: "middle" });
-    s += L(530, 600, "ENTRY", { size: 12, fill: "#5d685e" });
+    s += L(518, 662, "ENTRY", { size: 12, fill: "#5d685e", a: "middle" });
     // outside dims (from Rev 07)
     s += L(470, 118, "2200", { size: 14, fill: "#5d685e", a: "middle", rot: -19.7 });
     s += L(716, 110, "570", { size: 13, fill: "#5d685e" });
