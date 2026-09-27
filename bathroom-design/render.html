@@ -514,11 +514,25 @@
   // ---------- fixed glass panel ----------
   (function () {
     var len = GLASS_Z1 - GLASS_Z0, zc = (GLASS_Z0 + GLASS_Z1) / 2;
-    var gl = new T.Mesh(new T.BoxGeometry(10, 2000, len), M.glass); gl.position.set(GLASS_X, 1000, zc); gl.renderOrder = 2; root.add(gl);
-    var edgeFree = mesh(new T.BoxGeometry(11, 2000, 3), M.glassEdge); edgeFree.position.set(GLASS_X, 1000, GLASS_Z1); root.add(edgeFree);
+    // glass sits 10 mm off the floor, held by brass clamps only (no channels)
+    var gl = new T.Mesh(new T.BoxGeometry(10, 1990, len), M.glass); gl.position.set(GLASS_X, 1005, zc); gl.renderOrder = 2; root.add(gl);
+    var edgeFree = mesh(new T.BoxGeometry(11, 1990, 3), M.glassEdge); edgeFree.position.set(GLASS_X, 1005, GLASS_Z1); root.add(edgeFree);
     var edgeTop = mesh(new T.BoxGeometry(11, 3, len), M.glassEdge); edgeTop.position.set(GLASS_X, 2000, zc); root.add(edgeTop);
-    var chan = mesh(new T.BoxGeometry(30, 30, len), M.brass, true); chan.position.set(GLASS_X, 15, zc); root.add(chan);
-    var wallCh = mesh(new T.BoxGeometry(24, 2000, 20), M.brass, true); wallCh.position.set(GLASS_X, 1000, GLASS_Z0 + 10); root.add(wallCh);
+    var edgeWall = mesh(new T.BoxGeometry(11, 1990, 3), M.glassEdge); edgeWall.position.set(GLASS_X, 1005, GLASS_Z0 + 2); root.add(edgeWall);
+    // wall clamps: backplate on the tile plus a jaw either side of the glass
+    [350, 1000, 1650].forEach(function (y) {
+      var plate = mesh(rbox(55, 60, 8, 3), M.brass, true); plate.position.set(GLASS_X, y, GLASS_Z0 + 4); root.add(plate);
+      [-11, 11].forEach(function (dx) {
+        var jaw = mesh(rbox(12, 50, 45, 4), M.brass, true); jaw.position.set(GLASS_X + dx, y, GLASS_Z0 + 30); root.add(jaw);
+      });
+    });
+    // floor clamps
+    [GLASS_Z0 + 120, GLASS_Z1 - 120].forEach(function (z) {
+      [-11, 11].forEach(function (dx) {
+        var jaw = mesh(rbox(12, 45, 50, 4), M.brass, true); jaw.position.set(GLASS_X + dx, 22, z); root.add(jaw);
+      });
+      var base = mesh(rbox(40, 8, 55, 2), M.brass, true); base.position.set(GLASS_X, 4, z); root.add(base);
+    });
   })();
 
   // ---------- heated towel poles ----------
