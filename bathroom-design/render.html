@@ -61,7 +61,7 @@
   <div class="views" role="group" aria-label="Wall tile layout">
     <button type="button" id="t-split" data-tile="split" aria-pressed="true">Green above ledge</button>
     <button type="button" id="t-full" data-tile="full" aria-pressed="false">Green floor to ceiling</button>
-    <button type="button" id="t-feature" data-tile="feature" aria-pressed="false">Green shower wall only</button>
+    <button type="button" id="t-feature" data-tile="feature" aria-pressed="false">Green vanity wall only</button>
   </div>
   </div>
 </div>
@@ -263,7 +263,8 @@
   var EDGES = {};
   var LOWER = []; // lower wall bands, swapped when tiling green floor to ceiling
   var NICHE = null;
-  var UPPER = []; // upper wall bands as { mesh, feature } where feature marks the shower tap wall
+  var UPPER = []; // upper wall bands as { mesh, feature } where feature marks the feature wall
+  var FEATURE_WALL = "D-E"; // the 2200 vanity wall behind the ledge and mirror cabinet
   for (var i = 0; i < ORDER.length; i++) {
     var a = ORDER[i], b = ORDER[(i + 1) % ORDER.length], key = a + "-" + b;
     var e = edge(a, b); EDGES[key] = e;
@@ -283,8 +284,8 @@
     bands.forEach(function (bd) {
       var m = mesh(new T.ShapeGeometry(bd[0]), bd[1]);
       place(m, e, 0, 0); root.add(m);
-      if (bd[1] === M.stone) LOWER.push({ mesh: m, feature: key === "A-B" });
-      else UPPER.push({ mesh: m, feature: key === "A-B" });
+      if (bd[1] === M.stone) LOWER.push({ mesh: m, feature: key === FEATURE_WALL });
+      else UPPER.push({ mesh: m, feature: key === FEATURE_WALL });
     });
   }
 
@@ -644,7 +645,7 @@
   window.addEventListener("resize", resize);
   resize();
   function setTile(mode) {
-    // split: green above 1000 · full: green everywhere · feature: green only on the shower tap wall, stone-look elsewhere
+    // split: green above 1000 · full: green everywhere · feature: green only on the vanity wall, stone-look elsewhere
     LOWER.forEach(function (w) { w.mesh.material = (mode === "full" || (mode === "feature" && w.feature)) ? M.green : M.stone; });
     UPPER.forEach(function (w) { w.mesh.material = (mode !== "feature" || w.feature) ? M.green : M.stone; });
     NICHE.mesh.material = mode === "feature" ? NICHE.stone : NICHE.green;
