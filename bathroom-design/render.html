@@ -263,6 +263,7 @@
   var EDGES = {};
   var LOWER = []; // lower wall bands, swapped when tiling green floor to ceiling
   var NICHE = null;
+  var LEDGE_FRONT = null; // turns green in the feature-wall option so the vanity wall reads floor to ceiling
   var UPPER = []; // upper wall bands as { mesh, feature } where feature marks the feature wall
   var FEATURE_WALL = "D-E"; // the 2200 vanity wall behind the ledge and mirror cabinet
   for (var i = 0; i < ORDER.length; i++) {
@@ -350,6 +351,7 @@
   (function () {
     var g = new T.Group();
     var front = mesh(new T.ShapeGeometry(rectShape(0, 0, 2200, 1000)), M.stone); front.position.z = 200; g.add(front);
+    LEDGE_FRONT = front;
     var topS = new T.Shape(); topS.moveTo(0, 0); topS.lineTo(2200, 0); topS.lineTo(2200, -200); topS.lineTo(0, -200); topS.closePath();
     var top = mesh(new T.ShapeGeometry(topS), M.stone); top.rotation.x = -Math.PI / 2; top.position.y = 1000; g.add(top);
     place(g, WALL_A, 0, 0); root.add(g);
@@ -649,6 +651,7 @@
     LOWER.forEach(function (w) { w.mesh.material = (mode === "full" || (mode === "feature" && w.feature)) ? M.green : M.stone; });
     UPPER.forEach(function (w) { w.mesh.material = (mode !== "feature" || w.feature) ? M.green : M.stone; });
     NICHE.mesh.material = mode === "feature" ? NICHE.stone : NICHE.green;
+    LEDGE_FRONT.material = mode === "feature" ? M.green : M.stone;
     document.querySelectorAll("[data-tile]").forEach(function (bt) { bt.setAttribute("aria-pressed", String(bt.dataset.tile === mode)); });
     dirty = true;
   }
