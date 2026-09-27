@@ -27,6 +27,7 @@
   h1 { font-family: "Gloock", Georgia, serif; font-weight: 400; font-size: 22px; margin: 0; line-height: 1.1; }
   h1 small { display: block; font-family: "Barlow Condensed", "Arial Narrow", sans-serif; font-size: 12px; letter-spacing: 1.6px; text-transform: uppercase; color: var(--muted); margin-top: 4px; }
   .views { display: flex; flex-wrap: wrap; gap: 6px; }
+  .top .controls { display: grid; gap: 6px; justify-items: end; }
   .views button {
     font: 600 13px/1 "Barlow Condensed", "Arial Narrow", sans-serif; letter-spacing: 1px; text-transform: uppercase;
     color: var(--ink); background: var(--chip); border: 1px solid rgba(255, 255, 255, 0.18);
@@ -50,11 +51,17 @@
 <div class="grain" id="grain" aria-hidden="true"></div>
 <div class="top">
   <h1>Unit 18D Bathroom<small>3D concept render</small></h1>
+  <div class="controls">
   <div class="views" role="group" aria-label="Camera views">
     <button type="button" id="v-basin" data-view="basin" aria-pressed="true">From basin</button>
     <button type="button" id="v-door" data-view="door" aria-pressed="false">From door</button>
     <button type="button" id="v-shower" data-view="shower" aria-pressed="false">Shower</button>
     <button type="button" id="v-vanity" data-view="vanity" aria-pressed="false">Vanity</button>
+  </div>
+  <div class="views" role="group" aria-label="Wall tile layout">
+    <button type="button" id="t-split" data-tile="split" aria-pressed="true">Green above ledge</button>
+    <button type="button" id="t-full" data-tile="full" aria-pressed="false">Green floor to ceiling</button>
+  </div>
   </div>
 </div>
 <div class="hint"><span>Drag to look around</span><span>Concept only · proportions from Rev 07 plan</span></div>
@@ -253,6 +260,7 @@
     var s = new T.Shape(); s.moveTo(u0, v0); s.lineTo(u1, v0); s.lineTo(u1, v1); s.lineTo(u0, v1); s.closePath(); return s;
   }
   var EDGES = {};
+  var LOWER = []; // lower wall bands, swapped when tiling green floor to ceiling
   for (var i = 0; i < ORDER.length; i++) {
     var a = ORDER[i], b = ORDER[(i + 1) % ORDER.length], key = a + "-" + b;
     var e = edge(a, b); EDGES[key] = e;
@@ -272,6 +280,7 @@
     bands.forEach(function (bd) {
       var m = mesh(new T.ShapeGeometry(bd[0]), bd[1]);
       place(m, e, 0, 0); root.add(m);
+      if (bd[1] === M.stone) LOWER.push(m);
     });
   }
 
@@ -595,10 +604,10 @@
     camera.fov = v.fov; camera.updateProjectionMatrix();
     controls.target.copy(pos).add(look.sub(pos).normalize().multiplyScalar(0.05));
     controls.update();
-    document.querySelectorAll(".views button").forEach(function (bt) { bt.setAttribute("aria-pressed", String(bt.dataset.view === name)); });
+    document.querySelectorAll("[data-view]").forEach(function (bt) { bt.setAttribute("aria-pressed", String(bt.dataset.view === name)); });
     dirty = true;
   }
-  document.querySelectorAll(".views button").forEach(function (bt) {
+  document.querySelectorAll("[data-view]").forEach(function (bt) {
     bt.addEventListener("click", function () { setView(bt.dataset.view); });
   });
 
@@ -612,8 +621,18 @@
   controls.addEventListener("change", function () { dirty = true; });
   window.addEventListener("resize", resize);
   resize();
-  var initial = (location.hash || "").replace("#", "");
-  setView(VIEWS[initial] ? initial : "basin");
+  function setTile(mode) {
+    LOWER.forEach(function (m) { m.material = mode === "full" ? M.green : M.stone; });
+    document.querySelectorAll("[data-tile]").forEach(function (bt) { bt.setAttribute("aria-pressed", String(bt.dataset.tile === mode)); });
+    dirty = true;
+  }
+  document.querySelectorAll("[data-tile]").forEach(function (bt) {
+    bt.addEventListener("click", function () { setTile(bt.dataset.tile); });
+  });
+  // deep link: #door or #door-full
+  var hash = (location.hash || "").replace("#", "").split("-");
+  setView(VIEWS[hash[0]] ? hash[0] : "basin");
+  setTile(hash[1] === "full" ? "full" : "split");
 
   (function loop() {
     requestAnimationFrame(loop);
