@@ -61,6 +61,7 @@
   <div class="views" role="group" aria-label="Wall tile layout">
     <button type="button" id="t-split" data-tile="split" aria-pressed="true">Green above ledge</button>
     <button type="button" id="t-full" data-tile="full" aria-pressed="false">Green floor to ceiling</button>
+    <button type="button" id="t-feature" data-tile="feature" aria-pressed="false">Green shower wall only</button>
   </div>
   </div>
 </div>
@@ -261,6 +262,8 @@
   }
   var EDGES = {};
   var LOWER = []; // lower wall bands, swapped when tiling green floor to ceiling
+  var NICHE = null;
+  var UPPER = []; // upper wall bands as { mesh, feature } where feature marks the shower tap wall
   for (var i = 0; i < ORDER.length; i++) {
     var a = ORDER[i], b = ORDER[(i + 1) % ORDER.length], key = a + "-" + b;
     var e = edge(a, b); EDGES[key] = e;
@@ -280,7 +283,8 @@
     bands.forEach(function (bd) {
       var m = mesh(new T.ShapeGeometry(bd[0]), bd[1]);
       place(m, e, 0, 0); root.add(m);
-      if (bd[1] === M.stone) LOWER.push(m);
+      if (bd[1] === M.stone) LOWER.push({ mesh: m, feature: key === "A-B" });
+      else UPPER.push({ mesh: m, feature: key === "A-B" });
     });
   }
 
@@ -327,7 +331,11 @@
     var nMap = greenMap.clone(), nBump = greenBump.clone();
     [nMap, nBump].forEach(function (t) { t.needsUpdate = true; t.repeat.set(600 / GMW, 400 / GMH); t.offset.set(0, 0); });
     var nm = M.green.clone(); nm.map = nMap; nm.bumpMap = nBump; nm.side = T.BackSide;
+    var sMap = stoneMap.clone(), sBump = stoneBump.clone();
+    [sMap, sBump].forEach(function (t) { t.needsUpdate = true; t.repeat.set(600 / SM, 400 / SM); t.offset.set(0, 0); });
+    var sm = M.stone.clone(); sm.map = sMap; sm.bumpMap = sBump; sm.side = T.BackSide;
     var box = mesh(new T.BoxGeometry(600, 400, 200), nm);
+    NICHE = { mesh: box, green: nm, stone: sm };
     box.position.y = 1400; place(box, e, 1600 - 457, -100); root.add(box);
     var sill = mesh(new T.BoxGeometry(600, 12, 100), M.stone); sill.position.y = 1206; place(sill, e, 1600 - 457, -50); root.add(sill);
     var bottle1 = mesh(new T.CylinderGeometry(28, 28, 190, 24), new T.MeshStandardMaterial({ color: 0xe9e2d4, roughness: 0.35 }), true);
@@ -636,17 +644,20 @@
   window.addEventListener("resize", resize);
   resize();
   function setTile(mode) {
-    LOWER.forEach(function (m) { m.material = mode === "full" ? M.green : M.stone; });
+    // split: green above 1000 · full: green everywhere · feature: green only on the shower tap wall, stone-look elsewhere
+    LOWER.forEach(function (w) { w.mesh.material = (mode === "full" || (mode === "feature" && w.feature)) ? M.green : M.stone; });
+    UPPER.forEach(function (w) { w.mesh.material = (mode !== "feature" || w.feature) ? M.green : M.stone; });
+    NICHE.mesh.material = mode === "feature" ? NICHE.stone : NICHE.green;
     document.querySelectorAll("[data-tile]").forEach(function (bt) { bt.setAttribute("aria-pressed", String(bt.dataset.tile === mode)); });
     dirty = true;
   }
   document.querySelectorAll("[data-tile]").forEach(function (bt) {
     bt.addEventListener("click", function () { setTile(bt.dataset.tile); });
   });
-  // deep link: #door or #door-full
+  // deep link: #door, #door-full or #door-feature
   var hash = (location.hash || "").replace("#", "").split("-");
   setView(VIEWS[hash[0]] ? hash[0] : "basin");
-  setTile(hash[1] === "full" ? "full" : "split");
+  setTile(hash[1] === "full" || hash[1] === "feature" ? hash[1] : "split");
 
   (function loop() {
     requestAnimationFrame(loop);
