@@ -142,10 +142,10 @@
     return t;
   }
 
-  // Green crackle-glaze tile, 65 x 200 with 2.5 mm grout. Module: 12 cols x 5 rows.
-  var GW = 65, GH = 200, GG = 2.5, GCOLS = 12, GROWS = 5;
-  var GMW = GCOLS * (GW + GG), GMH = GROWS * (GH + GG);
+  // Vertical stack-bond wall tile generator. Each call can set its own tile size; UVs are in mm.
   function makeTile(o) {
+    var GW = o.w, GH = o.h, GG = o.g, GCOLS = o.cols, GROWS = o.rows;
+    var GMW = GCOLS * (GW + GG), GMH = GROWS * (GH + GG);
     var s = 1.6, w = Math.round(GMW * s), h = Math.round(GMH * s);
     var c = document.createElement("canvas"); c.width = w; c.height = h;
     var b = document.createElement("canvas"); b.width = w; b.height = h;
@@ -190,20 +190,22 @@
     }
     var mp = tex(c, true), bp = tex(b, false);
     [mp, bp].forEach(function (t) { t.repeat.set(1 / GMW, 1 / GMH); t.offset.set(0, -DATUM / GMH); });
-    return [mp, bp];
+    return [mp, bp, GMW, GMH];
   }
-  // your showroom green: gloss crackle glaze, dark pooled edges
+  // olive gloss tile: slim 50 x 300, even olive-khaki glaze, cream grout
   var gt = makeTile({
-    palette: [[88, 100, 78], [98, 108, 84], [106, 116, 92], [80, 92, 72], [114, 122, 98], [92, 104, 82], [102, 110, 86], [84, 98, 78], [108, 114, 88]],
-    grout: "#b8b19d", edge: 0.72, blooms: 7, bloomLight: "rgba(214,222,190,0.12)", bloomDark: "rgba(40,48,26,0.14)", cracks: 26
+    w: 50, h: 300, g: 3, cols: 16, rows: 4,
+    palette: [[86, 86, 64], [80, 82, 60], [90, 89, 66], [78, 80, 58], [88, 88, 66], [82, 84, 62], [92, 90, 68], [80, 82, 61]],
+    grout: "#d9d1ba", edge: 0.86, blooms: 4, bloomLight: "rgba(220,218,190,0.08)", bloomDark: "rgba(50,52,34,0.1)", cracks: 0
   });
-  var greenMap = gt[0], greenBump = gt[1];
+  var greenMap = gt[0], greenBump = gt[1], GREEN_MW = gt[2], GREEN_MH = gt[3];
   // Beaumont-style sage: washed olive, khaki and grey-green, soft edges, pale grout, no crackle
   var st = makeTile({
+    w: 65, h: 200, g: 2.5, cols: 12, rows: 5,
     palette: [[118, 120, 96], [108, 116, 104], [126, 120, 94], [114, 118, 110], [102, 106, 80], [122, 124, 104], [106, 112, 96], [130, 124, 100], [98, 106, 92]],
     grout: "#cfcbbf", edge: 0.84, blooms: 14, bloomLight: "rgba(214,214,200,0.2)", bloomDark: "rgba(70,78,60,0.24)", cracks: 0
   });
-  var sageMap = st[0], sageBump = st[1];
+  var sageMap = st[0], sageBump = st[1], SAGE_MW = st[2], SAGE_MH = st[3];
 
 
   // Stone-look porcelain 600 x 600, module 2 x 2 tiles.
@@ -246,7 +248,7 @@
 
   // ---------- materials ----------
   var M = {
-    green: new T.MeshStandardMaterial({ map: greenMap, bumpMap: greenBump, bumpScale: 0.018, roughness: 0.14, metalness: 0, envMapIntensity: 0.65 }),
+    green: new T.MeshStandardMaterial({ map: greenMap, bumpMap: greenBump, bumpScale: 0.016, roughness: 0.1, metalness: 0, envMapIntensity: 0.65 }),
     sage: new T.MeshStandardMaterial({ map: sageMap, bumpMap: sageBump, bumpScale: 0.014, roughness: 0.32, metalness: 0, envMapIntensity: 0.5 }),
     stone: new T.MeshStandardMaterial({ map: stoneMap, bumpMap: stoneBump, bumpScale: 0.012, roughness: 0.85, envMapIntensity: 0.3 }),
     ceiling: new T.MeshStandardMaterial({ color: 0xf1f0ec, roughness: 0.95, envMapIntensity: 0.4 }),
@@ -347,13 +349,13 @@
   (function () {
     var e = EDGES["J-A"];
     var nMap = greenMap.clone(), nBump = greenBump.clone();
-    [nMap, nBump].forEach(function (t) { t.needsUpdate = true; t.repeat.set(600 / GMW, 400 / GMH); t.offset.set(0, 0); });
+    [nMap, nBump].forEach(function (t) { t.needsUpdate = true; t.repeat.set(600 / GREEN_MW, 400 / GREEN_MH); t.offset.set(0, 0); });
     var nm = M.green.clone(); nm.map = nMap; nm.bumpMap = nBump; nm.side = T.BackSide;
     var sMap = stoneMap.clone(), sBump = stoneBump.clone();
     [sMap, sBump].forEach(function (t) { t.needsUpdate = true; t.repeat.set(600 / SM, 400 / SM); t.offset.set(0, 0); });
     var sm = M.stone.clone(); sm.map = sMap; sm.bumpMap = sBump; sm.side = T.BackSide;
     var gMap = sageMap.clone(), gBump = sageBump.clone();
-    [gMap, gBump].forEach(function (t) { t.needsUpdate = true; t.repeat.set(600 / GMW, 400 / GMH); t.offset.set(0, 0); });
+    [gMap, gBump].forEach(function (t) { t.needsUpdate = true; t.repeat.set(600 / SAGE_MW, 400 / SAGE_MH); t.offset.set(0, 0); });
     var gm = M.sage.clone(); gm.map = gMap; gm.bumpMap = gBump; gm.side = T.BackSide;
     var box = mesh(new T.BoxGeometry(600, 400, 200), nm);
     NICHE = { mesh: box, green: nm, stone: sm, sage: gm };
