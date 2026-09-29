@@ -477,7 +477,7 @@
           <tr><td>Mirror cabinet</td><td>Shaving cabinet, 3 doors, concealed LED perimeter strip</td><td>Mirror, LED 2700 K warm white</td><td class="num">1600 × 750 @ 1200</td><td>Wall A, centred</td></tr>
           <tr><td>Robe hook</td><td>Single robe hook</td><td><span class="tag">Brushed brass</span></td><td class="num">≈ 1600</td><td>Wall A, right of basin</td></tr>
           <tr><td>Shower</td><td>Twin rail shower (rose + hand shower), wall mixer</td><td><span class="tag">Brushed brass</span></td><td class="num">Rose ≈ 2050, mixer 1100</td><td>Wall B</td></tr>
-          <tr><td>Niche</td><td>Recessed, waterproofed, lined in green tile, sill falls inward</td><td>Green tile</td><td class="num">600 × 400 @ 1200</td><td>Wall C, shower side</td></tr>
+          <tr><td>Niche</td><td>Recessed, waterproofed, lined in olive tile, sill falls inward; 12 tiles wide × 1 course high, edges on grout lines</td><td>Olive tile</td><td class="num">636 × 303 @ 1303</td><td>Wall C, shower side</td></tr>
           <tr><td>Shower screen</td><td>10 mm toughened fixed panel, 3 wall clamps + 2 floor clamps, no channels or overhead bar</td><td>Clear <span class="tag">Brass hardware</span></td><td class="num">600 W × 2000 H</td><td>Existing glass line</td></tr>
           <tr><td>Entry door</td><td>Existing door and frame repainted, satin enamel</td><td>Greige to match the floor tile</td><td class="num">—</td><td>Entry</td></tr>
           <tr><td>Downlights</td><td>Existing positions, warm white lamps</td><td>2700 K</td><td class="num">Ceiling</td><td>As existing</td></tr>
@@ -512,7 +512,7 @@
       <h2 id="confirm-h">To confirm before ordering</h2>
     </div>
     <ul class="confirm">
-      <li><div><b>Olive tile size.</b> <span>Drawn as 50 × 300. If that's right, a niche 12 tiles wide (about 633) and one or two courses high (about 300 or 603) lands on whole tiles; the drawn 600 × 400 would need cut tiles.</span></div></li>
+      <li><div><b>Olive tile size.</b> <span>Drawn as 50 × 300 with 3 mm grout. The niche is sized to whole tiles on that basis: 12 tiles wide and one course high (636 × 303, sill on the course line at 1303). If the tile or grout differs, resize the niche to suit before framing.</span></div></li>
       <li><div><b>Niche wall construction.</b> <span>The door-side wall needs a stud cavity with no pipes or cables at the niche position. If it's masonry or a common wall, the niche needs strata sign-off or a new location.</span></div></li>
       <li><div><b>Glass fixing with clamps only.</b> <span>Ask the glazier to confirm a 600 panel is rigid on wall and floor clamps alone, and whether the floor clamps need to be set before or after the tiles go down. If it needs more support, a brass clamp to the ceiling is less visible than a bar across the entry.</span></div></li>
       <li><div><b>Cistern frame height.</b> <span>The ledge is 1000 high, so the frame must be a low-height model that fits inside it with access to the flush plate.</span></div></li>
@@ -718,12 +718,12 @@
   // ---------- Elevation C: door-side wall 1600 (viewed from inside; door return left, shower right) ----------
   (function () {
     var W = 1600, glassX = 650, c = "";
-    // niche 600 x 400 @ sill 1200, centred in shower zone (650-1600)
-    var nx0 = 825, nx1 = 1425, ny0 = 1200, ny1 = 1600;
+    // niche 12 tiles x 1 course (636 x 303) @ sill 1303, edges on grout lines, in the shower zone (650-1600)
+    var nx0 = 795, nx1 = 1431, ny0 = 1303, ny1 = 1606;
     c += '<rect x="' + nx0 + '" y="' + (CEIL - ny1) + '" width="' + (nx1 - nx0) + '" height="' + (ny1 - ny0) + '" fill="url(#niche)"/>';
-    c += '<rect x="' + nx0 + '" y="' + (CEIL - ny0 - 26) + '" width="' + (nx1 - nx0) + '" height="26" fill="#6b784d" opacity=".6"/>';
+    c += '<rect x="' + nx0 + '" y="' + (CEIL - ny0 - 26) + '" width="' + (nx1 - nx0) + '" height="26" fill="#5e5c44" opacity=".7"/>';
     c += '<rect x="' + nx0 + '" y="' + (CEIL - ny1) + '" width="' + (nx1 - nx0) + '" height="' + (ny1 - ny0) + '" fill="none" stroke="#7a6333" stroke-width="6"/>';
-    c += txt((nx0 + nx1) / 2, CEIL - 1385, "NICHE", { size: 48, weight: 600, fill: "#f3f1e8", ls: 2 });
+    c += txt((nx0 + nx1) / 2, CEIL - 1480, "NICHE", { size: 48, weight: 600, fill: "#f3f1e8", ls: 2 });
     // glass line / walk-in opening marker
     c += '<line x1="' + glassX + '" y1="' + (CEIL - 2000) + '" x2="' + glassX + '" y2="' + CEIL + '" stroke="#5a8f95" stroke-width="5" stroke-dasharray="26 14"/>';
     // heated poles
@@ -734,11 +734,11 @@
     });
     var x = "";
     x += dimH(0, glassX, -60, "650 DRY SIDE") + dimH(glassX, W, -60, "950 SHOWER");
-    x += txt((nx0 + nx1) / 2, CEIL - 1320, "600 × 400", { size: 42, fill: "#f3f1e8" });
-    x += dimV(0, ny0, W + 90, "1200 SILL", "r");
+    x += txt((nx0 + nx1) / 2, CEIL - 1420, "636 × 303", { size: 42, fill: "#f3f1e8" });
+    x += dimV(0, ny0, W + 90, "1303 SILL", "r");
     x += dimV(400, 1600, W + 200, "POLES 400–1600", "r");
     x += txt(glassX, CEIL + 180, "GLASS LINE · WALK-IN OPENING", { size: 40, weight: 600, fill: "#3f7a80", ls: 1 });
-    x += txt(325, CEIL - 1700, "HEATED POLES", { size: 44, weight: 600, ls: 1.5 });
+    x += txt(325, CEIL - 1700, "HEATED POLES", { size: 44, weight: 600, ls: 1.5, fill: "#f3f1e8" });
     x += txt(-40, CEIL + 180, "DOOR ←", { size: 40, fill: DIM, anchor: "start", ls: 1 });
     document.getElementById("elevC").innerHTML = wallShell(W, c, x, { id: "C", seed: 37, right: 360, bottom: 230, label: "Elevation C: door-side wall with niche and heated towel poles" });
   })();
@@ -811,7 +811,7 @@
     s += L(240, 505, "SHOWER", { size: 17, a: "middle" });
     s += L(240, 522, "falls to linear drain", { size: 11, w: 400, fill: "#5d685e", a: "middle" });
     s += L(160, 440, "LINEAR", { size: 10, fill: "#7a6333" }) + L(160, 452, "DRAIN", { size: 10, fill: "#7a6333" });
-    s += L(225, 630, "NICHE 600 × 400, SILL 1200", { size: 11, fill: "#7a6333", a: "middle" });
+    s += L(225, 630, "NICHE 636 × 303, SILL 1303", { size: 11, fill: "#7a6333", a: "middle" });
     s += L(324, 380, "FIXED GLASS 600", { size: 11, fill: "#3f7a80", rot: 90 });
     s += L(326, 530, "WALK-IN", { size: 11, fill: "#3f7a80" });
     s += L(378, 572, "HEATED POLES", { size: 11, fill: "#7a6333", a: "middle" });

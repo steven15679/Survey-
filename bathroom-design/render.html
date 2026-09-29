@@ -59,9 +59,9 @@
     <button type="button" id="v-vanity" data-view="vanity" aria-pressed="false">Vanity</button>
   </div>
   <div class="views" role="group" aria-label="Wall tile layout">
-    <button type="button" id="t-split" data-tile="split" aria-pressed="true">Green above ledge</button>
-    <button type="button" id="t-full" data-tile="full" aria-pressed="false">Green floor to ceiling</button>
-    <button type="button" id="t-feature" data-tile="feature" aria-pressed="false">Green vanity wall only</button>
+    <button type="button" id="t-split" data-tile="split" aria-pressed="true">Olive above ledge</button>
+    <button type="button" id="t-full" data-tile="full" aria-pressed="false">Olive floor to ceiling</button>
+    <button type="button" id="t-feature" data-tile="feature" aria-pressed="false">Olive vanity wall only</button>
     <button type="button" id="t-stone" data-tile="stone" aria-pressed="false">All stone-look</button>
     <button type="button" id="t-sage" data-tile="sage" aria-pressed="false">Beaumont sage above ledge</button>
   </div>
@@ -281,6 +281,8 @@
   var EDGES = {};
   var LOWER = []; // lower wall bands, swapped when tiling green floor to ceiling
   var NICHE = null;
+  var NICHE_U0 = 15 * 53, NICHE_U1 = 27 * 53, NICHE_Y0 = 1303, NICHE_Y1 = 1606; // along wall J-A from x = 1600
+  var NICHE_W = NICHE_U1 - NICHE_U0, NICHE_H = NICHE_Y1 - NICHE_Y0, NICHE_UC = (NICHE_U0 + NICHE_U1) / 2;
   var LEDGE_FRONT = null; // turns green in the feature-wall option so the vanity wall reads floor to ceiling
   var UPPER = []; // upper wall bands as { mesh, feature } where feature marks the feature wall
   var FEATURE_WALL = "D-E"; // the 2200 vanity wall behind the ledge and mirror cabinet
@@ -293,9 +295,9 @@
     } else {
       var up = rectShape(0, DATUM, e.L, CEIL);
       if (key === "J-A") {
-        // recessed niche 600 x 400, sill 1200, centred in the shower (x = 457)
-        var h = new T.Path(); var u0 = 1600 - 457 - 300, u1 = u0 + 600;
-        h.moveTo(u0, 1200); h.lineTo(u0, 1600); h.lineTo(u1, 1600); h.lineTo(u1, 1200); h.closePath();
+        // recessed niche 12 tiles wide x 1 course high (olive 50 x 300 + 3 mm grout), edges on grout lines
+        var h = new T.Path(); var u0 = NICHE_U0, u1 = NICHE_U1;
+        h.moveTo(u0, NICHE_Y0); h.lineTo(u0, NICHE_Y1); h.lineTo(u1, NICHE_Y1); h.lineTo(u1, NICHE_Y0); h.closePath();
         up.holes.push(h);
       }
       bands = [[rectShape(0, 0, e.L, DATUM), M.stone], [up, M.green]];
@@ -349,22 +351,22 @@
   (function () {
     var e = EDGES["J-A"];
     var nMap = greenMap.clone(), nBump = greenBump.clone();
-    [nMap, nBump].forEach(function (t) { t.needsUpdate = true; t.repeat.set(600 / GREEN_MW, 400 / GREEN_MH); t.offset.set(0, 0); });
+    [nMap, nBump].forEach(function (t) { t.needsUpdate = true; t.repeat.set(NICHE_W / GREEN_MW, NICHE_H / GREEN_MH); t.offset.set(0, 0); });
     var nm = M.green.clone(); nm.map = nMap; nm.bumpMap = nBump; nm.side = T.BackSide;
     var sMap = stoneMap.clone(), sBump = stoneBump.clone();
-    [sMap, sBump].forEach(function (t) { t.needsUpdate = true; t.repeat.set(600 / SM, 400 / SM); t.offset.set(0, 0); });
+    [sMap, sBump].forEach(function (t) { t.needsUpdate = true; t.repeat.set(NICHE_W / SM, NICHE_H / SM); t.offset.set(0, 0); });
     var sm = M.stone.clone(); sm.map = sMap; sm.bumpMap = sBump; sm.side = T.BackSide;
     var gMap = sageMap.clone(), gBump = sageBump.clone();
-    [gMap, gBump].forEach(function (t) { t.needsUpdate = true; t.repeat.set(600 / SAGE_MW, 400 / SAGE_MH); t.offset.set(0, 0); });
+    [gMap, gBump].forEach(function (t) { t.needsUpdate = true; t.repeat.set(NICHE_W / SAGE_MW, NICHE_H / SAGE_MH); t.offset.set(0, 0); });
     var gm = M.sage.clone(); gm.map = gMap; gm.bumpMap = gBump; gm.side = T.BackSide;
-    var box = mesh(new T.BoxGeometry(600, 400, 200), nm);
+    var box = mesh(new T.BoxGeometry(NICHE_W, NICHE_H, 200), nm);
     NICHE = { mesh: box, green: nm, stone: sm, sage: gm };
-    box.position.y = 1400; place(box, e, 1600 - 457, -100); root.add(box);
-    var sill = mesh(new T.BoxGeometry(600, 12, 100), M.stone); sill.position.y = 1206; place(sill, e, 1600 - 457, -50); root.add(sill);
+    box.position.y = (NICHE_Y0 + NICHE_Y1) / 2; place(box, e, NICHE_UC, -100); root.add(box);
+    var sill = mesh(new T.BoxGeometry(NICHE_W, 12, 100), M.stone); sill.position.y = NICHE_Y0 + 6; place(sill, e, NICHE_UC, -50); root.add(sill);
     var bottle1 = mesh(new T.CylinderGeometry(28, 28, 190, 24), new T.MeshStandardMaterial({ color: 0xe9e2d4, roughness: 0.35 }), true);
-    bottle1.position.y = 1212 + 95; place(bottle1, e, 1600 - 457 - 150, -55); root.add(bottle1);
+    bottle1.position.y = NICHE_Y0 + 12 + 95; place(bottle1, e, NICHE_UC - 150, -55); root.add(bottle1);
     var bottle2 = mesh(new T.CylinderGeometry(30, 30, 220, 24), new T.MeshStandardMaterial({ color: 0x6f7e62, roughness: 0.3 }), true);
-    bottle2.position.y = 1212 + 110; place(bottle2, e, 1600 - 457 - 60, -55); root.add(bottle2);
+    bottle2.position.y = NICHE_Y0 + 12 + 110; place(bottle2, e, NICHE_UC - 60, -55); root.add(bottle2);
   })();
 
   // ---------- ledge (clad in floor tile) ----------
