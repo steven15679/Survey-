@@ -465,7 +465,7 @@
       ctx.restore();
       if (extras) {
         // soft shadow under the wall-hung pan and the basin
-        [[450, 470, 26, 34, 0.28], [1500, 400, 30, 22, 0.16]].forEach(function (s) {
+        [[450, 470, 26, 34, 0.28], [1100, 400, 30, 22, 0.16]].forEach(function (s) {
           var a = WALL_A, cx = (a.p[0] + a.d[0] * s[0] + a.n[0] * s[1] - x0) * k, cy = (a.p[1] + a.d[1] * s[0] + a.n[1] * s[1] - z0) * k;
           var g = ctx.createRadialGradient(cx, cy, 0, cx, cy, Math.max(s[2], s[3]));
           g.addColorStop(0, "rgba(28,20,12," + s[4] + ")"); g.addColorStop(1, "rgba(28,20,12,0)");
@@ -512,7 +512,7 @@
 
   // ---------- matte white basin, brass mixer, bottle trap ----------
   (function () {
-    var g = fixture(WALL_A, 1500, 200);
+    var g = fixture(WALL_A, 1100, 200); // centred under the mirror cabinet
     function rrect(w, d, r, cx, cy) {
       var s = new T.Shape(), x0 = cx - w / 2, y0 = cy - d / 2;
       s.moveTo(x0 + r, y0); s.lineTo(x0 + w - r, y0); s.quadraticCurveTo(x0 + w, y0, x0 + w, y0 + r);
@@ -611,7 +611,7 @@
       stem.position.set(lm.position.x * 0.5, 1105 + (h - 1105) / 2, lm.position.z * 0.5); g.add(stem);
     }
     // amber glass soap pump to the left of the tap
-    var sg = fixture(WALL_A, 1320, 100);
+    var sg = fixture(WALL_A, 880, 100);
     var amber = mesh(new T.CylinderGeometry(30, 30, 130, 32), new T.MeshStandardMaterial({ color: 0x5a3212, roughness: 0.06, metalness: 0, transparent: true, opacity: 0.82, envMapIntensity: 1.5 }), true);
     amber.position.y = 1065; sg.add(amber);
     var neck = mesh(new T.CylinderGeometry(11, 14, 22, 20), M.brass, true); neck.position.y = 1141; sg.add(neck);
@@ -689,14 +689,14 @@
     [[-55, 0], [55, 0]].forEach(function (s) { var m = mesh(new T.BoxGeometry(6, 3, 116), M.brass); m.position.set(s[0], 1.5, s[1]); g.add(m); });
   });
 
-  // ---------- toilet roll holder (Rainco TBB00021) on the ledge front, right of the pan ----------
+  // ---------- toilet roll holder (Rainco TBB00021) on the short wall beside the shower glass, left of the pan ----------
   (function () {
-    var g = fixture(WALL_A, 760, 200);
-    var plate = mesh(new T.CylinderGeometry(22, 22, 8, 24), M.brass, true); plate.rotation.x = Math.PI / 2; plate.position.set(-60, 700, 4); g.add(plate);
-    var post = mesh(new T.CylinderGeometry(9, 9, 30, 16), M.brass, true); post.rotation.x = Math.PI / 2; post.position.set(-60, 700, 22); g.add(post);
-    var bar = mesh(new T.CylinderGeometry(9, 9, 150, 16), M.brass, true); bar.rotation.z = Math.PI / 2; bar.position.set(10, 700, 37); g.add(bar);
+    var g = fixture(EDGES["C-D"], 130, 0); // 130 from the glass corner, clear of the ledge
+    var plate = mesh(new T.CylinderGeometry(22, 22, 8, 24), M.brass, true); plate.rotation.x = Math.PI / 2; plate.position.set(60, 700, 4); g.add(plate);
+    var post = mesh(new T.CylinderGeometry(9, 9, 30, 16), M.brass, true); post.rotation.x = Math.PI / 2; post.position.set(60, 700, 22); g.add(post);
+    var bar = mesh(new T.CylinderGeometry(9, 9, 150, 16), M.brass, true); bar.rotation.z = Math.PI / 2; bar.position.set(-10, 700, 37); g.add(bar);
     var roll = mesh(new T.CylinderGeometry(55, 55, 100, 32), new T.MeshStandardMaterial({ color: 0xf2efe8, roughness: 1 }), true);
-    roll.rotation.z = Math.PI / 2; roll.position.set(15, 700, 50); g.add(roll);
+    roll.rotation.z = Math.PI / 2; roll.position.set(-15, 700, 50); g.add(roll);
   })();
 
 
@@ -804,7 +804,7 @@
     door:   { pos: [1720, 1600, -420],  look: [1900, 1200, -2200], fov: 74 },
     shower: { pos: [1500, 1550, -760],  look: [0, 1250, -330], fov: 68 },
     vanity: { pos: [2450, 1650, -300],  look: [1650, 1150, -2050], fov: 64 },
-    sink:   { pos: [2960, 1250, -170],  look: [2398, 640, -1755], fov: 58 }
+    sink:   { pos: [2620, 1250, -40],  look: [2022, 640, -1620], fov: 58 }
   };
   function setView(name) {
     var v = VIEWS[name] || VIEWS.basin;

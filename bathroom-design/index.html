@@ -488,13 +488,13 @@
           <tr><td>Floor tile</td><td>Stone beige 600 × 600, P4 anti-slip, Ardex Mud Berry grout</td><td>Matte</td><td class="num">—</td><td>Whole floor incl. shower</td></tr>
           <tr><td>Ledge top</td><td>Floor tile (stone-look porcelain), mitred front edge</td><td>Matte, as floor</td><td class="num">1000 AFFL × 200</td><td>Wall A, wall to wall</td></tr>
           <tr><td>Toilet</td><td>Wall-faced (back-to-wall) toilet suite, Tornado rimless, 4.5 / 3 L dual flush, 595 × 360 × 410, concealed cistern, slim soft-close quick-release seat</td><td>Gloss white <span class="tag">Brushed gold button</span></td><td class="num">Seat ≈ 410</td><td>Wall A, left end</td></tr>
-          <tr><td>Basin</td><td>Wall-hung rectangular basin 590 W × 430 D × 120 H, one tap hole, pop-up waste</td><td>Matt white <span class="tag">Brushed gold waste</span></td><td class="num">Rim ≈ 850</td><td>Wall A, right of centre</td></tr>
+          <tr><td>Basin</td><td>Wall-hung rectangular basin 590 W × 430 D × 120 H, one tap hole, pop-up waste</td><td>Matt white <span class="tag">Brushed gold waste</span></td><td class="num">Rim ≈ 850</td><td>Wall A, centred under the mirror cabinet</td></tr>
           <tr><td>Basin mixer</td><td>Basin-mounted mixer on the basin tap deck (one tap-hole basin)</td><td><span class="tag">Brushed brass</span></td><td class="num">On basin</td><td>Back of basin</td></tr>
           <tr><td>Vanity (Option G)</td><td>Wall-hung vanity under the basin, fluted front with half-round reeds, push-to-open, moisture-resistant carcass</td><td>Mid walnut-toned timber</td><td class="num">590 × 420 × 400, 330 → 730</td><td>Under the basin</td></tr>
           <tr><td>Bottle trap</td><td>Round bottle trap for 32 mm basin waste</td><td><span class="tag">Brushed brass</span></td><td class="num">—</td><td>Under basin</td></tr>
           <tr><td>Mirror cabinet</td><td>Shaving cabinet, 3 doors, concealed LED perimeter strip</td><td>Mirror, LED 2700 K warm white</td><td class="num">1600 × 750 @ 1200</td><td>Wall A, centred</td></tr>
           <tr><td>Robe hooks</td><td>Rainco robe hook × 2 (BB00015)</td><td><span class="tag">Brushed brass</span></td><td class="num">≈ 1600 / 1700</td><td>Right of basin; back of entry door</td></tr>
-          <tr><td>Toilet roll holder</td><td>Rainco toilet roll holder (TBB00021)</td><td><span class="tag">Brushed brass</span></td><td class="num">≈ 700</td><td>Ledge front, right of the pan</td></tr>
+          <tr><td>Toilet roll holder</td><td>Rainco toilet roll holder (TBB00021)</td><td><span class="tag">Brushed brass</span></td><td class="num">≈ 700</td><td>Short wall beside the shower glass, left of the pan</td></tr>
           <tr><td>Shower</td><td>Rainco Haven Minimal diverter wall mixer (BB00025); hand shower wand on a wall bracket (BB00008); overhead rose on a wall arm</td><td><span class="tag">Brushed brass</span></td><td class="num">Arm ≈ 2010, mixer 1000, diverter 1180, wand bracket 1560</td><td>Wall B</td></tr>
           <tr><td>Niche</td><td>Recessed, waterproofed, lined in olive tile, sill falls inward; 12 tiles × 2 rows (two sheets), edges on grout lines</td><td>Olive tile</td><td class="num">600 × 300 @ 1300</td><td>Wall C, shower side</td></tr>
           <tr><td>Shower screen</td><td>10 mm toughened fixed panel, 3 wall clamps + 2 floor clamps, no channels or overhead bar</td><td>Clear <span class="tag">Brass hardware</span></td><td class="num">600 W × 2000 H</td><td>Existing glass line</td></tr>
@@ -678,13 +678,8 @@
     c += '<rect x="' + (wx - 176) + '" y="' + (CEIL - 392) + '" width="352" height="18" rx="8" fill="#f6f6f3" stroke="#6d736f" stroke-width="3"/>';
     c += '<rect x="' + (wx - 172) + '" y="' + (CEIL - 410) + '" width="344" height="18" rx="9" fill="#fafaf8" stroke="#6d736f" stroke-width="3"/>';
 
-    // toilet roll holder (Rainco TBB00021) on the ledge front, right of the pan
-    c += '<circle cx="700" cy="' + (CEIL - 700) + '" r="22" fill="url(#brass)" stroke="#7a6333" stroke-width="3"/>';
-    c += '<rect x="700" y="' + (CEIL - 709) + '" width="150" height="18" rx="9" fill="url(#brass)" stroke="#7a6333" stroke-width="2"/>';
-    c += '<rect x="720" y="' + (CEIL - 755) + '" width="100" height="110" rx="12" fill="#f4f2ec" stroke="#b8b3a8" stroke-width="2" opacity=".9"/>';
-
     // basin + tap + trap
-    var bx = 1500;
+    var bx = 1100; // basin centred under the mirror cabinet
     // basin mixer mounted on the basin's rear tap deck
     c += '<rect x="' + (bx - 20) + '" y="' + (CEIL - 1030) + '" width="40" height="180" rx="6" fill="url(#brass)" stroke="#7a6333" stroke-width="3"/>';
     c += '<rect x="' + (bx - 66) + '" y="' + (CEIL - 1005) + '" width="46" height="16" rx="6" fill="url(#brass)" stroke="#7a6333" stroke-width="2"/>';
@@ -709,7 +704,6 @@
     x += dimV(0, cy0, W + 200, "1200 AFFL", "r");
     x += txt(wx, CEIL - 220, "BACK-TO-WALL", { size: 38, weight: 600, fill: "#44504b", ls: 1 }) + txt(wx, CEIL - 172, "RIMLESS WC", { size: 38, weight: 600, fill: "#44504b", ls: 1 });
     x += txt(wx, CEIL - 740, "FLUSH PLATE", { size: 40, weight: 600, fill: "#6e5323", ls: 1 });
-    x += txt(770, CEIL - 600, "ROLL HOLDER", { size: 34, weight: 600, fill: "#6e5323", ls: 1 });
     x += callout(bx + 150, CEIL - 790, W + 290, CEIL - 700, "590 BASIN", "start");
     x += callout(bx + 20, CEIL - 960, W + 290, CEIL - 1080, "MIXER ON BASIN", "start");
     x += callout(hx + 20, CEIL - hy + 50, W + 290, CEIL - 1640, "ROBE HOOK", "start");
@@ -799,13 +793,11 @@
     s += '<path d="M272 200 L628 200 L630 530 Q630 795 450 795 Q270 795 270 530 Z" fill="#ffffff" stroke="#243029" stroke-width="6"/>';
     s += '<path d="M302 236 L598 236 L598 525 Q598 762 450 762 Q302 762 302 525 Z" fill="none" stroke="#7d887f" stroke-width="5"/>';
     // basin
-    s += '<rect x="1205" y="200" width="590" height="430" rx="18" fill="#ffffff" stroke="#243029" stroke-width="6"/>';
-    s += '<rect x="1219" y="295" width="562" height="321" rx="12" fill="none" stroke="#7d887f" stroke-width="5"/>';
-    s += '<circle cx="1500" cy="455" r="22" fill="#b89d66" stroke="#243029" stroke-width="4"/>';
-    s += '<circle cx="1500" cy="247" r="26" fill="url(#brass)" stroke="#7a6333" stroke-width="5"/>';
-    s += '<rect x="1488" y="247" width="24" height="160" fill="url(#brass)" stroke="#7a6333" stroke-width="4"/>';
-    // toilet roll holder on the ledge front
-    s += '<rect x="700" y="200" width="150" height="40" fill="url(#brass)" stroke="#7a6333" stroke-width="5"/>';
+    s += '<rect x="805" y="200" width="590" height="430" rx="18" fill="#ffffff" stroke="#243029" stroke-width="6"/>';
+    s += '<rect x="819" y="295" width="562" height="321" rx="12" fill="none" stroke="#7d887f" stroke-width="5"/>';
+    s += '<circle cx="1100" cy="455" r="22" fill="#b89d66" stroke="#243029" stroke-width="4"/>';
+    s += '<circle cx="1100" cy="247" r="26" fill="url(#brass)" stroke="#7a6333" stroke-width="5"/>';
+    s += '<rect x="1088" y="247" width="24" height="160" fill="url(#brass)" stroke="#7a6333" stroke-width="4"/>';
     // robe hook
     s += '<rect x="2020" y="200" width="60" height="45" fill="url(#brass)" stroke="#7a6333" stroke-width="5"/>';
     s += "</g></g>";
@@ -813,6 +805,8 @@
     // walls
     s += '<polyline points="' + ["J2", "J", "A", "B", "C", "D", "E", "F", "G", "I"].map(pt).join(" ") + '" fill="none" stroke="#243029" stroke-width="8" stroke-linejoin="miter"/>';
 
+    // toilet roll holder on the short wall beside the shower glass
+    s += '<rect x="298" y="252" width="7" height="22" fill="url(#brass)" stroke="#7a6333" stroke-width="1.2"/>';
     // shower: square tile insert waste, rose, niche, glass
     s += '<rect x="214" y="436" width="22" height="22" fill="#d6d0c5" stroke="#a8884f" stroke-width="2.2"/>';
     s += '<circle cx="175" cy="497" r="16" fill="none" stroke="#243029" stroke-width="1.6"/>';
@@ -844,7 +838,7 @@
     s += L(378, 572, "HEATED POLES", { size: 11, fill: "#7a6333", a: "middle" });
     s += L(544, 460, "TILE INSERT", { size: 10, fill: "#7a6333", a: "middle" }) + L(544, 472, "FLOOR WASTE", { size: 10, fill: "#7a6333", a: "middle" });
     s += L(400, 380, "BACK-TO-WALL WC", { size: 11, a: "middle" }) + L(400, 393, "cistern in ledge", { size: 10, w: 400, fill: "#5d685e", a: "middle" });
-    s += L(610, 245, "590 BASIN", { size: 11, a: "middle" });
+    s += L(548, 278, "590 BASIN", { size: 11, a: "middle" });
     s += L(452, 182, "LEDGE 1000 H × 200 D", { size: 9.5, fill: "#3d4740", a: "middle", rot: -19.7 });
     s += L(672, 142, "HOOK", { size: 10, fill: "#7a6333", a: "middle" });
     s += L(518, 662, "ENTRY", { size: 12, fill: "#5d685e", a: "middle" });
