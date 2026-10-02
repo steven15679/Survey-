@@ -203,11 +203,11 @@
     [mp, bp, rp].forEach(function (t) { t.repeat.set(1 / GMW, 1 / GMH); t.offset.set(0, -DATUM / GMH); });
     return [mp, bp, GMW, GMH, rp];
   }
-  // olive gloss tile: slim 50 x 300, even olive-khaki glaze, cream grout
+  // olive gloss feature tile (Beaumont quote): 50 x 150, olive-khaki glaze, Ardex Slate Grey grout
   var gt = makeTile({
-    w: 50, h: 300, g: 3, cols: 16, rows: 4,
-    palette: [[86, 86, 64], [80, 82, 60], [90, 89, 66], [78, 80, 58], [88, 88, 66], [82, 84, 62], [92, 90, 68], [80, 82, 61]],
-    rough: [18, 52], grout: "#d9d1ba", edge: 0.86, blooms: 4, bloomLight: "rgba(220,218,190,0.08)", bloomDark: "rgba(50,52,34,0.1)", cracks: 0
+    w: 48, h: 148, g: 2, cols: 18, rows: 6, // 50 x 150 pitch, sold on 300 x 300 sheets
+    palette: [[86, 86, 64], [80, 82, 60], [94, 91, 64], [78, 80, 58], [98, 93, 66], [82, 84, 62], [102, 97, 70], [84, 84, 60]],
+    rough: [18, 52], grout: "#8a8d8f", edge: 0.84, blooms: 6, bloomLight: "rgba(220,214,180,0.1)", bloomDark: "rgba(50,52,34,0.12)", cracks: 0
   });
   var greenMap = gt[0], greenBump = gt[1], GREEN_MW = gt[2], GREEN_MH = gt[3], greenRough = gt[4];
   // Beaumont-style sage: washed olive, khaki and grey-green, soft edges, pale grout, no crackle
@@ -219,16 +219,16 @@
   var sageMap = st[0], sageBump = st[1], SAGE_MW = st[2], SAGE_MH = st[3], sageRough = st[4];
 
 
-  // Stone-look porcelain 600 x 600, module 2 x 2 tiles.
+  // Stone beige porcelain 600 x 600 (Beaumont quote), Ardex Mud Berry grout. Module 2 x 2 tiles.
   var SM = 1200, stoneMap, stoneBump;
   (function () {
     var s = 0.9, w = Math.round(SM * s);
     var c = document.createElement("canvas"); c.width = c.height = w;
     var b = document.createElement("canvas"); b.width = b.height = w;
     var g = c.getContext("2d"), bg = b.getContext("2d");
-    g.fillStyle = "#b3ab9e"; g.fillRect(0, 0, w, w);
+    g.fillStyle = "#c2b5ad"; g.fillRect(0, 0, w, w); // Mud Berry grout
     bg.fillStyle = "#707070"; bg.fillRect(0, 0, w, w);
-    var tones = ["#bdb7ad", "#b9b3a8", "#c1bbb1", "#b6b0a5"];
+    var tones = ["#cdc4b2", "#c9c0ae", "#d1c8b6", "#c6bdab"];
     var gr = 2 * s, ts = 600 * s;
     for (var i = 0; i < 2; i++) for (var j = 0; j < 2; j++) {
       var x = i * ts + gr / 2, y = j * ts + gr / 2, t = ts - gr;
@@ -266,7 +266,9 @@
   var M = {
     green: new T.MeshStandardMaterial({ map: greenMap, bumpMap: greenBump, bumpScale: 0.016, roughness: 1, roughnessMap: greenRough, metalness: 0, envMapIntensity: 0.65 }),
     sage: new T.MeshStandardMaterial({ map: sageMap, bumpMap: sageBump, bumpScale: 0.014, roughness: 1, roughnessMap: sageRough, metalness: 0, envMapIntensity: 0.5 }),
-    stone: new T.MeshStandardMaterial({ map: stoneMap, bumpMap: stoneBump, bumpScale: 0.012, roughness: 0.85, envMapIntensity: 0.3 }),
+    // walls: "Silk" finish with a soft sheen; floor and ledge: P4 anti-slip, fully matte
+    stone: new T.MeshStandardMaterial({ map: stoneMap, bumpMap: stoneBump, bumpScale: 0.012, roughness: 0.52, envMapIntensity: 0.4 }),
+    stoneFloor: new T.MeshStandardMaterial({ map: stoneMap, bumpMap: stoneBump, bumpScale: 0.012, roughness: 0.88, envMapIntensity: 0.3 }),
     ceiling: new T.MeshStandardMaterial({ color: 0xf1f0ec, roughness: 0.95, envMapIntensity: 0.4 }),
     brass: new T.MeshStandardMaterial({ color: 0xd6b77c, metalness: 1, roughness: 0.3, envMapIntensity: 1.4 }),
     matteWhite: new T.MeshStandardMaterial({ color: 0xf3f3ef, roughness: 0.62, envMapIntensity: 0.6 }),
@@ -297,7 +299,7 @@
   var EDGES = {};
   var LOWER = []; // lower wall bands, swapped when tiling green floor to ceiling
   var NICHE = null;
-  var NICHE_U0 = 15 * 53, NICHE_U1 = 27 * 53, NICHE_Y0 = 1303, NICHE_Y1 = 1606; // along wall J-A from x = 1600
+  var NICHE_U0 = 16 * 50, NICHE_U1 = 28 * 50, NICHE_Y0 = 1300, NICHE_Y1 = 1600; // 600 x 300 = 12 x 2 tiles, along wall J-A from x = 1600
   var NICHE_W = NICHE_U1 - NICHE_U0, NICHE_H = NICHE_Y1 - NICHE_Y0, NICHE_UC = (NICHE_U0 + NICHE_U1) / 2;
   var LEDGE_FRONT = null; // turns green in the feature-wall option so the vanity wall reads floor to ceiling
   var UPPER = []; // upper wall bands as { mesh, feature } where feature marks the feature wall
@@ -317,7 +319,7 @@
       segs.forEach(function (sg) {
         var up = rectShape(sg[0], DATUM, sg[1], CEIL);
         if (key === "J-A" && sg[2]) {
-          // recessed niche 12 tiles wide x 1 course high (olive 50 x 300 + 3 mm grout), edges on grout lines
+          // recessed niche 12 tiles wide x 2 rows high (olive 50 x 150), edges on grout lines
           var h = new T.Path(); var u0 = NICHE_U0, u1 = NICHE_U1;
           h.moveTo(u0, NICHE_Y0); h.lineTo(u0, NICHE_Y1); h.lineTo(u1, NICHE_Y1); h.lineTo(u1, NICHE_Y0); h.closePath();
           up.holes.push(h);
@@ -367,7 +369,7 @@
     if (idx === 0) { floorShape.moveTo(p[0], -p[1]); ceilShape.moveTo(p[0], p[1]); }
     else { floorShape.lineTo(p[0], -p[1]); ceilShape.lineTo(p[0], p[1]); }
   });
-  var floor = mesh(new T.ShapeGeometry(floorShape), M.stone); floor.rotation.x = -Math.PI / 2; root.add(floor);
+  var floor = mesh(new T.ShapeGeometry(floorShape), M.stoneFloor); floor.rotation.x = -Math.PI / 2; root.add(floor);
   var ceil = mesh(new T.ShapeGeometry(ceilShape), M.ceiling); ceil.rotation.x = Math.PI / 2; ceil.position.y = CEIL; root.add(ceil);
 
   // niche interior (open box seen from the room)
@@ -396,10 +398,10 @@
   var WALL_A = EDGES["D-E"];
   (function () {
     var g = new T.Group();
-    var front = mesh(new T.ShapeGeometry(rectShape(0, 0, 2200, 1000)), M.stone); front.position.z = 200; g.add(front);
+    var front = mesh(new T.ShapeGeometry(rectShape(0, 0, 2200, 1000)), M.stoneFloor); front.position.z = 200; g.add(front);
     LEDGE_FRONT = front;
     var topS = new T.Shape(); topS.moveTo(0, 0); topS.lineTo(2200, 0); topS.lineTo(2200, -200); topS.lineTo(0, -200); topS.closePath();
-    var top = mesh(new T.ShapeGeometry(topS), M.stone); top.rotation.x = -Math.PI / 2; top.position.y = 1000; g.add(top);
+    var top = mesh(new T.ShapeGeometry(topS), M.stoneFloor); top.rotation.x = -Math.PI / 2; top.position.y = 1000; g.add(top);
     place(g, WALL_A, 0, 0); root.add(g);
   })();
 
@@ -456,11 +458,11 @@
   // ---------- wall-hung WC with smart seat ----------
   (function () {
     var g = fixture(WALL_A, 450, 200);
-    // plan outline of a wall-hung pan: square to the wall, rounded nose; y runs away from the wall
+    // plan outline of the back-to-wall pan (595 long x 360 wide incl. bevel): square to the wall, rounded nose
     function panShape(k) {
       var sh = new T.Shape();
-      sh.moveTo(-175 * k, 0); sh.lineTo(175 * k, 0); sh.lineTo(178 * k, -300 * k);
-      sh.bezierCurveTo(178 * k, -575 * k, -178 * k, -575 * k, -178 * k, -300 * k); sh.closePath();
+      sh.moveTo(-148 * k, 0); sh.lineTo(148 * k, 0); sh.lineTo(150 * k, -330 * k);
+      sh.bezierCurveTo(150 * k, -645 * k, -150 * k, -645 * k, -150 * k, -330 * k); sh.closePath();
       return sh;
     }
     function solid(shape, depth, bevel) {
@@ -468,17 +470,15 @@
       geo.rotateX(-Math.PI / 2); // extrusion becomes height; shape y becomes distance from the wall
       return geo;
     }
-    var panGeo = solid(panShape(1), 220, 34), pos = panGeo.attributes.position;
-    for (var i = 0; i < pos.count; i++) { // taper the pan towards its underside
-      var yy = pos.getY(i), t = Math.min(1, Math.max(0, (yy + 34) / 288)), k = 0.74 + 0.26 * Math.pow(t, 0.7);
-      pos.setX(i, pos.getX(i) * k); pos.setZ(i, 40 + (pos.getZ(i) - 40) * (0.86 + 0.14 * t));
+    var panGeo = solid(panShape(1), 318, 28), pos = panGeo.attributes.position;
+    for (var i = 0; i < pos.count; i++) { // skirted pan: slightly narrower at the floor
+      var yy = pos.getY(i), t = Math.min(1, Math.max(0, (yy + 28) / 374)), k = 0.86 + 0.14 * Math.pow(t, 0.8);
+      pos.setX(i, pos.getX(i) * k); pos.setZ(i, (pos.getZ(i)) * (0.93 + 0.07 * t));
     }
     panGeo.computeVertexNormals();
-    var body = mesh(panGeo, M.gloss, true); body.position.set(0, 160, 0); g.add(body);
-    var seat = mesh(solid(panShape(1.02), 16, 9), M.gloss, true); seat.position.set(0, 424, 0); g.add(seat);
-    var lid = mesh(solid(panShape(0.99), 12, 9), M.gloss, true); lid.position.set(0, 451, 4); g.add(lid);
-    var housing = mesh(rbox(380, 95, 140, 30), M.gloss, true); housing.position.set(0, 450, 60); g.add(housing);
-    var knob = mesh(new T.CylinderGeometry(16, 16, 12, 24), M.grey); knob.rotation.x = Math.PI / 2; knob.position.set(140, 455, 132); g.add(knob);
+    var body = mesh(panGeo, M.gloss, true); body.position.set(0, 28, 0); g.add(body); // sits on the floor, 0 to 374
+    var seat = mesh(solid(panShape(1.0), 8, 6), M.gloss, true); seat.position.set(0, 381, 6); g.add(seat); // slim soft-close seat
+    var lid = mesh(solid(panShape(0.985), 6, 6), M.gloss, true); lid.position.set(0, 399, 10); g.add(lid); // top at about 410
     var plate = mesh(rbox(220, 145, 8, 3), M.brass, true); plate.position.set(0, 880, 4); g.add(plate);
     var split = mesh(new T.BoxGeometry(3, 140, 2), M.gap); split.position.set(0, 880, 9); g.add(split);
   })();
@@ -494,21 +494,21 @@
       s.lineTo(x0, y0 + r); s.quadraticCurveTo(x0, y0, x0 + r, y0);
       return s;
     }
-    var outer = rrect(550, 420, 60, 0, -210);
-    var inner = rrect(470, 280, 60, 0, -265); // bowl sits forward, leaving a tap deck at the back
+    var outer = rrect(590, 430, 18, 0, -215); // Beaumont quote: 590 W x 430 D x 120 H
+    var inner = rrect(562, 321, 12, 0, -255.5); // thin 14 mm rim, 95 mm tap deck at the back
     outer.holes.push(inner);
-    var bodyGeo = new T.ExtrudeGeometry(outer, { depth: 140, bevelEnabled: true, bevelThickness: 8, bevelSize: 8, bevelSegments: 4, curveSegments: 16 });
+    var bodyGeo = new T.ExtrudeGeometry(outer, { depth: 114, bevelEnabled: true, bevelThickness: 3, bevelSize: 3, bevelSegments: 3, curveSegments: 16 });
     bodyGeo.rotateX(-Math.PI / 2);
-    var body = mesh(bodyGeo, M.matteWhite, true); body.position.y = 702; g.add(body);
+    var body = mesh(bodyGeo, M.matteWhite, true); body.position.y = 733; g.add(body); // 730 to 850
     // bowl lofted from the basin opening: steep sides easing into a flat bottom, shaded towards the rim
-    var rim = inner.getPoints(24), RINGS = 14, DEPTH = 120, verts = [], cols = [], idx = [];
-    var ccx = 0, ccz = 265; // opening centre (shape y = -265 maps to z = +265)
+    var rim = inner.getPoints(24), RINGS = 14, DEPTH = 100, verts = [], cols = [], idx = [];
+    var ccx = 0, ccz = 255.5; // opening centre (shape y maps to z)
     rim.pop(); // getPoints repeats the first point
     for (var k = 0; k <= RINGS; k++) {
-      var t = k / RINGS, f = 1 - 0.82 * Math.pow(t, 1.6), d = DEPTH * Math.sin(t * Math.PI / 2), shade = 0.66 + 0.34 * Math.pow(t, 0.7);
+      var t = k / RINGS, f = 1 - 0.04 * t - 0.06 * Math.pow(Math.max(0, (t - 0.75) / 0.25), 2), d = DEPTH * t, shade = 0.68 + 0.3 * Math.pow(t, 0.7); // near-vertical sides, flat floor
       rim.forEach(function (pt) {
-        var x = pt.x * 0.97, z = -pt.y; // shape y runs away from the wall
-        verts.push(ccx + (x - ccx) * f, -d, ccz + (z - ccz) * f * 0.97);
+        var x = pt.x, z = -pt.y; // shape y runs away from the wall
+        verts.push(ccx + (x - ccx) * f, -d, ccz + (z - ccz) * f);
         cols.push(shade, shade, shade * 0.985);
       });
     }
@@ -525,17 +525,17 @@
     bowlGeo.setIndex(idx); bowlGeo.computeVertexNormals();
     var bowl = mesh(bowlGeo, new T.MeshStandardMaterial({ color: 0xf3f3ef, vertexColors: true, roughness: 0.5, envMapIntensity: 0.5, side: T.DoubleSide }), true);
     bowl.position.set(0, 849, 0); g.add(bowl);
-    var waste = mesh(new T.CylinderGeometry(22, 22, 4, 24), M.brass); waste.position.set(0, 731, 265); g.add(waste);
+    var waste = mesh(new T.SphereGeometry(24, 24, 8, 0, Math.PI * 2, 0, Math.PI / 2.6), M.brass); waste.scale.y = 0.35; waste.position.set(0, 749, 255.5); g.add(waste); // brushed gold pop-up waste
     // basin mixer on the tap deck at the back of the basin
-    var mx = mesh(new T.CylinderGeometry(20, 22, 150, 32), M.brass, true); mx.position.set(0, 933, 60); g.add(mx);
-    var lever = mesh(new T.BoxGeometry(12, 12, 60), M.brass, true); lever.position.set(0, 995, 25); lever.rotation.x = -0.25; g.add(lever);
-    var curve = new T.CatmullRomCurve3([new T.Vector3(0, 1000, 60), new T.Vector3(0, 1040, 90), new T.Vector3(0, 1035, 170), new T.Vector3(0, 990, 230), new T.Vector3(0, 950, 250)]);
+    var mx = mesh(new T.CylinderGeometry(20, 22, 150, 32), M.brass, true); mx.position.set(0, 925, 47); g.add(mx);
+    var lever = mesh(new T.BoxGeometry(12, 12, 60), M.brass, true); lever.position.set(0, 987, 12); lever.rotation.x = -0.25; g.add(lever);
+    var curve = new T.CatmullRomCurve3([new T.Vector3(0, 992, 47), new T.Vector3(0, 1035, 80), new T.Vector3(0, 1030, 170), new T.Vector3(0, 985, 235), new T.Vector3(0, 945, 255)]);
     var spout = mesh(new T.TubeGeometry(curve, 40, 11, 16, false), M.brass, true); g.add(spout);
     // bottle trap
-    var tail = mesh(new T.CylinderGeometry(16, 16, 150, 20), M.brass, true); tail.position.set(0, 630, 275); g.add(tail);
-    var bottle = mesh(new T.CylinderGeometry(32, 32, 170, 24), M.brass, true); bottle.position.set(0, 490, 275); g.add(bottle);
-    var arm = mesh(new T.CylinderGeometry(16, 16, 275, 20), M.brass, true); arm.rotation.x = Math.PI / 2; arm.position.set(0, 530, 137); g.add(arm);
-    var flange = mesh(new T.CylinderGeometry(34, 34, 8, 24), M.brass); flange.rotation.x = Math.PI / 2; flange.position.set(0, 530, 4); g.add(flange);
+    var tail = mesh(new T.CylinderGeometry(16, 16, 180, 20), M.brass, true); tail.position.set(0, 640, 255); g.add(tail);
+    var bottle = mesh(new T.CylinderGeometry(32, 32, 170, 24), M.brass, true); bottle.position.set(0, 480, 255); g.add(bottle);
+    var arm = mesh(new T.CylinderGeometry(16, 16, 255, 20), M.brass, true); arm.rotation.x = Math.PI / 2; arm.position.set(0, 520, 127); g.add(arm);
+    var flange = mesh(new T.CylinderGeometry(34, 34, 8, 24), M.brass); flange.rotation.x = Math.PI / 2; flange.position.set(0, 520, 4); g.add(flange);
   })();
 
   // ---------- everyday things: plant and soap on the ledge, bath mat outside the shower ----------
@@ -778,7 +778,7 @@
     LOWER.forEach(function (w) { w.mesh.material = (mode === "full" || (mode === "feature" && w.feature) || (mode === "shower" && w.shower)) ? M.green : M.stone; });
     UPPER.forEach(function (w) { w.mesh.material = (mode === "split" || mode === "sage" || mode === "full" || (mode === "feature" && w.feature) || (mode === "shower" && w.shower)) ? top : M.stone; });
     NICHE.mesh.material = mode === "sage" ? NICHE.sage : (mode === "split" || mode === "full" || mode === "shower") ? NICHE.green : NICHE.stone;
-    LEDGE_FRONT.material = mode === "feature" ? M.green : M.stone;
+    LEDGE_FRONT.material = mode === "feature" ? M.green : M.stoneFloor;
     document.querySelectorAll("[data-tile]").forEach(function (bt) { bt.setAttribute("aria-pressed", String(bt.dataset.tile === mode)); });
     dirty = true;
   }
