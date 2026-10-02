@@ -64,6 +64,7 @@
     <button type="button" id="t-feature" data-tile="feature" aria-pressed="false">Olive vanity wall only</button>
     <button type="button" id="t-stone" data-tile="stone" aria-pressed="false">All stone-look</button>
     <button type="button" id="t-sage" data-tile="sage" aria-pressed="false">Beaumont sage above ledge</button>
+    <button type="button" id="t-shower" data-tile="shower" aria-pressed="false">Olive shower only</button>
   </div>
   </div>
 </div>
@@ -286,6 +287,8 @@
   var LEDGE_FRONT = null; // turns green in the feature-wall option so the vanity wall reads floor to ceiling
   var UPPER = []; // upper wall bands as { mesh, feature } where feature marks the feature wall
   var FEATURE_WALL = "D-E"; // the 2200 vanity wall behind the ledge and mirror cabinet
+  var SHOWER_WALLS = ["A-B", "B-C"]; // tap wall and angled wall inside the shower, plus J-A up to the glass
+  var SHOWER_U = 1600 - GLASS_X; // distance along J-A (from x = 1600) where the shower starts
   for (var i = 0; i < ORDER.length; i++) {
     var a = ORDER[i], b = ORDER[(i + 1) % ORDER.length], key = a + "-" + b;
     var e = edge(a, b); EDGES[key] = e;
@@ -293,20 +296,25 @@
     if (key === DOOR_EDGE) {
       bands = [[rectShape(0, 2040, e.L, CEIL), M.green]];
     } else {
-      var up = rectShape(0, DATUM, e.L, CEIL);
-      if (key === "J-A") {
-        // recessed niche 12 tiles wide x 1 course high (olive 50 x 300 + 3 mm grout), edges on grout lines
-        var h = new T.Path(); var u0 = NICHE_U0, u1 = NICHE_U1;
-        h.moveTo(u0, NICHE_Y0); h.lineTo(u0, NICHE_Y1); h.lineTo(u1, NICHE_Y1); h.lineTo(u1, NICHE_Y0); h.closePath();
-        up.holes.push(h);
-      }
-      bands = [[rectShape(0, 0, e.L, DATUM), M.stone], [up, M.green]];
+      // the door-side wall is split at the glass line so its shower part can be tiled separately
+      var segs = key === "J-A" ? [[0, SHOWER_U, false], [SHOWER_U, e.L, true]] : [[0, e.L, SHOWER_WALLS.indexOf(key) >= 0]];
+      bands = [];
+      segs.forEach(function (sg) {
+        var up = rectShape(sg[0], DATUM, sg[1], CEIL);
+        if (key === "J-A" && sg[2]) {
+          // recessed niche 12 tiles wide x 1 course high (olive 50 x 300 + 3 mm grout), edges on grout lines
+          var h = new T.Path(); var u0 = NICHE_U0, u1 = NICHE_U1;
+          h.moveTo(u0, NICHE_Y0); h.lineTo(u0, NICHE_Y1); h.lineTo(u1, NICHE_Y1); h.lineTo(u1, NICHE_Y0); h.closePath();
+          up.holes.push(h);
+        }
+        bands.push([rectShape(sg[0], 0, sg[1], DATUM), M.stone, sg[2]], [up, M.green, sg[2]]);
+      });
     }
     bands.forEach(function (bd) {
       var m = mesh(new T.ShapeGeometry(bd[0]), bd[1]);
       place(m, e, 0, 0); root.add(m);
-      if (bd[1] === M.stone) LOWER.push({ mesh: m, feature: key === FEATURE_WALL });
-      else UPPER.push({ mesh: m, feature: key === FEATURE_WALL });
+      var w = { mesh: m, feature: key === FEATURE_WALL, shower: !!bd[2] };
+      if (bd[1] === M.stone) LOWER.push(w); else UPPER.push(w);
     });
   }
 
@@ -672,10 +680,11 @@
   function setTile(mode) {
     // split: green above 1000 · full: green everywhere · feature: green only on the vanity wall
     // stone: no green at all · sage: like split, with the Beaumont-style sage tile above 1000
+    // shower: olive floor to ceiling inside the shower only, stone-look everywhere else
     var top = mode === "sage" ? M.sage : M.green;
-    LOWER.forEach(function (w) { w.mesh.material = (mode === "full" || (mode === "feature" && w.feature)) ? M.green : M.stone; });
-    UPPER.forEach(function (w) { w.mesh.material = (mode === "split" || mode === "sage" || mode === "full" || (mode === "feature" && w.feature)) ? top : M.stone; });
-    NICHE.mesh.material = mode === "sage" ? NICHE.sage : (mode === "split" || mode === "full") ? NICHE.green : NICHE.stone;
+    LOWER.forEach(function (w) { w.mesh.material = (mode === "full" || (mode === "feature" && w.feature) || (mode === "shower" && w.shower)) ? M.green : M.stone; });
+    UPPER.forEach(function (w) { w.mesh.material = (mode === "split" || mode === "sage" || mode === "full" || (mode === "feature" && w.feature) || (mode === "shower" && w.shower)) ? top : M.stone; });
+    NICHE.mesh.material = mode === "sage" ? NICHE.sage : (mode === "split" || mode === "full" || mode === "shower") ? NICHE.green : NICHE.stone;
     LEDGE_FRONT.material = mode === "feature" ? M.green : M.stone;
     document.querySelectorAll("[data-tile]").forEach(function (bt) { bt.setAttribute("aria-pressed", String(bt.dataset.tile === mode)); });
     dirty = true;
@@ -683,10 +692,10 @@
   document.querySelectorAll("[data-tile]").forEach(function (bt) {
     bt.addEventListener("click", function () { setTile(bt.dataset.tile); });
   });
-  // deep link: #door, #door-full, #door-feature, #door-stone or #door-sage
+  // deep link: #door, #door-full, #door-feature, #door-stone, #door-sage or #door-shower
   var hash = (location.hash || "").replace("#", "").split("-");
   setView(VIEWS[hash[0]] ? hash[0] : "basin");
-  setTile(["full", "feature", "stone", "sage"].indexOf(hash[1]) >= 0 ? hash[1] : "split");
+  setTile(["full", "feature", "stone", "sage", "shower"].indexOf(hash[1]) >= 0 ? hash[1] : "split");
 
   (function loop() {
     requestAnimationFrame(loop);
