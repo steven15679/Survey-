@@ -578,13 +578,14 @@
     mat.position.set(1280, 6, -330); mat.rotation.y = 0.04; root.add(mat);
   })();
 
-  // ---------- robe hook ----------
-  (function () {
-    var g = fixture(WALL_A, 2050, 0);
-    var rose = mesh(new T.CylinderGeometry(24, 24, 10, 24), M.brass, true); rose.rotation.x = Math.PI / 2; rose.position.set(0, 1600, 5); g.add(rose);
-    var arm = mesh(new T.CylinderGeometry(8, 8, 60, 16), M.brass, true); arm.rotation.x = Math.PI / 2; arm.position.set(0, 1600, 38); g.add(arm);
-    var tip = mesh(new T.CylinderGeometry(8, 8, 36, 16), M.brass, true); tip.position.set(0, 1614, 66); g.add(tip);
-  })();
+  // ---------- robe hooks (Rainco BB00015, brushed brass): round post with an upturned rounded end ----------
+  function robeHook(g, y, z0) {
+    var post = mesh(new T.CylinderGeometry(14, 14, 55, 24), M.brass, true); post.rotation.x = Math.PI / 2; post.position.set(0, y, z0 + 27); g.add(post);
+    var tip = mesh(new T.CylinderGeometry(14, 14, 40, 24), M.brass, true); tip.position.set(0, y + 14, z0 + 55); g.add(tip);
+    var capT = mesh(new T.SphereGeometry(14, 20, 10), M.brass, true); capT.position.set(0, y + 34, z0 + 55); g.add(capT);
+    var capB = mesh(new T.SphereGeometry(14, 20, 10), M.brass, true); capB.position.set(0, y - 6, z0 + 55); g.add(capB);
+  }
+  robeHook(fixture(WALL_A, 2050, 0), 1600, 0);
 
   // ---------- mirror cabinet with LED halo ----------
   (function () {
@@ -616,34 +617,55 @@
     });
   })();
 
-  // ---------- shower: twin rail, mixer, linear drain ----------
+  // ---------- shower (Rainco quote): Haven Minimal diverter wall mixer, wand on a wall bracket, rose on a wall arm ----------
   (function () {
     var e = EDGES["A-B"];
     var g = fixture(e, 310, 0);
-    var rail = mesh(new T.CylinderGeometry(11, 11, 900, 20), M.brass, true); rail.position.set(0, 1500, 60); g.add(rail);
-    [1060, 1950].forEach(function (y) { var br = mesh(new T.CylinderGeometry(10, 10, 60, 16), M.brass, true); br.rotation.x = Math.PI / 2; br.position.set(0, y, 30); g.add(br); });
-    var arm = mesh(new T.CylinderGeometry(11, 11, 300, 20), M.brass, true); arm.rotation.x = Math.PI / 2; arm.position.set(0, 1950, 200); g.add(arm);
-    var rose = mesh(new T.CylinderGeometry(125, 125, 12, 48), M.brass, true); rose.position.set(0, 1935, 330); g.add(rose);
-    var slider = mesh(rbox(50, 40, 40, 8), M.brass, true); slider.position.set(0, 1480, 80); g.add(slider);
-    var hand = mesh(new T.CylinderGeometry(22, 16, 240, 20), M.brass, true); hand.position.set(0, 1560, 110); hand.rotation.x = 0.35; g.add(hand);
-    var hose = new T.CatmullRomCurve3([new T.Vector3(0, 1440, 108), new T.Vector3(60, 1300, 120), new T.Vector3(40, 1170, 60), new T.Vector3(0, 1120, 30)]);
-    g.add(mesh(new T.TubeGeometry(hose, 30, 7, 10, false), M.brass, true));
-    var mixer = mesh(new T.CylinderGeometry(80, 80, 10, 40), M.brass, true); mixer.rotation.x = Math.PI / 2; mixer.position.set(0, 1100, 5); g.add(mixer);
-    var mh = mesh(new T.CylinderGeometry(14, 14, 50, 16), M.brass, true); mh.rotation.x = Math.PI / 2; mh.position.set(0, 1100, 30); g.add(mh);
-    var ml = mesh(new T.BoxGeometry(110, 14, 16), M.brass, true); ml.position.set(50, 1100, 55); g.add(ml);
-    // linear tile insert drain along the base of this wall
-    var d = fixture(e, 310, 60);
-    var fr1 = mesh(new T.BoxGeometry(560, 3, 6), M.brass); fr1.position.set(0, 1.5, -22); d.add(fr1);
-    var fr2 = mesh(new T.BoxGeometry(560, 3, 6), M.brass); fr2.position.set(0, 1.5, 22); d.add(fr2);
-    var fr3 = mesh(new T.BoxGeometry(6, 3, 50), M.brass); fr3.position.set(-280, 1.5, 0); d.add(fr3);
-    var fr4 = mesh(new T.BoxGeometry(6, 3, 50), M.brass); fr4.position.set(280, 1.5, 0); d.add(fr4);
+    // overhead rose on a wall arm (rose and arm are not on the Rainco quote)
+    var flangeR = mesh(new T.CylinderGeometry(26, 26, 8, 24), M.brass); flangeR.rotation.x = Math.PI / 2; flangeR.position.set(0, 2010, 4); g.add(flangeR);
+    var arm = mesh(new T.CylinderGeometry(11, 11, 380, 20), M.brass, true); arm.rotation.x = Math.PI / 2; arm.position.set(0, 2010, 190); g.add(arm);
+    var drop = mesh(new T.CylinderGeometry(11, 11, 50, 20), M.brass, true); drop.position.set(0, 1990, 370); g.add(drop);
+    var rose = mesh(new T.CylinderGeometry(125, 125, 10, 64), M.brass, true); rose.position.set(0, 1962, 370); g.add(rose);
+    // Haven Minimal diverter mixer: round plate with a slim pin lever; small round diverter plate above it
+    var mixer = mesh(new T.CylinderGeometry(78, 78, 8, 48), M.brass, true); mixer.rotation.x = Math.PI / 2; mixer.position.set(0, 1000, 4); g.add(mixer);
+    var mh = mesh(new T.CylinderGeometry(16, 16, 40, 24), M.brass, true); mh.rotation.x = Math.PI / 2; mh.position.set(0, 1000, 28); g.add(mh);
+    var ml = mesh(new T.CylinderGeometry(6, 6, 95, 16), M.brass, true); ml.position.set(0, 950, 46); g.add(ml);
+    var dv = mesh(new T.CylinderGeometry(30, 30, 8, 32), M.brass, true); dv.rotation.x = Math.PI / 2; dv.position.set(0, 1180, 4); g.add(dv);
+    var dk = mesh(new T.CylinderGeometry(9, 9, 28, 16), M.brass, true); dk.rotation.x = Math.PI / 2; dk.position.set(0, 1180, 20); g.add(dk);
+    // hand shower wand (Rainco BB00008): wall outlet, fixed bracket, slim cylindrical wand and hose
+    var wx = 170;
+    var outlet = mesh(new T.CylinderGeometry(22, 22, 30, 24), M.brass, true); outlet.rotation.x = Math.PI / 2; outlet.position.set(wx, 1150, 15); g.add(outlet);
+    var bracket = mesh(new T.CylinderGeometry(20, 20, 45, 24), M.brass, true); bracket.rotation.x = Math.PI / 2; bracket.position.set(wx, 1560, 22); g.add(bracket);
+    var cup = mesh(new T.CylinderGeometry(16, 13, 40, 24), M.brass, true); cup.position.set(wx, 1560, 52); g.add(cup);
+    var wand = mesh(new T.CylinderGeometry(15, 13, 250, 24), M.brass, true); wand.position.set(wx, 1660, 56); g.add(wand);
+    var hose = new T.CatmullRomCurve3([new T.Vector3(wx, 1535, 56), new T.Vector3(wx + 30, 1400, 75), new T.Vector3(wx + 25, 1240, 60), new T.Vector3(wx, 1150, 30)]);
+    g.add(mesh(new T.TubeGeometry(hose, 30, 6, 10, false), M.brass, true));
   })();
 
-  // ---------- square tile insert floor waste ----------
-  (function () {
-    var g = new T.Group(); g.position.set(2350, 0, -1000); root.add(g);
+  // ---------- square tile insert floor wastes (Rainco BB00034) x 2: shower and main floor ----------
+  [[430, -430], [2350, -1000]].forEach(function (pt) {
+    var g = new T.Group(); g.position.set(pt[0], 0, pt[1]); root.add(g);
     [[0, -55, 116, 6], [0, 55, 116, 6]].forEach(function (s) { var m = mesh(new T.BoxGeometry(s[2], 3, s[3]), M.brass); m.position.set(s[0], 1.5, s[1]); g.add(m); });
     [[-55, 0], [55, 0]].forEach(function (s) { var m = mesh(new T.BoxGeometry(6, 3, 116), M.brass); m.position.set(s[0], 1.5, s[1]); g.add(m); });
+  });
+
+  // ---------- toilet roll holder (Rainco TBB00021) on the ledge front, right of the pan ----------
+  (function () {
+    var g = fixture(WALL_A, 760, 200);
+    var plate = mesh(new T.CylinderGeometry(22, 22, 8, 24), M.brass, true); plate.rotation.x = Math.PI / 2; plate.position.set(-60, 700, 4); g.add(plate);
+    var post = mesh(new T.CylinderGeometry(9, 9, 30, 16), M.brass, true); post.rotation.x = Math.PI / 2; post.position.set(-60, 700, 22); g.add(post);
+    var bar = mesh(new T.CylinderGeometry(9, 9, 150, 16), M.brass, true); bar.rotation.z = Math.PI / 2; bar.position.set(10, 700, 37); g.add(bar);
+    var roll = mesh(new T.CylinderGeometry(55, 55, 100, 32), new T.MeshStandardMaterial({ color: 0xf2efe8, roughness: 1 }), true);
+    roll.rotation.z = Math.PI / 2; roll.position.set(15, 700, 50); g.add(roll);
+  })();
+
+  // ---------- Lombardy door stop (Rainco BB000067): floor mounted where the open door meets it ----------
+  (function () {
+    var g = new T.Group(); g.position.set(2430, 0, -600); root.add(g);
+    var base = mesh(new T.CylinderGeometry(22, 24, 10, 32), M.brass, true); base.position.y = 5; g.add(base);
+    var body = mesh(new T.CylinderGeometry(20, 20, 32, 32), M.brass, true); body.position.y = 26; g.add(body);
+    var ring = mesh(new T.TorusGeometry(20, 4, 10, 32), new T.MeshStandardMaterial({ color: 0x1c1c1c, roughness: 0.7 }), true); ring.rotation.x = Math.PI / 2; ring.position.y = 36; g.add(ring);
+    var cap = mesh(new T.CylinderGeometry(19, 20, 10, 32), M.brass, true); cap.position.y = 45; g.add(cap);
   })();
 
   // ---------- fixed glass panel ----------
@@ -697,7 +719,7 @@
     var hd = mesh(new T.BoxGeometry(e.L, 40, 80), frame); hd.position.set(0, 2040, 10); g.add(hd);
     var ros = mesh(new T.CylinderGeometry(26, 26, 10, 24), M.brass); ros.rotation.x = Math.PI / 2; ros.position.set(e.L / 2 - 90, 1020, 25); g.add(ros);
     var lev = mesh(new T.CylinderGeometry(9, 9, 120, 16), M.brass, true); lev.rotation.z = Math.PI / 2; lev.position.set(e.L / 2 - 140, 1020, 50); g.add(lev);
-    var hook = mesh(new T.CylinderGeometry(10, 10, 40, 16), M.brass); hook.rotation.x = Math.PI / 2; hook.position.set(0, 1700, 40); g.add(hook);
+    robeHook(g, 1700, 20); // second robe hook on the back of the door
   })();
 
   // ---------- lights ----------
