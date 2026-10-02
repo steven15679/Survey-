@@ -117,7 +117,7 @@
   renderer.toneMapping = T.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 0.8;
   renderer.shadowMap.enabled = true;
-  renderer.shadowMap.type = T.PCFSoftShadowMap;
+  renderer.shadowMap.type = T.PCFShadowMap; // PCF honours shadow.radius for a softer edge
   stage.appendChild(renderer.domElement);
 
   var scene = new T.Scene();
@@ -151,6 +151,8 @@
     var c = document.createElement("canvas"); c.width = w; c.height = h;
     var b = document.createElement("canvas"); b.width = w; b.height = h;
     var g = c.getContext("2d"), bg = b.getContext("2d");
+    var rc = document.createElement("canvas"); rc.width = w; rc.height = h;
+    var rgx = rc.getContext("2d"); rgx.fillStyle = "#e6e6e6"; rgx.fillRect(0, 0, w, h);
     g.fillStyle = o.grout; g.fillRect(0, 0, w, h);
     bg.fillStyle = "#5a5a5a"; bg.fillRect(0, 0, w, h);
     var greens = o.palette;
@@ -187,26 +189,34 @@
         bgd.addColorStop(0, "#909090"); bgd.addColorStop(0.1, "#c8c8c8"); bgd.addColorStop(0.9, "#c8c8c8"); bgd.addColorStop(1, "#909090");
         bg.fillStyle = bgd; bg.fillRect(x, y, tw, th);
         bg.fillStyle = "rgba(0,0,0,0.35)"; bg.fillRect(x, y, tw, 3 * s); bg.fillRect(x, y + th - 3 * s, tw, 3 * s);
+        // each tile sits very slightly out of plane, so reflections break from tile to tile
+        var ang = rnd() * Math.PI * 2, amp = 0.08 + rnd() * 0.14, cxm = x + tw / 2, cym = y + th / 2;
+        var tg = bg.createLinearGradient(cxm - Math.cos(ang) * tw / 2, cym - Math.sin(ang) * th / 2, cxm + Math.cos(ang) * tw / 2, cym + Math.sin(ang) * th / 2);
+        tg.addColorStop(0, "rgba(255,255,255," + amp.toFixed(3) + ")"); tg.addColorStop(1, "rgba(0,0,0," + amp.toFixed(3) + ")");
+        bg.fillStyle = tg; bg.fillRect(x + 2 * s, y + 4 * s, tw - 4 * s, th - 8 * s);
+        // gloss varies a little per tile; grout stays matte
+        var rv = Math.round(o.rough[0] + rnd() * (o.rough[1] - o.rough[0]));
+        rgx.fillStyle = "rgb(" + rv + "," + rv + "," + rv + ")"; rgx.fillRect(x, y, tw, th);
       }
     }
-    var mp = tex(c, true), bp = tex(b, false);
-    [mp, bp].forEach(function (t) { t.repeat.set(1 / GMW, 1 / GMH); t.offset.set(0, -DATUM / GMH); });
-    return [mp, bp, GMW, GMH];
+    var mp = tex(c, true), bp = tex(b, false), rp = tex(rc, false);
+    [mp, bp, rp].forEach(function (t) { t.repeat.set(1 / GMW, 1 / GMH); t.offset.set(0, -DATUM / GMH); });
+    return [mp, bp, GMW, GMH, rp];
   }
   // olive gloss tile: slim 50 x 300, even olive-khaki glaze, cream grout
   var gt = makeTile({
     w: 50, h: 300, g: 3, cols: 16, rows: 4,
     palette: [[86, 86, 64], [80, 82, 60], [90, 89, 66], [78, 80, 58], [88, 88, 66], [82, 84, 62], [92, 90, 68], [80, 82, 61]],
-    grout: "#d9d1ba", edge: 0.86, blooms: 4, bloomLight: "rgba(220,218,190,0.08)", bloomDark: "rgba(50,52,34,0.1)", cracks: 0
+    rough: [18, 52], grout: "#d9d1ba", edge: 0.86, blooms: 4, bloomLight: "rgba(220,218,190,0.08)", bloomDark: "rgba(50,52,34,0.1)", cracks: 0
   });
-  var greenMap = gt[0], greenBump = gt[1], GREEN_MW = gt[2], GREEN_MH = gt[3];
+  var greenMap = gt[0], greenBump = gt[1], GREEN_MW = gt[2], GREEN_MH = gt[3], greenRough = gt[4];
   // Beaumont-style sage: washed olive, khaki and grey-green, soft edges, pale grout, no crackle
   var st = makeTile({
     w: 65, h: 200, g: 2.5, cols: 12, rows: 5,
     palette: [[118, 120, 96], [108, 116, 104], [126, 120, 94], [114, 118, 110], [102, 106, 80], [122, 124, 104], [106, 112, 96], [130, 124, 100], [98, 106, 92]],
-    grout: "#cfcbbf", edge: 0.84, blooms: 14, bloomLight: "rgba(214,214,200,0.2)", bloomDark: "rgba(70,78,60,0.24)", cracks: 0
+    rough: [70, 105], grout: "#cfcbbf", edge: 0.84, blooms: 14, bloomLight: "rgba(214,214,200,0.2)", bloomDark: "rgba(70,78,60,0.24)", cracks: 0
   });
-  var sageMap = st[0], sageBump = st[1], SAGE_MW = st[2], SAGE_MH = st[3];
+  var sageMap = st[0], sageBump = st[1], SAGE_MW = st[2], SAGE_MH = st[3], sageRough = st[4];
 
 
   // Stone-look porcelain 600 x 600, module 2 x 2 tiles.
@@ -242,6 +252,11 @@
       }
       g.restore();
       bg.fillStyle = "#9a9a9a"; bg.fillRect(x, y, t, t);
+      // slight lippage: each large tile is fractionally out of plane
+      var la = rnd() * Math.PI * 2, lamp = 0.05 + rnd() * 0.07, lc = x + t / 2, ld = y + t / 2;
+      var lg2 = bg.createLinearGradient(lc - Math.cos(la) * t / 2, ld - Math.sin(la) * t / 2, lc + Math.cos(la) * t / 2, ld + Math.sin(la) * t / 2);
+      lg2.addColorStop(0, "rgba(255,255,255," + lamp.toFixed(3) + ")"); lg2.addColorStop(1, "rgba(0,0,0," + lamp.toFixed(3) + ")");
+      bg.fillStyle = lg2; bg.fillRect(x, y, t, t);
     }
     stoneMap = tex(c, true); stoneBump = tex(b, false);
     [stoneMap, stoneBump].forEach(function (t) { t.repeat.set(1 / SM, 1 / SM); t.offset.set(0, -400 / SM); });
@@ -249,8 +264,8 @@
 
   // ---------- materials ----------
   var M = {
-    green: new T.MeshStandardMaterial({ map: greenMap, bumpMap: greenBump, bumpScale: 0.016, roughness: 0.1, metalness: 0, envMapIntensity: 0.65 }),
-    sage: new T.MeshStandardMaterial({ map: sageMap, bumpMap: sageBump, bumpScale: 0.014, roughness: 0.32, metalness: 0, envMapIntensity: 0.5 }),
+    green: new T.MeshStandardMaterial({ map: greenMap, bumpMap: greenBump, bumpScale: 0.016, roughness: 1, roughnessMap: greenRough, metalness: 0, envMapIntensity: 0.65 }),
+    sage: new T.MeshStandardMaterial({ map: sageMap, bumpMap: sageBump, bumpScale: 0.014, roughness: 1, roughnessMap: sageRough, metalness: 0, envMapIntensity: 0.5 }),
     stone: new T.MeshStandardMaterial({ map: stoneMap, bumpMap: stoneBump, bumpScale: 0.012, roughness: 0.85, envMapIntensity: 0.3 }),
     ceiling: new T.MeshStandardMaterial({ color: 0xf1f0ec, roughness: 0.95, envMapIntensity: 0.4 }),
     brass: new T.MeshStandardMaterial({ color: 0xd6b77c, metalness: 1, roughness: 0.3, envMapIntensity: 1.4 }),
@@ -441,11 +456,27 @@
   // ---------- wall-hung WC with smart seat ----------
   (function () {
     var g = fixture(WALL_A, 450, 200);
-    var body = mesh(new T.CylinderGeometry(1, 0.78, 1, 48), M.gloss, true);
-    body.scale.set(180, 230, 270); body.position.set(0, 285, 270); g.add(body);
-    var back = mesh(rbox(300, 230, 120, 40), M.gloss, true); back.position.set(0, 285, 60); g.add(back);
-    var seat = mesh(new T.CylinderGeometry(1, 1, 1, 48), M.gloss, true); seat.scale.set(186, 34, 272); seat.position.set(0, 417, 272); g.add(seat);
-    var lid = mesh(new T.CylinderGeometry(1, 1, 1, 48), M.gloss, true); lid.scale.set(178, 22, 262); lid.position.set(0, 445, 280); g.add(lid);
+    // plan outline of a wall-hung pan: square to the wall, rounded nose; y runs away from the wall
+    function panShape(k) {
+      var sh = new T.Shape();
+      sh.moveTo(-175 * k, 0); sh.lineTo(175 * k, 0); sh.lineTo(178 * k, -300 * k);
+      sh.bezierCurveTo(178 * k, -575 * k, -178 * k, -575 * k, -178 * k, -300 * k); sh.closePath();
+      return sh;
+    }
+    function solid(shape, depth, bevel) {
+      var geo = new T.ExtrudeGeometry(shape, { depth: depth, bevelEnabled: true, bevelThickness: bevel, bevelSize: bevel, bevelSegments: 6, curveSegments: 32 });
+      geo.rotateX(-Math.PI / 2); // extrusion becomes height; shape y becomes distance from the wall
+      return geo;
+    }
+    var panGeo = solid(panShape(1), 220, 34), pos = panGeo.attributes.position;
+    for (var i = 0; i < pos.count; i++) { // taper the pan towards its underside
+      var yy = pos.getY(i), t = Math.min(1, Math.max(0, (yy + 34) / 288)), k = 0.74 + 0.26 * Math.pow(t, 0.7);
+      pos.setX(i, pos.getX(i) * k); pos.setZ(i, 40 + (pos.getZ(i) - 40) * (0.86 + 0.14 * t));
+    }
+    panGeo.computeVertexNormals();
+    var body = mesh(panGeo, M.gloss, true); body.position.set(0, 160, 0); g.add(body);
+    var seat = mesh(solid(panShape(1.02), 16, 9), M.gloss, true); seat.position.set(0, 424, 0); g.add(seat);
+    var lid = mesh(solid(panShape(0.99), 12, 9), M.gloss, true); lid.position.set(0, 451, 4); g.add(lid);
     var housing = mesh(rbox(380, 95, 140, 30), M.gloss, true); housing.position.set(0, 450, 60); g.add(housing);
     var knob = mesh(new T.CylinderGeometry(16, 16, 12, 24), M.grey); knob.rotation.x = Math.PI / 2; knob.position.set(140, 455, 132); g.add(knob);
     var plate = mesh(rbox(220, 145, 8, 3), M.brass, true); plate.position.set(0, 880, 4); g.add(plate);
@@ -469,10 +500,32 @@
     var bodyGeo = new T.ExtrudeGeometry(outer, { depth: 140, bevelEnabled: true, bevelThickness: 8, bevelSize: 8, bevelSegments: 4, curveSegments: 16 });
     bodyGeo.rotateX(-Math.PI / 2);
     var body = mesh(bodyGeo, M.matteWhite, true); body.position.y = 702; g.add(body);
-    var bowl = mesh(new T.SphereGeometry(1, 40, 20, 0, Math.PI * 2, Math.PI / 2, Math.PI / 2), new T.MeshStandardMaterial({ color: 0xd9d8d2, roughness: 0.55, envMapIntensity: 0.4 }), true);
-    bowl.material.side = T.DoubleSide;
-    bowl.scale.set(233, 105, 138); bowl.position.set(0, 849, 265); g.add(bowl);
-    var waste = mesh(new T.CylinderGeometry(22, 22, 4, 24), M.brass); waste.position.set(0, 746, 275); g.add(waste);
+    // bowl lofted from the basin opening: steep sides easing into a flat bottom, shaded towards the rim
+    var rim = inner.getPoints(24), RINGS = 14, DEPTH = 120, verts = [], cols = [], idx = [];
+    var ccx = 0, ccz = 265; // opening centre (shape y = -265 maps to z = +265)
+    rim.pop(); // getPoints repeats the first point
+    for (var k = 0; k <= RINGS; k++) {
+      var t = k / RINGS, f = 1 - 0.82 * Math.pow(t, 1.6), d = DEPTH * Math.sin(t * Math.PI / 2), shade = 0.66 + 0.34 * Math.pow(t, 0.7);
+      rim.forEach(function (pt) {
+        var x = pt.x * 0.97, z = -pt.y; // shape y runs away from the wall
+        verts.push(ccx + (x - ccx) * f, -d, ccz + (z - ccz) * f * 0.97);
+        cols.push(shade, shade, shade * 0.985);
+      });
+    }
+    var NR = rim.length;
+    for (k = 0; k < RINGS; k++) for (var j = 0; j < NR; j++) {
+      var a0 = k * NR + j, a1 = k * NR + (j + 1) % NR, b0 = a0 + NR, b1 = a1 + NR;
+      idx.push(a0, b0, a1, a1, b0, b1);
+    }
+    var centre = verts.length / 3; verts.push(ccx, -DEPTH, ccz); cols.push(1, 1, 0.985);
+    for (j = 0; j < NR; j++) idx.push(RINGS * NR + j, centre, RINGS * NR + (j + 1) % NR);
+    var bowlGeo = new T.BufferGeometry();
+    bowlGeo.setAttribute("position", new T.Float32BufferAttribute(verts, 3));
+    bowlGeo.setAttribute("color", new T.Float32BufferAttribute(cols, 3));
+    bowlGeo.setIndex(idx); bowlGeo.computeVertexNormals();
+    var bowl = mesh(bowlGeo, new T.MeshStandardMaterial({ color: 0xf3f3ef, vertexColors: true, roughness: 0.5, envMapIntensity: 0.5, side: T.DoubleSide }), true);
+    bowl.position.set(0, 849, 0); g.add(bowl);
+    var waste = mesh(new T.CylinderGeometry(22, 22, 4, 24), M.brass); waste.position.set(0, 731, 265); g.add(waste);
     // basin mixer on the tap deck at the back of the basin
     var mx = mesh(new T.CylinderGeometry(20, 22, 150, 32), M.brass, true); mx.position.set(0, 933, 60); g.add(mx);
     var lever = mesh(new T.BoxGeometry(12, 12, 60), M.brass, true); lever.position.set(0, 995, 25); lever.rotation.x = -0.25; g.add(lever);
@@ -483,6 +536,46 @@
     var bottle = mesh(new T.CylinderGeometry(32, 32, 170, 24), M.brass, true); bottle.position.set(0, 490, 275); g.add(bottle);
     var arm = mesh(new T.CylinderGeometry(16, 16, 275, 20), M.brass, true); arm.rotation.x = Math.PI / 2; arm.position.set(0, 530, 137); g.add(arm);
     var flange = mesh(new T.CylinderGeometry(34, 34, 8, 24), M.brass); flange.rotation.x = Math.PI / 2; flange.position.set(0, 530, 4); g.add(flange);
+  })();
+
+  // ---------- everyday things: plant and soap on the ledge, bath mat outside the shower ----------
+  (function () {
+    // plant in a speckled stone pot at the right end of the ledge
+    var g = fixture(WALL_A, 2010, 95);
+    var prof = [new T.Vector2(0, 0), new T.Vector2(52, 0), new T.Vector2(56, 6), new T.Vector2(66, 120), new T.Vector2(62, 124), new T.Vector2(58, 112), new T.Vector2(0, 112)];
+    var pot = mesh(new T.LatheGeometry(prof, 40), new T.MeshStandardMaterial({ color: 0xe4ddd0, roughness: 0.85 }), true);
+    pot.position.y = 1000; g.add(pot);
+    var soil = mesh(new T.CircleGeometry(57, 32), new T.MeshStandardMaterial({ color: 0x3b2f25, roughness: 1 }));
+    soil.rotation.x = -Math.PI / 2; soil.position.y = 1108; g.add(soil);
+    var leaf = new T.Shape(); leaf.moveTo(0, 0); leaf.bezierCurveTo(22, 25, 20, 70, 0, 95); leaf.bezierCurveTo(-20, 70, -22, 25, 0, 0);
+    var leafGeo = new T.ShapeGeometry(leaf, 8);
+    var lpos = leafGeo.attributes.position; for (var li = 0; li < lpos.count; li++) { var ly = lpos.getY(li); lpos.setZ(li, -Math.pow(ly / 95, 2) * 18 + Math.abs(lpos.getX(li)) * 0.25); }
+    leafGeo.computeVertexNormals();
+    var greensLeaf = [0x4d6a37, 0x587a40, 0x445f31, 0x62844a];
+    for (var n = 0; n < 46; n++) {
+      var a = rnd() * Math.PI * 2, rr = rnd() * 30, h = 1110 + rnd() * 120;
+      var lm = new T.Mesh(leafGeo, new T.MeshStandardMaterial({ color: greensLeaf[n % 4], roughness: 0.55, side: T.DoubleSide }));
+      lm.castShadow = true;
+      lm.position.set(Math.cos(a) * rr, h, Math.sin(a) * rr);
+      lm.rotation.set(-0.3 - rnd() * 0.9, -a + Math.PI / 2, (rnd() - 0.5) * 0.6, "YXZ");
+      var sc = 0.75 + rnd() * 0.6; lm.scale.set(sc, sc, sc); g.add(lm);
+      var stem = mesh(new T.CylinderGeometry(2, 2.5, h - 1105, 5), new T.MeshStandardMaterial({ color: 0x5c6f3a, roughness: 0.8 }));
+      stem.position.set(lm.position.x * 0.5, 1105 + (h - 1105) / 2, lm.position.z * 0.5); g.add(stem);
+    }
+    // amber glass soap pump to the left of the tap
+    var sg = fixture(WALL_A, 1320, 100);
+    var amber = mesh(new T.CylinderGeometry(30, 30, 130, 32), new T.MeshStandardMaterial({ color: 0x5a3212, roughness: 0.06, metalness: 0, transparent: true, opacity: 0.82, envMapIntensity: 1.5 }), true);
+    amber.position.y = 1065; sg.add(amber);
+    var neck = mesh(new T.CylinderGeometry(11, 14, 22, 20), M.brass, true); neck.position.y = 1141; sg.add(neck);
+    var pump = mesh(new T.BoxGeometry(14, 10, 46), M.brass, true); pump.position.set(0, 1158, 14); sg.add(pump);
+    // woven cotton bath mat outside the walk-in opening
+    var mc = document.createElement("canvas"); mc.width = mc.height = 256;
+    var mg = mc.getContext("2d"); mg.fillStyle = "#c4b8a2"; mg.fillRect(0, 0, 256, 256);
+    for (var my = 0; my < 256; my += 4) { mg.fillStyle = my % 8 ? "rgba(120,104,80,0.10)" : "rgba(255,255,255,0.12)"; mg.fillRect(0, my, 256, 2); }
+    for (var mn = 0; mn < 2500; mn++) { mg.fillStyle = rnd() > 0.5 ? "rgba(90,78,60,0.12)" : "rgba(255,255,250,0.15)"; mg.fillRect(rnd() * 256, rnd() * 256, 1.5, 1.5); }
+    var mt = new T.CanvasTexture(mc); mt.encoding = T.sRGBEncoding; mt.wrapS = mt.wrapT = T.RepeatWrapping; mt.repeat.set(3, 2);
+    var mat = mesh(rbox(600, 12, 460, 5), new T.MeshStandardMaterial({ map: mt, bumpMap: mt, bumpScale: 0.004, roughness: 1 }), true);
+    mat.position.set(1280, 6, -330); mat.rotation.y = 0.04; root.add(mat);
   })();
 
   // ---------- robe hook ----------
@@ -615,11 +708,11 @@
     var rim = new T.Mesh(new T.RingGeometry(45, 60, 32), M.brass); rim.rotation.x = Math.PI / 2; rim.position.set(x, CEIL - 3, z); root.add(rim);
     var l = new T.PointLight(0xffc98c, cd, 0, 2);
     l.position.set(x / 1000, (CEIL - 80) / 1000, z / 1000);
-    if (shadow) { l.castShadow = true; l.shadow.mapSize.set(1024, 1024); l.shadow.bias = -0.002; l.shadow.radius = 4; l.shadow.camera.near = 0.05; }
+    if (shadow) { l.castShadow = true; l.shadow.mapSize.set(2048, 2048); l.shadow.bias = -0.0015; l.shadow.radius = 9; l.shadow.camera.near = 0.05; }
     scene.add(l);
   }
   downlight(2150, -900, 6, true);
-  downlight(450, -450, 3.5, false);
+  downlight(450, -450, 3.5, true);
   downlight(1850, -150, 3.5, false);
   // LED halo light near the cabinet
   (function () {
