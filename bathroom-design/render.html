@@ -57,6 +57,7 @@
     <button type="button" id="v-door" data-view="door" aria-pressed="false">From door</button>
     <button type="button" id="v-shower" data-view="shower" aria-pressed="false">Shower</button>
     <button type="button" id="v-vanity" data-view="vanity" aria-pressed="false">Vanity</button>
+    <button type="button" id="v-sink" data-view="sink" aria-pressed="false">Basin</button>
   </div>
   <div class="views" role="group" aria-label="Wall tile layout">
     <button type="button" id="t-split" data-tile="split" aria-pressed="true">Olive above ledge</button>
@@ -65,6 +66,9 @@
     <button type="button" id="t-stone" data-tile="stone" aria-pressed="false">All stone-look</button>
     <button type="button" id="t-sage" data-tile="sage" aria-pressed="false">Beaumont sage above ledge</button>
     <button type="button" id="t-shower" data-tile="shower" aria-pressed="false">Olive shower only</button>
+  </div>
+  <div class="views" role="group" aria-label="Vanity">
+    <button type="button" id="vanity-toggle" aria-pressed="false">Fluted timber vanity</button>
   </div>
   </div>
 </div>
@@ -321,6 +325,7 @@
   var EDGES = {};
   var LOWER = []; // lower wall bands, swapped when tiling green floor to ceiling
   var NICHE = null;
+  var TRAP = [], VANITY = null; // exposed bottle trap vs. optional fluted vanity under the basin
   var NICHE_U0 = 16 * 50, NICHE_U1 = 28 * 50, NICHE_Y0 = 1300, NICHE_Y1 = 1600; // 600 x 300 = 12 x 2 tiles, along wall J-A from x = 1600
   var NICHE_W = NICHE_U1 - NICHE_U0, NICHE_H = NICHE_Y1 - NICHE_Y0, NICHE_UC = (NICHE_U0 + NICHE_U1) / 2;
   var LEDGE_FRONT = null; // turns green in the feature-wall option so the vanity wall reads floor to ceiling
@@ -558,6 +563,27 @@
     var bottle = mesh(new T.CylinderGeometry(32, 32, 170, 24), M.brass, true); bottle.position.set(0, 480, 255); g.add(bottle);
     var arm = mesh(new T.CylinderGeometry(16, 16, 255, 20), M.brass, true); arm.rotation.x = Math.PI / 2; arm.position.set(0, 520, 127); g.add(arm);
     var flange = mesh(new T.CylinderGeometry(34, 34, 8, 24), M.brass); flange.rotation.x = Math.PI / 2; flange.position.set(0, 520, 4); g.add(flange);
+    TRAP = [tail, bottle, arm, flange];
+
+    // optional fluted vanity in dark stained timber, wall-hung under the basin (590 W x 420 D x 400 H, 330 to 730)
+    var wc = document.createElement("canvas"); wc.width = 256; wc.height = 512;
+    var wg = wc.getContext("2d"); wg.fillStyle = "#3a281c"; wg.fillRect(0, 0, 256, 512);
+    for (var gi = 0; gi < 90; gi++) { // long vertical grain with gentle waves
+      var gx = rnd() * 256, ga = 0.05 + rnd() * 0.14, gw = 0.6 + rnd() * 2.2;
+      wg.strokeStyle = rnd() > 0.5 ? "rgba(20,12,6," + ga + ")" : "rgba(120,86,58," + ga + ")"; wg.lineWidth = gw;
+      wg.beginPath(); wg.moveTo(gx, 0);
+      for (var gy = 0; gy <= 512; gy += 32) wg.lineTo(gx + Math.sin(gy / 70 + gi) * (2 + rnd() * 3), gy);
+      wg.stroke();
+    }
+    var wt = new T.CanvasTexture(wc); wt.encoding = T.sRGBEncoding; wt.wrapS = wt.wrapT = T.RepeatWrapping; wt.anisotropy = maxAniso;
+    var wood = new T.MeshStandardMaterial({ map: wt, bumpMap: wt, bumpScale: 0.002, roughness: 0.55, envMapIntensity: 0.6 });
+    VANITY = new T.Group(); VANITY.visible = false; g.add(VANITY);
+    var carcass = mesh(rbox(590, 400, 404, 4), wood, true); carcass.position.set(0, 530, 202); VANITY.add(carcass);
+    var flute = new T.CylinderGeometry(10, 10, 392, 20, 1, false, -Math.PI / 2, Math.PI); // half-round reeds facing out
+    for (var fx = -280; fx <= 280; fx += 20) {
+      var reed = mesh(flute, wood, true); reed.position.set(fx, 530, 404); VANITY.add(reed);
+    }
+    var shadowGap = mesh(new T.BoxGeometry(580, 6, 6), M.gap); shadowGap.position.set(0, 727, 406); VANITY.add(shadowGap);
   })();
 
   // ---------- everyday things: plant and soap on the ledge ----------
@@ -777,7 +803,8 @@
     basin:  { pos: [2750, 1600, -1500], look: [600, 1150, -150], fov: 70 },
     door:   { pos: [1720, 1600, -420],  look: [1900, 1200, -2200], fov: 74 },
     shower: { pos: [1500, 1550, -760],  look: [0, 1250, -330], fov: 68 },
-    vanity: { pos: [2450, 1650, -300],  look: [1650, 1150, -2050], fov: 64 }
+    vanity: { pos: [2450, 1650, -300],  look: [1650, 1150, -2050], fov: 64 },
+    sink:   { pos: [2960, 1250, -170],  look: [2398, 640, -1755], fov: 58 }
   };
   function setView(name) {
     var v = VIEWS[name] || VIEWS.basin;
@@ -819,10 +846,18 @@
   document.querySelectorAll("[data-tile]").forEach(function (bt) {
     bt.addEventListener("click", function () { setTile(bt.dataset.tile); });
   });
-  // deep link: #door, #door-full, #door-feature, #door-stone, #door-sage or #door-shower
+  function setVanity(on) {
+    VANITY.visible = on;
+    TRAP.forEach(function (m) { m.visible = !on; });
+    document.getElementById("vanity-toggle").setAttribute("aria-pressed", String(on));
+    dirty = true;
+  }
+  document.getElementById("vanity-toggle").addEventListener("click", function () { setVanity(!VANITY.visible); });
+  // deep link: #view[-tiles][-vanity], e.g. #door, #door-full, #vanity-split-vanity
   var hash = (location.hash || "").replace("#", "").split("-");
   setView(VIEWS[hash[0]] ? hash[0] : "basin");
   setTile(["full", "feature", "stone", "sage", "shower"].indexOf(hash[1]) >= 0 ? hash[1] : "split");
+  setVanity(hash.indexOf("vanity", 1) >= 0);
 
   (function loop() {
     requestAnimationFrame(loop);
