@@ -565,12 +565,12 @@
     var flange = mesh(new T.CylinderGeometry(34, 34, 8, 24), M.brass); flange.rotation.x = Math.PI / 2; flange.position.set(0, 520, 4); g.add(flange);
     TRAP = [tail, bottle, arm, flange];
 
-    // optional fluted vanity in dark stained timber, wall-hung under the basin (590 W x 420 D x 400 H, 330 to 730)
+    // optional fluted vanity in warm walnut-toned timber, wall-hung under the basin (590 W x 420 D x 400 H, 330 to 730)
     var wc = document.createElement("canvas"); wc.width = 256; wc.height = 512;
-    var wg = wc.getContext("2d"); wg.fillStyle = "#3a281c"; wg.fillRect(0, 0, 256, 512);
+    var wg = wc.getContext("2d"); wg.fillStyle = "#64503f"; wg.fillRect(0, 0, 256, 512); // mid walnut
     for (var gi = 0; gi < 90; gi++) { // long vertical grain with gentle waves
       var gx = rnd() * 256, ga = 0.05 + rnd() * 0.14, gw = 0.6 + rnd() * 2.2;
-      wg.strokeStyle = rnd() > 0.5 ? "rgba(20,12,6," + ga + ")" : "rgba(120,86,58," + ga + ")"; wg.lineWidth = gw;
+      wg.strokeStyle = rnd() > 0.5 ? "rgba(48,34,22," + (ga * 1.4) + ")" : "rgba(160,128,96," + ga + ")"; wg.lineWidth = gw;
       wg.beginPath(); wg.moveTo(gx, 0);
       for (var gy = 0; gy <= 512; gy += 32) wg.lineTo(gx + Math.sin(gy / 70 + gi) * (2 + rnd() * 3), gy);
       wg.stroke();
