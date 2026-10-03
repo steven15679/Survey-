@@ -58,6 +58,7 @@
     <button type="button" id="v-shower" data-view="shower" aria-pressed="false">Shower</button>
     <button type="button" id="v-vanity" data-view="vanity" aria-pressed="false">Vanity</button>
     <button type="button" id="v-sink" data-view="sink" aria-pressed="false">Basin</button>
+    <button type="button" id="v-back" data-view="back" aria-pressed="false">From doorway</button>
   </div>
   <div class="views" role="group" aria-label="Wall tile layout">
     <button type="button" id="t-split" data-tile="split" aria-pressed="true">Olive above ledge</button>
@@ -804,7 +805,8 @@
     door:   { pos: [1720, 1600, -420],  look: [1900, 1200, -2200], fov: 74 },
     shower: { pos: [1500, 1550, -760],  look: [0, 1250, -330], fov: 68 },
     vanity: { pos: [2450, 1650, -300],  look: [1650, 1150, -2050], fov: 64 },
-    sink:   { pos: [2620, 1250, -40],  look: [2022, 640, -1620], fov: 58 }
+    sink:   { pos: [2620, 1250, -40],  look: [2022, 640, -1620], fov: 58 },
+    back:   { pos: [2150, 1560, 40],   look: [1700, 950, -1950], fov: 80 } // wide, from the doorway
   };
   function setView(name) {
     var v = VIEWS[name] || VIEWS.basin;
