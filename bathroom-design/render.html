@@ -592,7 +592,7 @@
     var flange = mesh(new T.CylinderGeometry(34, 34, 8, 24), M.brass); flange.rotation.x = Math.PI / 2; flange.position.set(0, 520, 4); g.add(flange);
     TRAP = [tail, bottle, arm, flange];
 
-    // ---- vanity option 1: wall-hung walnut vanity, finely fluted drawer front, white stone top (750 W x 460 D, 300 high + 20 top)
+    // ---- vanity option 1: wall-hung walnut vanity, finely fluted drawer front, white stone top (650 W x 460 D, 300 high + 20 top)
     var wc = document.createElement("canvas"); wc.width = 256; wc.height = 512;
     var wg = wc.getContext("2d"); wg.fillStyle = "#6c4a33"; wg.fillRect(0, 0, 256, 512); // warm walnut, as in the showroom sample
     for (var gi = 0; gi < 90; gi++) { // long vertical grain with gentle waves
@@ -606,13 +606,13 @@
     var wood = new T.MeshStandardMaterial({ map: wt, bumpMap: wt, bumpScale: 0.002, roughness: 0.55, envMapIntensity: 0.6 });
     var quartz = new T.MeshStandardMaterial({ color: 0xf2f1ec, roughness: 0.25, envMapIntensity: 0.7 });
     var VW = new T.Group(); VW.visible = false; g.add(VW); VANITIES.walnut = VW;
-    var wCase = mesh(rbox(750, 300, 452, 3), wood, true); wCase.position.set(0, 560, 226); VW.add(wCase);
-    var wTop = mesh(rbox(760, 20, 470, 3), quartz, true); wTop.position.set(0, 720, 235); VW.add(wTop);
-    var wRail = mesh(new T.BoxGeometry(744, 22, 6), wood, true); wRail.position.set(0, 697, 455); VW.add(wRail);
-    var wGap = mesh(new T.BoxGeometry(744, 4, 8), M.gap); wGap.position.set(0, 684, 456); VW.add(wGap);
-    var wPanel = mesh(new T.BoxGeometry(746, 268, 14), wood, true); wPanel.position.set(0, 548, 459); VW.add(wPanel);
+    var wCase = mesh(rbox(650, 300, 452, 3), wood, true); wCase.position.set(0, 560, 226); VW.add(wCase);
+    var wTop = mesh(rbox(660, 20, 470, 3), quartz, true); wTop.position.set(0, 720, 235); VW.add(wTop);
+    var wRail = mesh(new T.BoxGeometry(644, 22, 6), wood, true); wRail.position.set(0, 697, 455); VW.add(wRail);
+    var wGap = mesh(new T.BoxGeometry(644, 4, 8), M.gap); wGap.position.set(0, 684, 456); VW.add(wGap);
+    var wPanel = mesh(new T.BoxGeometry(646, 268, 14), wood, true); wPanel.position.set(0, 548, 459); VW.add(wPanel);
     var reedGeo = new T.CylinderGeometry(5, 5, 266, 12, 1, false, -Math.PI / 2, Math.PI); // fine half-round reeds, 10 mm pitch
-    for (var fx = -368; fx <= 368; fx += 10) { var reed = mesh(reedGeo, wood, false); reed.position.set(fx, 548, 466); VW.add(reed); }
+    for (var fx = -318; fx <= 318; fx += 10) { var reed = mesh(reedGeo, wood, false); reed.position.set(fx, 548, 466); VW.add(reed); }
 
     // ---- vanity option 2: white curved vanity with a shaker drawer, marble-look top, round vessel basin and tall mixer
     var satin = new T.MeshStandardMaterial({ color: 0xefede7, roughness: 0.42, envMapIntensity: 0.6 });
@@ -638,13 +638,13 @@
       geo.rotateX(-Math.PI / 2); return geo;
     }
     var VH = new T.Group(); VH.visible = false; g.add(VH); VANITIES.white = VH;
-    var hCase = mesh(slab(curvedPlan(750, 455, 120), 300, 0), satin, true); hCase.position.y = 410; VH.add(hCase);
-    var hTop = mesh(slab(curvedPlan(764, 470, 128), 18, 2), marble, true); hTop.position.y = 712; VH.add(hTop);
+    var hCase = mesh(slab(curvedPlan(650, 455, 120), 300, 0), satin, true); hCase.position.y = 410; VH.add(hCase);
+    var hTop = mesh(slab(curvedPlan(664, 470, 128), 18, 2), marble, true); hTop.position.y = 712; VH.add(hTop);
     // shaker drawer on the flat part of the front: shadow gaps, raised frame, brushed brass edge pull
-    [[-252, 0], [252, 0]].forEach(function (q) { var gp = mesh(new T.BoxGeometry(4, 290, 6), M.gap); gp.position.set(q[0], 560, 455); VH.add(gp); });
-    [[0, 694, 500, 26], [0, 426, 500, 26]].forEach(function (q) { var fr = mesh(new T.BoxGeometry(q[2], q[3], 6), satin, true); fr.position.set(q[0], q[1], 458); VH.add(fr); });
-    [[-237, 560], [237, 560]].forEach(function (q) { var fr = mesh(new T.BoxGeometry(26, 242, 6), satin, true); fr.position.set(q[0], q[1], 458); VH.add(fr); });
-    var pull = mesh(rbox(260, 12, 18, 4), M.brass, true); pull.position.set(0, 700, 466); VH.add(pull);
+    [[-202, 0], [202, 0]].forEach(function (q) { var gp = mesh(new T.BoxGeometry(4, 290, 6), M.gap); gp.position.set(q[0], 560, 455); VH.add(gp); });
+    [[0, 694, 400, 26], [0, 426, 400, 26]].forEach(function (q) { var fr = mesh(new T.BoxGeometry(q[2], q[3], 6), satin, true); fr.position.set(q[0], q[1], 458); VH.add(fr); });
+    [[-187, 560], [187, 560]].forEach(function (q) { var fr = mesh(new T.BoxGeometry(26, 242, 6), satin, true); fr.position.set(q[0], q[1], 458); VH.add(fr); });
+    var pull = mesh(rbox(220, 12, 18, 4), M.brass, true); pull.position.set(0, 700, 466); VH.add(pull);
     // round matt white vessel basin with a rounded belly (about 420 diameter, 130 high)
     // D-shaped fluted vessel basin, gloss white: flat back to the wall, round front, vertical flutes outside
     // 420 W x 360 D x 125 H; shape y runs away from the wall
@@ -676,6 +676,7 @@
     var vfloor = mesh(floorGeo, new T.MeshStandardMaterial({ color: 0xeeeeea, roughness: 0.15, envMapIntensity: 0.9 }), false); vfloor.position.y = 12; vessel.add(vfloor);
     // round vessel basin and tall mixer are shared by both vanities (both tops finish at 730)
     var VV = new T.Group(); VV.visible = false; g.add(VV); VANITIES.vessel = VV;
+    [VW, VH, VV].forEach(function (grp) { grp.position.x = 100; }); // vanity sits 100 right of the mirror centre
     vessel.position.set(-20, 730, 70); VV.add(vessel); // flat back 70 off the wall, front at about 430
     var vWaste = mesh(new T.CylinderGeometry(27, 29, 10, 32), M.brass, true); vWaste.position.set(-20, 747, 70 + 200); VV.add(vWaste); // brushed gold pop-up plug
     // tall brushed brass vessel mixer at the back corner, spout reaching over the bowl
