@@ -71,7 +71,7 @@
   </div>
   <div class="views" role="group" aria-label="Vanity">
     <button type="button" data-vanity="none" aria-pressed="true">No vanity</button>
-    <button type="button" data-vanity="walnut" aria-pressed="false">Walnut fluted vanity</button>
+    <button type="button" data-vanity="walnut" aria-pressed="false">Walnut vanity + round basin</button>
     <button type="button" data-vanity="white" aria-pressed="false">White vanity + round basin</button>
   </div>
   </div>
@@ -648,10 +648,12 @@
     // round matt white vessel basin with a rounded belly (about 420 diameter, 130 high)
     var vprof = [[0, 0], [118, 0], [150, 8], [192, 42], [208, 84], [202, 118], [190, 130], [178, 128], [172, 100], [146, 50], [70, 24], [0, 22]].map(function (q) { return new T.Vector2(q[0], q[1]); });
     var vessel = mesh(new T.LatheGeometry(vprof, 64), new T.MeshStandardMaterial({ color: 0xf3f3ef, roughness: 0.6, envMapIntensity: 0.5, side: T.DoubleSide }), true);
-    vessel.position.set(-20, 730, 250); VH.add(vessel);
-    var vWaste = mesh(new T.CylinderGeometry(24, 26, 6, 32), M.brass, true); vWaste.position.set(-20, 755, 250); VH.add(vWaste);
+    // round vessel basin and tall mixer are shared by both vanities (both tops finish at 730)
+    var VV = new T.Group(); VV.visible = false; g.add(VV); VANITIES.vessel = VV;
+    vessel.position.set(-20, 730, 250); VV.add(vessel);
+    var vWaste = mesh(new T.CylinderGeometry(24, 26, 6, 32), M.brass, true); vWaste.position.set(-20, 755, 250); VV.add(vWaste);
     // tall brushed brass vessel mixer at the back corner, spout reaching over the bowl
-    var tm = new T.Group(); tm.position.set(255, 730, 85); VH.add(tm);
+    var tm = new T.Group(); tm.position.set(255, 730, 85); VV.add(tm);
     var tBase = mesh(new T.CylinderGeometry(26, 26, 8, 32), M.brass, true); tBase.position.y = 4; tm.add(tBase);
     var tBody = mesh(new T.CylinderGeometry(19, 19, 320, 32), M.brass, true); tBody.position.y = 168; tm.add(tBody);
     var tCap = mesh(new T.CylinderGeometry(19, 19, 4, 32), M.brass, true); tCap.position.y = 330; tm.add(tCap);
@@ -923,13 +925,14 @@
   document.querySelectorAll("[data-tile]").forEach(function (bt) {
     bt.addEventListener("click", function () { setTile(bt.dataset.tile); });
   });
-  // none: the quoted 590 basin on the wall with an exposed trap · walnut: same basin on the walnut vanity
-  // white: white curved vanity with a round vessel basin and tall mixer instead of the 590 basin
+  // none: the quoted 590 basin on the wall with an exposed trap
+  // walnut / white: that vanity with the round vessel basin and tall mixer instead of the 590 basin
   function setVanity(mode) {
     VANITIES.walnut.visible = mode === "walnut";
     VANITIES.white.visible = mode === "white";
     TRAP.forEach(function (m) { m.visible = mode === "none"; });
-    BASIN_RECT.forEach(function (m) { m.visible = mode !== "white"; });
+    VANITIES.vessel.visible = mode !== "none";
+    BASIN_RECT.forEach(function (m) { m.visible = mode === "none"; });
     document.querySelectorAll("[data-vanity]").forEach(function (bt) { bt.setAttribute("aria-pressed", String(bt.dataset.vanity === mode)); });
     dirty = true;
   }
