@@ -24,6 +24,22 @@
     pointer-events: none;
   }
   .top > * { pointer-events: auto; }
+  #ui-toggle {
+    position: fixed; right: 16px; bottom: calc(env(safe-area-inset-bottom, 0px) + 40px); z-index: 5;
+    font: 600 13px/1 "Barlow Condensed", "Arial Narrow", sans-serif; letter-spacing: 1px; text-transform: uppercase;
+    color: var(--chip-on-ink); background: var(--chip-on); border: 0; border-radius: 999px;
+    padding: 11px 16px; cursor: pointer; box-shadow: 0 2px 10px rgba(0,0,0,.35);
+  }
+  #ui-toggle:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+  body.clean .top, body.clean .hint { display: none; }
+  @media (max-width: 600px) {
+    .top { padding-bottom: 8px; gap: 6px; }
+    h1 { font-size: 17px; } h1 small { display: none; }
+    .views { gap: 4px; }
+    .views button { padding: 6px 9px; font-size: 11px; letter-spacing: .6px; }
+    .hint span:last-child { display: none; }
+  }
+  body.clean #ui-toggle { opacity: .75; }
   h1 { font-family: "Gloock", Georgia, serif; font-weight: 400; font-size: 22px; margin: 0; line-height: 1.1; }
   h1 small { display: block; font-family: "Barlow Condensed", "Arial Narrow", sans-serif; font-size: 12px; letter-spacing: 1.6px; text-transform: uppercase; color: var(--muted); margin-top: 4px; }
   .views { display: flex; flex-wrap: wrap; gap: 6px; }
@@ -77,6 +93,7 @@
   </div>
   </div>
 </div>
+<button type="button" id="ui-toggle" aria-pressed="false">Hide options</button>
 <div class="hint"><span>Drag to look around</span><span>Concept only · proportions from Rev 07 plan</span></div>
 <div id="err" hidden>The 3D view needs WebGL, which this browser has turned off.</div>
 
@@ -1009,6 +1026,18 @@
     for (var i = 0; i < img.data.length; i += 4) { var v = 128 + (rnd() - 0.5) * 255; img.data[i] = img.data[i + 1] = img.data[i + 2] = v; img.data[i + 3] = 255; }
     ctx.putImageData(img, 0, 0);
     document.getElementById("grain").style.backgroundImage = "url(" + c.toDataURL() + ")";
+  })();
+  (function () {
+    var bt = document.getElementById("ui-toggle");
+    function apply(clean) {
+      document.body.classList.toggle("clean", clean);
+      bt.textContent = clean ? "Show options" : "Hide options";
+      bt.setAttribute("aria-pressed", String(clean));
+      try { localStorage.setItem("bathroom-clean", clean ? "1" : "0"); } catch (e) {}
+    }
+    var saved = false; try { saved = localStorage.getItem("bathroom-clean") === "1"; } catch (e) {}
+    apply(saved);
+    bt.addEventListener("click", function () { apply(!document.body.classList.contains("clean")); });
   })();
   window.__rendered = true;
 })();
