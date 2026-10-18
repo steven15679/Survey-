@@ -110,8 +110,8 @@
 
   // ---------- plan (mm). x = east, z = south; polygon order gives inward normals ----------
   var P = {
-    A: [0, 0], B: [0, -620], C: [910, -1183], D: [847, -1639], E: [2917, -2380],
-    F: [3066, -1830], G: [3066, 90], I: [2380, 90], J2: [1600, 90], J: [1600, 0]
+    A: [0, 0], B: [0, -620], C: [910, -1183], D: [847, -1639], E: [2729, -2313], // wall A (D-E) measured 2000 on site
+    F: [2878, -1763], G: [2878, 90], I: [2380, 90], J2: [1600, 90], J: [1600, 0]
   };
   var ORDER = ["A", "B", "C", "D", "E", "F", "G", "I", "J2", "J"];
   var DOOR_EDGE = "I-J2";
@@ -395,7 +395,7 @@
   var NICHE_W = NICHE_U1 - NICHE_U0, NICHE_H = NICHE_Y1 - NICHE_Y0, NICHE_UC = (NICHE_U0 + NICHE_U1) / 2;
   var LEDGE_FRONT = null; // turns green in the feature-wall option so the vanity wall reads floor to ceiling
   var UPPER = []; // upper wall bands as { mesh, feature } where feature marks the feature wall
-  var FEATURE_WALL = "D-E"; // the 2200 vanity wall behind the ledge and mirror cabinet
+  var FEATURE_WALL = "D-E"; // the 2000 vanity wall behind the ledge and mirror cabinet
   var SHOWER_WALLS = ["A-B", "B-C"]; // tap wall and angled wall inside the shower, plus J-A up to the glass
   var SHOWER_U = 1600 - GLASS_X; // distance along J-A (from x = 1600) where the shower starts
   for (var i = 0; i < ORDER.length; i++) {
@@ -495,9 +495,9 @@
   var WALL_A = EDGES["D-E"];
   (function () {
     var g = new T.Group();
-    var front = mesh(new T.ShapeGeometry(rectShape(0, 0, 2200, 1000)), M.stoneFloor); front.position.z = 200; g.add(front);
+    var front = mesh(new T.ShapeGeometry(rectShape(0, 0, 2000, 1000)), M.stoneFloor); front.position.z = 200; g.add(front);
     LEDGE_FRONT = front;
-    var topS = new T.Shape(); topS.moveTo(0, 0); topS.lineTo(2200, 0); topS.lineTo(2200, -200); topS.lineTo(0, -200); topS.closePath();
+    var topS = new T.Shape(); topS.moveTo(0, 0); topS.lineTo(2000, 0); topS.lineTo(2000, -200); topS.lineTo(0, -200); topS.closePath();
     var top = mesh(new T.ShapeGeometry(topS), M.stoneFloor); top.rotation.x = -Math.PI / 2; top.position.y = 1000; g.add(top);
     place(g, WALL_A, 0, 0); root.add(g);
   })();
@@ -507,8 +507,8 @@
     var c = document.createElement("canvas"); c.width = 220; c.height = 100;
     var ctx = c.getContext("2d");
     edgeShade(ctx, 220, 100, "b", 18, 0.38); edgeShade(ctx, 220, 100, "l", 10, 0.2); edgeShade(ctx, 220, 100, "r", 10, 0.2);
-    var m = new T.Mesh(new T.PlaneGeometry(2200, 1000), aoMat(c));
-    m.position.y = 500; place(m, WALL_A, 1100, 201); m.renderOrder = 1; root.add(m);
+    var m = new T.Mesh(new T.PlaneGeometry(2000, 1000), aoMat(c));
+    m.position.y = 500; place(m, WALL_A, 1000, 201); m.renderOrder = 1; root.add(m);
   })();
   // floor and ceiling shading along the walls, the ledge and under the WC
   (function () {
@@ -525,7 +525,7 @@
         ctx.stroke();
         if (extras) {
           var a = WALL_A, px = function (u) { return [(a.p[0] + a.d[0] * u + a.n[0] * 200 - x0) * k, (a.p[1] + a.d[1] * u + a.n[1] * 200 - z0) * k]; };
-          var s0 = px(0), s1 = px(2200);
+          var s0 = px(0), s1 = px(2000);
           ctx.beginPath(); ctx.moveTo(s0[0], s0[1]); ctx.lineTo(s1[0], s1[1]); ctx.stroke();
           ctx.beginPath();
           ORDER.forEach(function (key, j) { var p = P[key]; var x = (p[0] - x0) * k, y = (p[1] - z0) * k; if (j) ctx.lineTo(x, y); else ctx.moveTo(x, y); });
@@ -535,7 +535,7 @@
       ctx.restore();
       if (extras) {
         // soft shadow under the wall-hung pan and the basin
-        [[450, 470, 26, 34, 0.28], [1100, 400, 30, 22, 0.16]].forEach(function (s) {
+        [[450, 470, 26, 34, 0.28], [1000, 400, 30, 22, 0.16]].forEach(function (s) {
           var a = WALL_A, cx = (a.p[0] + a.d[0] * s[0] + a.n[0] * s[1] - x0) * k, cy = (a.p[1] + a.d[1] * s[0] + a.n[1] * s[1] - z0) * k;
           var g = ctx.createRadialGradient(cx, cy, 0, cx, cy, Math.max(s[2], s[3]));
           g.addColorStop(0, "rgba(28,20,12," + s[4] + ")"); g.addColorStop(1, "rgba(28,20,12,0)");
@@ -582,7 +582,7 @@
 
   // ---------- matte white basin, brass mixer, bottle trap ----------
   (function () {
-    var g = fixture(WALL_A, 1100, 200); // centred under the mirror cabinet
+    var g = fixture(WALL_A, 1000, 200); // centred under the mirror cabinet
     function rrect(w, d, r, cx, cy) {
       var s = new T.Shape(), x0 = cx - w / 2, y0 = cy - d / 2;
       s.moveTo(x0 + r, y0); s.lineTo(x0 + w - r, y0); s.quadraticCurveTo(x0 + w, y0, x0 + w, y0 + r);
@@ -737,7 +737,7 @@
   // ---------- everyday things: plant and soap on the ledge ----------
   (function () {
     // plant in a speckled stone pot at the right end of the ledge
-    var g = fixture(WALL_A, 2010, 95);
+    var g = fixture(WALL_A, 1820, 95);
     var prof = [new T.Vector2(0, 0), new T.Vector2(52, 0), new T.Vector2(56, 6), new T.Vector2(66, 120), new T.Vector2(62, 124), new T.Vector2(58, 112), new T.Vector2(0, 112)];
     var pot = mesh(new T.LatheGeometry(prof, 40), new T.MeshStandardMaterial({ color: 0xe4ddd0, roughness: 0.85 }), true);
     pot.position.y = 1000; g.add(pot);
@@ -759,7 +759,7 @@
       stem.position.set(lm.position.x * 0.5, 1105 + (h - 1105) / 2, lm.position.z * 0.5); g.add(stem);
     }
     // amber glass soap pump to the left of the tap
-    var sg = fixture(WALL_A, 880, 100);
+    var sg = fixture(WALL_A, 790, 100);
     var amber = mesh(new T.CylinderGeometry(30, 30, 130, 32), new T.MeshStandardMaterial({ color: 0x5a3212, roughness: 0.06, metalness: 0, transparent: true, opacity: 0.82, envMapIntensity: 1.5 }), true);
     amber.position.y = 1065; sg.add(amber);
     var neck = mesh(new T.CylinderGeometry(11, 14, 22, 20), M.brass, true); neck.position.y = 1141; sg.add(neck);
@@ -773,11 +773,11 @@
     var capT = mesh(new T.SphereGeometry(14, 20, 10), M.brass, true); capT.position.set(0, y + 34, z0 + 55); g.add(capT);
     var capB = mesh(new T.SphereGeometry(14, 20, 10), M.brass, true); capB.position.set(0, y - 6, z0 + 55); g.add(capB);
   }
-  robeHook(fixture(WALL_A, 2050, 0), 1600, 0);
+  robeHook(fixture(WALL_A, 1875, 0), 1600, 0); // in the 250 gap right of the cabinet
 
   // ---------- Newport shaving cabinet with LED halo ----------
   (function () {
-    var g = fixture(WALL_A, 1100, 0);
+    var g = fixture(WALL_A, 1000, 0); // cabinet centred on the 2000 wall: 250 each side
     // Zure Newport shaving cabinet, Woodland Oak, 1500 x 750 soft-square mirror front, 3 doors, oak body 1350 x 600 x 128
     var oc = document.createElement("canvas"); oc.width = 512; oc.height = 256;
     var og = oc.getContext("2d"); og.fillStyle = "#b08a5c"; og.fillRect(0, 0, 512, 256);
@@ -948,7 +948,7 @@
   downlight(1850, -150, 2.8, false);
   // LED halo light near the cabinet
   (function () {
-    var p = new T.Vector3(); var g = new T.Group(); place(g, WALL_A, 1100, 60); g.position.y = 1575;
+    var p = new T.Vector3(); var g = new T.Group(); place(g, WALL_A, 1000, 60); g.position.y = 1575;
     var l = new T.PointLight(0xffbf78, 2.4, 1.6, 2);
     l.position.set(g.position.x / 1000, 1.99, g.position.z / 1000); scene.add(l);
   })();
@@ -972,11 +972,11 @@
   controls.enableZoom = false; controls.enablePan = false; controls.enableDamping = true; controls.dampingFactor = 0.08;
   controls.rotateSpeed = -0.35;
   var VIEWS = {
-    basin:  { pos: [2750, 1600, -1500], look: [600, 1150, -150], fov: 70 },
+    basin:  { pos: [2700, 1600, -1450], look: [600, 1150, -150], fov: 70 },
     door:   { pos: [1720, 1600, -420],  look: [1900, 1200, -2200], fov: 74 },
     shower: { pos: [1500, 1550, -760],  look: [0, 1250, -330], fov: 68 },
-    vanity: { pos: [2450, 1650, -300],  look: [1650, 1150, -2050], fov: 64 },
-    sink:   { pos: [2620, 1250, -40],  look: [2022, 640, -1620], fov: 58 },
+    vanity: { pos: [2300, 1650, -250],  look: [1500, 1150, -2000], fov: 64 },
+    sink:   { pos: [2526, 1250, -6],  look: [1928, 640, -1586], fov: 58 },
     back:   { pos: [2150, 1560, 40],   look: [1700, 950, -1950], fov: 80 } // wide, from the doorway
   };
   function setView(name) {

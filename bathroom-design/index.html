@@ -480,10 +480,10 @@
     </div>
 
     <figure class="sheet" style="margin:0">
-      <div class="fig-head"><b>A · Vanity and WC wall</b><span>2200 wide × 2150 high</span></div>
+      <div class="fig-head"><b>A · Vanity and WC wall</b><span>2000 wide × 2150 high</span></div>
       <div class="scroller"><div id="elevA" style="min-width:620px"></div></div>
       <div class="fig-notes"><ul>
-        <li>Zure Newport shaving cabinet, 1500 × 750 soft-square mirror front in Woodland Oak, leaving 350 each side and 200 to the ceiling. The LED glow spills into those gaps.</li>
+        <li>Zure Newport shaving cabinet, 1500 × 750 soft-square mirror front in Woodland Oak, leaving 250 each side on the 2000 wall and 200 to the ceiling. The LED glow spills into those gaps.</li>
         <li>In-wall cistern sits inside the ledge; brass flush plate on the ledge front above the pan.</li>
         <li>Robe hook on the green tile to the right of the basin, clear of the cabinet door swing.</li>
       </ul></div>
@@ -704,11 +704,11 @@
 
   // ---------- Elevation A: vanity & WC ----------
   (function () {
-    var W = 2200, c = "";
+    var W = 2000, c = "";
     // ledge top, clad in the floor tile
     c += '<rect x="0" y="' + (CEIL - DATUM - 22) + '" width="' + W + '" height="24" fill="#d3cdc3" stroke="#b3ac9f" stroke-width="2"/>';
     // Newport cabinet halo + soft-square mirror front (1500 x 750 @ 1200)
-    var cx0 = 350, cx1 = 1850, cy0 = 1200, cy1 = 1950;
+    var cx0 = 250, cx1 = 1750, cy0 = 1200, cy1 = 1950;
     c += '<rect x="' + (cx0 - 30) + '" y="' + (CEIL - cy1 - 30) + '" width="' + (cx1 - cx0 + 60) + '" height="' + (cy1 - cy0 + 60) + '" fill="#ffe2a0" opacity=".95" filter="url(#halo)"/>';
     c += '<rect x="' + cx0 + '" y="' + (CEIL - cy1) + '" width="' + (cx1 - cx0) + '" height="' + (cy1 - cy0) + '" rx="110" fill="url(#mirror)" stroke="#6f7b76" stroke-width="4"/>';
     for (var i = 1; i < 3; i++) { var dx = cx0 + i * (cx1 - cx0) / 3; c += '<line x1="' + dx + '" y1="' + (CEIL - cy1) + '" x2="' + dx + '" y2="' + (CEIL - cy0) + '" stroke="#8e9b98" stroke-width="3"/>'; }
@@ -728,7 +728,7 @@
     c += '<rect x="' + (wx - 172) + '" y="' + (CEIL - 410) + '" width="344" height="18" rx="9" fill="#fafaf8" stroke="#6d736f" stroke-width="3"/>';
 
     // basin + tap + trap
-    var bx = 1100; // basin centred under the mirror cabinet
+    var bx = 1000; // basin centred under the mirror cabinet
     // basin mixer mounted on the basin's rear tap deck
     c += '<rect x="' + (bx - 20) + '" y="' + (CEIL - 1030) + '" width="40" height="180" rx="6" fill="url(#brass)" stroke="#7a6333" stroke-width="3"/>';
     c += '<rect x="' + (bx - 66) + '" y="' + (CEIL - 1005) + '" width="46" height="16" rx="6" fill="url(#brass)" stroke="#7a6333" stroke-width="2"/>';
@@ -741,13 +741,13 @@
     c += '<line x1="' + (bx - 285) + '" y1="' + (CEIL - 838) + '" x2="' + (bx + 285) + '" y2="' + (CEIL - 838) + '" stroke="#d9d9d4" stroke-width="4"/>';
 
     // robe hook
-    var hx = 2050, hy = 1600;
+    var hx = 1875, hy = 1600;
     c += '<circle cx="' + hx + '" cy="' + (CEIL - hy) + '" r="26" fill="url(#brass)" stroke="#7a6333" stroke-width="3"/>';
     c += '<path d="M' + hx + " " + (CEIL - hy) + " l0 60 q0 26 26 26" + '" fill="none" stroke="#a88d57" stroke-width="16" stroke-linecap="round"/>';
 
     var x = "";
     x += dimH(cx0, cx1, -60, "1500");
-    x += dimH(0, cx0, -60, "350") + dimH(cx1, W, -60, "350");
+    x += dimH(0, cx0, -60, "250") + dimH(cx1, W, -60, "250");
     x += dimV(cy1, CEIL, W + 90, "200", "r");
     x += dimV(cy0, cy1, W + 90, "750", "r");
     x += dimV(0, cy0, W + 200, "1200 AFFL", "r");
@@ -832,23 +832,23 @@
     for (var gy = 40; gy < 720; gy += 111) s += '<line x1="0" y1="' + gy + '" x2="820" y2="' + gy + '"/>';
     s += "</g>";
 
-    // Wall A group: local mm coordinates along the 2200 wall, y into the room
-    s += '<g clip-path="url(#roomClip)"><g transform="translate(290,205) rotate(-19.7) scale(0.185)">';
-    s += '<rect x="0" y="0" width="2200" height="200" fill="#d6d0c5" stroke="#243029" stroke-width="7"/>';
-    s += '<rect x="350" y="-10" width="1500" height="150" fill="none" stroke="#243029" stroke-width="6" stroke-dasharray="30 20"/>';
+    // Wall A group: local mm coordinates along the 2000 wall (measured), y into the room
+    s += '<g clip-path="url(#roomClip)"><g transform="translate(290,205) rotate(-19.7) scale(0.2035)">';
+    s += '<rect x="0" y="0" width="2000" height="200" fill="#d6d0c5" stroke="#243029" stroke-width="7"/>';
+    s += '<rect x="250" y="-10" width="1500" height="150" fill="none" stroke="#243029" stroke-width="6" stroke-dasharray="30 20"/>';
     // cistern in ledge
     s += '<rect x="250" y="30" width="400" height="150" fill="none" stroke="#7d887f" stroke-width="5" stroke-dasharray="14 10"/>';
     // back-to-wall WC pan, 360 wide x 595 long from the ledge face
     s += '<path d="M272 200 L628 200 L630 530 Q630 795 450 795 Q270 795 270 530 Z" fill="#ffffff" stroke="#243029" stroke-width="6"/>';
     s += '<path d="M302 236 L598 236 L598 525 Q598 762 450 762 Q302 762 302 525 Z" fill="none" stroke="#7d887f" stroke-width="5"/>';
     // basin
-    s += '<rect x="805" y="200" width="590" height="430" rx="18" fill="#ffffff" stroke="#243029" stroke-width="6"/>';
-    s += '<rect x="819" y="295" width="562" height="321" rx="12" fill="none" stroke="#7d887f" stroke-width="5"/>';
-    s += '<circle cx="1100" cy="455" r="22" fill="#b89d66" stroke="#243029" stroke-width="4"/>';
-    s += '<circle cx="1100" cy="247" r="26" fill="url(#brass)" stroke="#7a6333" stroke-width="5"/>';
-    s += '<rect x="1088" y="247" width="24" height="160" fill="url(#brass)" stroke="#7a6333" stroke-width="4"/>';
+    s += '<rect x="705" y="200" width="590" height="430" rx="18" fill="#ffffff" stroke="#243029" stroke-width="6"/>';
+    s += '<rect x="719" y="295" width="562" height="321" rx="12" fill="none" stroke="#7d887f" stroke-width="5"/>';
+    s += '<circle cx="1000" cy="455" r="22" fill="#b89d66" stroke="#243029" stroke-width="4"/>';
+    s += '<circle cx="1000" cy="247" r="26" fill="url(#brass)" stroke="#7a6333" stroke-width="5"/>';
+    s += '<rect x="988" y="247" width="24" height="160" fill="url(#brass)" stroke="#7a6333" stroke-width="4"/>';
     // robe hook
-    s += '<rect x="2020" y="200" width="60" height="45" fill="url(#brass)" stroke="#7a6333" stroke-width="5"/>';
+    s += '<rect x="1845" y="200" width="60" height="45" fill="url(#brass)" stroke="#7a6333" stroke-width="5"/>';
     s += "</g></g>";
 
     // walls
@@ -892,7 +892,7 @@
     s += L(672, 142, "HOOK", { size: 10, fill: "#7a6333", a: "middle" });
     s += L(518, 662, "ENTRY", { size: 12, fill: "#5d685e", a: "middle" });
     // outside dims (from Rev 07)
-    s += L(470, 118, "2200", { size: 14, fill: "#5d685e", a: "middle", rot: -19.7 });
+    s += L(470, 118, "2000", { size: 14, fill: "#5d685e", a: "middle", rot: -19.7 });
     s += L(716, 110, "570", { size: 13, fill: "#5d685e" });
     s += L(716, 400, "2300", { size: 14, fill: "#5d685e", rot: 90 });
     s += L(290, 668, "1600", { size: 14, fill: "#5d685e", a: "middle" });
