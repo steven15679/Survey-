@@ -483,7 +483,7 @@
       <div class="fig-head"><b>A · Vanity and WC wall</b><span>2200 wide × 2150 high</span></div>
       <div class="scroller"><div id="elevA" style="min-width:620px"></div></div>
       <div class="fig-notes"><ul>
-        <li>Cabinet reduced to 1600 × 750, leaving 300 each side and 200 to the ceiling. The LED glow spills into those gaps.</li>
+        <li>Zure Newport shaving cabinet, 1500 × 750 soft-square mirror front in Woodland Oak, leaving 350 each side and 200 to the ceiling. The LED glow spills into those gaps.</li>
         <li>In-wall cistern sits inside the ledge; brass flush plate on the ledge front above the pan.</li>
         <li>Robe hook on the green tile to the right of the basin, clear of the cabinet door swing.</li>
       </ul></div>
@@ -540,7 +540,7 @@
           <tr><td>Wall tile (Option J)</td><td>Kobe Verde Aver matt rectified Italian porcelain, TFO #0429, no sealing needed</td><td>Matt green-black marble look</td><td class="num">595 × 595, floor to ceiling</td><td>All walls</td></tr>
           <tr><td>Wall tile (Option H)</td><td>Palma Green gloss Spanish irregular-edge porcelain zellige, TFO #4628, $89/m²</td><td>Gloss green</td><td class="num">100 × 100, floor to ceiling</td><td>All walls</td></tr>
           <tr><td>Bottle trap</td><td>Round bottle trap for 32 mm basin waste</td><td><span class="tag">Brushed brass</span></td><td class="num">—</td><td>Under basin</td></tr>
-          <tr><td>Mirror cabinet</td><td>Shaving cabinet, 3 doors, concealed LED perimeter strip</td><td>Mirror, LED 2700 K warm white</td><td class="num">1600 × 750 @ 1200</td><td>Wall A, centred</td></tr>
+          <tr><td>Shaving cabinet</td><td>Zure Newport, Woodland Oak, soft-square, 3 mirrored doors, body ≈ 1350 × 600 × 128; LED backlight (LED version)</td><td>Mirror, Woodland Oak, LED 2700 K</td><td class="num">1500 × 750 @ 1200</td><td>Wall A, centred</td></tr>
           <tr><td>Robe hooks</td><td>Rainco robe hook × 2 (BB00015)</td><td><span class="tag">Brushed brass</span></td><td class="num">≈ 1600 / 1700</td><td>Right of basin; back of entry door</td></tr>
           <tr><td>Toilet roll holder</td><td>Rainco toilet roll holder (TBB00021)</td><td><span class="tag">Brushed brass</span></td><td class="num">≈ 700</td><td>Short wall beside the shower glass, left of the pan</td></tr>
           <tr><td>Shower</td><td>Rainco Haven Minimal diverter wall mixer (BB00025); hand shower wand on a wall bracket (BB00008); overhead rose on a wall arm</td><td><span class="tag">Brushed brass</span></td><td class="num">Arm ≈ 2010, mixer 1000, diverter 1180, wand bracket 1560</td><td>Wall B</td></tr>
@@ -585,7 +585,7 @@
       <li><div><b>Glass fixing with clamps only.</b> <span>Ask the glazier to confirm a 600 panel is rigid on wall and floor clamps alone, and whether the floor clamps need to be set before or after the tiles go down. If it needs more support, a brass clamp to the ceiling is less visible than a bar across the entry.</span></div></li>
       <li><div><b>Cistern and pan.</b> <span>The quoted suite is a floor-standing back-to-wall pan with a concealed cistern, not a wall-hung pan. Check the cistern fits inside the 1000 high, 200 deep ledge with access through the flush button, and that the pan's waste lines up with the existing floor outlet.</span></div></li>
       <li><div><b>Basin and tap.</b> <span>The quoted 590 basin has one tap hole on its rear deck, so the mixer mounts on the basin. Check the mixer spout reaches the middle of the bowl, and confirm basin and pan heights before rough-in.</span></div></li>
-      <li><div><b>Cabinet size and depth.</b> <span>1600 × 750 is the proposal. Confirm the LED strip is concealed on all four sides and the driver has an access point.</span></div></li>
+      <li><div><b>Newport cabinet version.</b> <span>The render shows the 1500 Newport with a warm LED glow behind it, as on the Otti LED Newport. If you're buying the non-LED version, there's no glow; check which one the link is, and where its power and driver go.</span></div></li>
       <li><div><b>Kalkstone slip rating.</b> <span>The TFO tag leaves the slip rating blank. Ask for the rating before ordering: a shower floor needs P3 or better, and some matt porcelains are only P2.</span></div></li>
       <li><div><b>Door stop on the door.</b> <span>Rainco lists the Lombardy as a floor stop. Check it can be screwed to the door face, or pick their door-mounted version, and set it so it meets the right-hand wall before the handle does.</span></div></li>
       <li><div><b>Towel pole height and spacing.</b> <span>Drawn 1200 tall, 300 apart. Check they clear the door swing and the door handle.</span></div></li>
@@ -707,14 +707,14 @@
     var W = 2200, c = "";
     // ledge top, clad in the floor tile
     c += '<rect x="0" y="' + (CEIL - DATUM - 22) + '" width="' + W + '" height="24" fill="#d3cdc3" stroke="#b3ac9f" stroke-width="2"/>';
-    // cabinet halo + cabinet (1600 x 750 @ 1200)
-    var cx0 = 300, cx1 = 1900, cy0 = 1200, cy1 = 1950;
+    // Newport cabinet halo + soft-square mirror front (1500 x 750 @ 1200)
+    var cx0 = 350, cx1 = 1850, cy0 = 1200, cy1 = 1950;
     c += '<rect x="' + (cx0 - 30) + '" y="' + (CEIL - cy1 - 30) + '" width="' + (cx1 - cx0 + 60) + '" height="' + (cy1 - cy0 + 60) + '" fill="#ffe2a0" opacity=".95" filter="url(#halo)"/>';
-    c += '<rect x="' + cx0 + '" y="' + (CEIL - cy1) + '" width="' + (cx1 - cx0) + '" height="' + (cy1 - cy0) + '" fill="url(#mirror)" stroke="#6f7b76" stroke-width="4"/>';
+    c += '<rect x="' + cx0 + '" y="' + (CEIL - cy1) + '" width="' + (cx1 - cx0) + '" height="' + (cy1 - cy0) + '" rx="110" fill="url(#mirror)" stroke="#6f7b76" stroke-width="4"/>';
     for (var i = 1; i < 3; i++) { var dx = cx0 + i * (cx1 - cx0) / 3; c += '<line x1="' + dx + '" y1="' + (CEIL - cy1) + '" x2="' + dx + '" y2="' + (CEIL - cy0) + '" stroke="#8e9b98" stroke-width="3"/>'; }
     c += '<line x1="' + (cx0 + 120) + '" y1="' + (CEIL - cy0 - 40) + '" x2="' + (cx0 + 520) + '" y2="' + (CEIL - cy1 + 60) + '" stroke="#ffffff" stroke-width="18" opacity=".45"/>';
     c += '<line x1="' + (cx0 + 700) + '" y1="' + (CEIL - cy0 - 40) + '" x2="' + (cx0 + 1000) + '" y2="' + (CEIL - cy1 + 180) + '" stroke="#ffffff" stroke-width="10" opacity=".35"/>';
-    c += txt((cx0 + cx1) / 2, CEIL - 1560, "MIRRORED SHAVING CABINET", { size: 50, weight: 600, fill: "#44504b", ls: 2 });
+    c += txt((cx0 + cx1) / 2, CEIL - 1560, "NEWPORT SHAVING CABINET", { size: 50, weight: 600, fill: "#44504b", ls: 2 });
     c += txt((cx0 + cx1) / 2, CEIL - 1490, "LED halo concealed on all edges", { size: 42, fill: "#5d685e" });
 
     // WC: flush plate on ledge face, back-to-wall floor pan (595 x 360 x 410) with slim seat
@@ -746,8 +746,8 @@
     c += '<path d="M' + hx + " " + (CEIL - hy) + " l0 60 q0 26 26 26" + '" fill="none" stroke="#a88d57" stroke-width="16" stroke-linecap="round"/>';
 
     var x = "";
-    x += dimH(cx0, cx1, -60, "1600");
-    x += dimH(0, cx0, -60, "300") + dimH(cx1, W, -60, "300");
+    x += dimH(cx0, cx1, -60, "1500");
+    x += dimH(0, cx0, -60, "350") + dimH(cx1, W, -60, "350");
     x += dimV(cy1, CEIL, W + 90, "200", "r");
     x += dimV(cy0, cy1, W + 90, "750", "r");
     x += dimV(0, cy0, W + 200, "1200 AFFL", "r");
@@ -835,7 +835,7 @@
     // Wall A group: local mm coordinates along the 2200 wall, y into the room
     s += '<g clip-path="url(#roomClip)"><g transform="translate(290,205) rotate(-19.7) scale(0.185)">';
     s += '<rect x="0" y="0" width="2200" height="200" fill="#d6d0c5" stroke="#243029" stroke-width="7"/>';
-    s += '<rect x="300" y="-10" width="1600" height="150" fill="none" stroke="#243029" stroke-width="6" stroke-dasharray="30 20"/>';
+    s += '<rect x="350" y="-10" width="1500" height="150" fill="none" stroke="#243029" stroke-width="6" stroke-dasharray="30 20"/>';
     // cistern in ledge
     s += '<rect x="250" y="30" width="400" height="150" fill="none" stroke="#7d887f" stroke-width="5" stroke-dasharray="14 10"/>';
     // back-to-wall WC pan, 360 wide x 595 long from the ledge face

@@ -775,17 +775,37 @@
   }
   robeHook(fixture(WALL_A, 2050, 0), 1600, 0);
 
-  // ---------- mirror cabinet with LED halo ----------
+  // ---------- Newport shaving cabinet with LED halo ----------
   (function () {
     var g = fixture(WALL_A, 1100, 0);
-    var body = mesh(rbox(1600, 750, 130, 6), M.cabinet, true); body.position.set(0, 1575, 75); g.add(body);
-    var mirror = new T.Reflector(new T.PlaneGeometry(1590, 740), {
+    // Zure Newport shaving cabinet, Woodland Oak, 1500 x 750 soft-square mirror front, 3 doors, oak body 1350 x 600 x 128
+    var oc = document.createElement("canvas"); oc.width = 512; oc.height = 256;
+    var og = oc.getContext("2d"); og.fillStyle = "#b08a5c"; og.fillRect(0, 0, 512, 256);
+    for (var oi = 0; oi < 70; oi++) {
+      var oy = rnd() * 256, oa = 0.05 + rnd() * 0.12;
+      og.strokeStyle = rnd() > 0.5 ? "rgba(110,76,42," + oa + ")" : "rgba(214,184,140," + oa + ")"; og.lineWidth = 0.6 + rnd() * 2;
+      og.beginPath(); og.moveTo(0, oy); for (var ox = 0; ox <= 512; ox += 32) og.lineTo(ox, oy + Math.sin(ox / 60 + oi) * 2); og.stroke();
+    }
+    var oakTex = new T.CanvasTexture(oc); oakTex.encoding = T.sRGBEncoding;
+    var oak = new T.MeshStandardMaterial({ map: oakTex, roughness: 0.6, envMapIntensity: 0.5 });
+    var body = mesh(rbox(1350, 600, 110, 6), oak, true); body.position.set(0, 1575, 55); g.add(body);
+    function softRect(w, h, r) {
+      var sh = new T.Shape(), x0 = -w / 2, y0 = -h / 2;
+      sh.moveTo(x0 + r, y0); sh.lineTo(x0 + w - r, y0); sh.quadraticCurveTo(x0 + w, y0, x0 + w, y0 + r);
+      sh.lineTo(x0 + w, y0 + h - r); sh.quadraticCurveTo(x0 + w, y0 + h, x0 + w - r, y0 + h);
+      sh.lineTo(x0 + r, y0 + h); sh.quadraticCurveTo(x0, y0 + h, x0, y0 + h - r);
+      sh.lineTo(x0, y0 + r); sh.quadraticCurveTo(x0, y0, x0 + r, y0);
+      return sh;
+    }
+    var doorGeo = new T.ExtrudeGeometry(softRect(1500, 750, 110), { depth: 18, bevelEnabled: false, curveSegments: 24 });
+    var door = mesh(doorGeo, M.cabinet, true); door.position.set(0, 1575, 110); g.add(door);
+    var mirror = new T.Reflector(new T.ShapeGeometry(softRect(1494, 744, 107), 24), {
       clipBias: 0.003, color: 0x9aa4a3,
       textureWidth: Math.min(2048, window.innerWidth * renderer.getPixelRatio()),
       textureHeight: Math.min(2048, window.innerHeight * renderer.getPixelRatio())
     });
-    mirror.position.set(0, 1575, 141); g.add(mirror);
-    [-1600 / 6, 1600 / 6].forEach(function (x) { var s = mesh(new T.BoxGeometry(4, 740, 3), M.gap); s.position.set(x, 1575, 142); g.add(s); });
+    mirror.position.set(0, 1575, 129); g.add(mirror);
+    [-250, 250].forEach(function (x) { var s = mesh(new T.BoxGeometry(4, 744, 3), M.gap); s.position.set(x, 1575, 130); g.add(s); });
     // hidden LED strip behind the edges, and its glow on the tile
     var c = document.createElement("canvas"); c.width = 512; c.height = 256;
     var cg = c.getContext("2d");
@@ -797,10 +817,10 @@
       cg.strokeRect(pad, pad * 0.8, 512 - 2 * pad, 256 - 1.6 * pad);
     }
     var glowTex = new T.CanvasTexture(c); glowTex.encoding = T.sRGBEncoding;
-    var glow = new T.Mesh(new T.PlaneGeometry(2300, 1150), new T.MeshBasicMaterial({ map: glowTex, transparent: true, blending: T.AdditiveBlending, depthWrite: false }));
+    var glow = new T.Mesh(new T.PlaneGeometry(2150, 1150), new T.MeshBasicMaterial({ map: glowTex, transparent: true, blending: T.AdditiveBlending, depthWrite: false }));
     glow.position.set(0, 1575, 4); g.add(glow);
-    var stripV = new T.BoxGeometry(10, 730, 10), stripH = new T.BoxGeometry(1580, 10, 10);
-    [[-795, 1575, stripV], [795, 1575, stripV], [0, 1945, stripH], [0, 1205, stripH]].forEach(function (s) {
+    var stripV = new T.BoxGeometry(10, 580, 10), stripH = new T.BoxGeometry(1330, 10, 10);
+    [[-670, 1575, stripV], [670, 1575, stripV], [0, 1870, stripH], [0, 1280, stripH]].forEach(function (s) {
       var m = new T.Mesh(s[2], M.led); m.position.set(s[0], s[1], 20); g.add(m);
     });
   })();
