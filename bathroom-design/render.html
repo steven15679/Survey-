@@ -90,6 +90,7 @@
     <button type="button" data-vanity="none" aria-pressed="true">No vanity</button>
     <button type="button" data-vanity="walnut" aria-pressed="false">Walnut vanity + D basin</button>
     <button type="button" data-vanity="white" aria-pressed="false">White vanity + D basin</button>
+    <button type="button" data-vanity="moon" aria-pressed="false">Otti Moonlight 600</button>
   </div>
   </div>
 </div>
@@ -722,7 +723,45 @@
     var vfloor = mesh(floorGeo, new T.MeshStandardMaterial({ color: 0xeeeeea, roughness: 0.15, envMapIntensity: 0.9 }), false); vfloor.position.y = 12; vessel.add(vfloor);
     // round vessel basin and tall mixer are shared by both vanities (both tops finish at 730)
     var VV = new T.Group(); VV.visible = false; g.add(VV); VANITIES.vessel = VV;
-    [VW, VH, VV].forEach(function (grp) { grp.position.x = 100; }); // vanity sits 100 right of the mirror centre
+    // ---- vanity option 3: Otti Moonlight 600, wall-hung solid-surface basin slab over a separate drawer unit
+    // basin slab 600 W x 460 D x 80 H (top 850): 400 x 340 bowl sloping back to a slot drain, 108 tap deck
+    // drawer unit 600 W x 460 D x 250 H (340 to 590), brushed brass half-moon pull, exposed bottle trap in the gap
+    var VM = new T.Group(); VM.visible = false; g.add(VM); VANITIES.moon = VM;
+    var moonSolid = new T.MeshStandardMaterial({ color: 0xf4f4f1, roughness: 0.55, envMapIntensity: 0.55 });
+    var slabShape = rrect(600, 460, 4, 0, -230); slabShape.holes.push(rrect(400, 340, 6, 0, -278));
+    var slabGeo = new T.ExtrudeGeometry(slabShape, { depth: 80, bevelEnabled: false, curveSegments: 8 });
+    slabGeo.rotateX(-Math.PI / 2);
+    var slab = mesh(slabGeo, moonSolid, true); slab.position.y = 770; VM.add(slab);
+    var slabBase = mesh(new T.BoxGeometry(600, 8, 460), moonSolid, true); slabBase.position.set(0, 774, 230); VM.add(slabBase);
+    // bowl floor: flat slot at the back (108 to 188, 70 deep), then a ramp up to 8 below the rim at the front
+    function quad(a, b, c, d) {
+      var geo = new T.BufferGeometry();
+      geo.setAttribute("position", new T.Float32BufferAttribute([].concat(a, b, c, a, c, d), 3));
+      geo.computeVertexNormals(); return geo;
+    }
+    var bowlMat = new T.MeshStandardMaterial({ color: 0xeeeeea, roughness: 0.5, envMapIntensity: 0.5, side: T.DoubleSide });
+    VM.add(mesh(quad([-200, 780, 108], [200, 780, 108], [200, 780, 188], [-200, 780, 188]), bowlMat, false));
+    VM.add(mesh(quad([-200, 780, 188], [200, 780, 188], [200, 842, 448], [-200, 842, 448]), bowlMat, false));
+    var mWaste = mesh(new T.BoxGeometry(300, 3, 40), M.brass, true); mWaste.position.set(0, 781.5, 148); VM.add(mWaste);
+    // basin mixer on the deck, short spout over the slot
+    var mm = new T.Group(); mm.position.set(0, 850, 54); VM.add(mm);
+    var mmB = mesh(new T.CylinderGeometry(20, 20, 170, 32), M.brass, true); mmB.position.y = 85; mm.add(mmB);
+    var mmS = mesh(new T.CylinderGeometry(9, 9, 120, 20), M.brass, true); mmS.rotation.x = Math.PI / 2; mmS.position.set(0, 140, 60); mm.add(mmS);
+    var mmT = mesh(new T.CylinderGeometry(9, 9, 18, 20), M.brass, true); mmT.position.set(0, 132, 118); mm.add(mmT);
+    var mmL = mesh(new T.CylinderGeometry(4, 4, 55, 12), M.brass, true); mmL.rotation.z = Math.PI / 2; mmL.position.set(28, 160, 0); mm.add(mmL);
+    // exposed brushed brass bottle trap in the gap
+    var mt1 = mesh(new T.CylinderGeometry(16, 16, 110, 20), M.brass, true); mt1.position.set(0, 715, 148); VM.add(mt1);
+    var mt2 = mesh(new T.CylinderGeometry(30, 30, 120, 24), M.brass, true); mt2.position.set(0, 630, 148); VM.add(mt2);
+    var mt3 = mesh(new T.CylinderGeometry(15, 15, 148, 20), M.brass, true); mt3.rotation.x = Math.PI / 2; mt3.position.set(0, 650, 74); VM.add(mt3);
+    var mt4 = mesh(new T.CylinderGeometry(32, 32, 8, 24), M.brass); mt4.rotation.x = Math.PI / 2; mt4.position.set(0, 650, 4); VM.add(mt4);
+    // drawer unit with an inset drawer front and half-moon pull at its top edge
+    var mCase = mesh(rbox(600, 250, 460, 3), moonSolid, true); mCase.position.set(0, 465, 230); VM.add(mCase);
+    [[0, 579, 576, 6], [0, 351, 576, 6]].forEach(function (q) { var gp = mesh(new T.BoxGeometry(q[2], q[3], 4), M.gap); gp.position.set(q[0], q[1], 461); VM.add(gp); });
+    [[-291, 465], [291, 465]].forEach(function (q) { var gp = mesh(new T.BoxGeometry(6, 234, 4), M.gap); gp.position.set(q[0], q[1], 461); VM.add(gp); });
+    var moonPull = mesh(new T.CylinderGeometry(42, 42, 6, 32, 1, false, Math.PI / 2, Math.PI), M.brass, true);
+    moonPull.rotation.x = Math.PI / 2; moonPull.position.set(0, 580, 464); VM.add(moonPull);
+
+    [VW, VH, VV, VM].forEach(function (grp) { grp.position.x = 100; }); // vanity sits 100 right of the mirror centre
     vessel.position.set(-20, 730, 70); VV.add(vessel); // flat back 70 off the wall, front at about 430
     var vWaste = mesh(new T.CylinderGeometry(27, 29, 10, 32), M.brass, true); vWaste.position.set(-20, 747, 70 + 200); VV.add(vWaste); // brushed gold pop-up plug
     // tall brushed brass vessel mixer at the back corner, spout reaching over the bowl
@@ -1042,7 +1081,8 @@
     VANITIES.walnut.visible = mode === "walnut";
     VANITIES.white.visible = mode === "white";
     TRAP.forEach(function (m) { m.visible = mode === "none"; });
-    VANITIES.vessel.visible = mode !== "none";
+    VANITIES.moon.visible = mode === "moon";
+    VANITIES.vessel.visible = mode === "walnut" || mode === "white";
     BASIN_RECT.forEach(function (m) { m.visible = mode === "none"; });
     document.querySelectorAll("[data-vanity]").forEach(function (bt) { bt.setAttribute("aria-pressed", String(bt.dataset.vanity === mode)); });
     dirty = true;
@@ -1052,7 +1092,7 @@
   var hash = (location.hash || "").replace("#", "").split("-");
   setView(VIEWS[hash[0]] ? hash[0] : "basin");
   setTile(["full", "feature", "stone", "sage", "shower", "zellige", "kobe"].indexOf(hash[1]) >= 0 ? hash[1] : "split");
-  setVanity(hash.indexOf("vanity", 1) >= 0 ? "walnut" : hash.indexOf("white", 1) >= 0 ? "white" : "none");
+  setVanity(hash.indexOf("vanity", 1) >= 0 ? "walnut" : hash.indexOf("white", 1) >= 0 ? "white" : hash.indexOf("moon", 1) >= 0 ? "moon" : "none");
 
   (function loop() {
     requestAnimationFrame(loop);
