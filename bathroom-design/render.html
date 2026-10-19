@@ -859,6 +859,19 @@
     [[-55, 0], [55, 0]].forEach(function (s) { var m = mesh(new T.BoxGeometry(6, 3, 116), M.brass); m.position.set(s[0], 1.5, s[1]); g.add(m); });
   });
 
+  // ---------- mini stop tap for a Tidaloo smart lid: brushed brass, ledge front, left of the pan, 200 AFFL ----------
+  (function () {
+    var g = fixture(WALL_A, 175, 200);
+    var fl = mesh(new T.CylinderGeometry(24, 24, 6, 32), M.brass, true); fl.rotation.x = Math.PI / 2; fl.position.set(0, 200, 3); g.add(fl);
+    var stem = mesh(new T.CylinderGeometry(11, 11, 40, 20), M.brass, true); stem.rotation.x = Math.PI / 2; stem.position.set(0, 200, 25); g.add(stem);
+    var bodyV = mesh(new T.CylinderGeometry(15, 15, 34, 24), M.brass, true); bodyV.rotation.x = Math.PI / 2; bodyV.position.set(0, 200, 55); g.add(bodyV);
+    var outlet = mesh(new T.CylinderGeometry(8, 8, 40, 16), M.brass, true); outlet.rotation.z = Math.PI / 2; outlet.position.set(26, 200, 55); g.add(outlet);
+    var handle = mesh(rbox(10, 46, 8, 3), M.brass, true); handle.position.set(0, 222, 76); g.add(handle);
+    // braided hose up to the seat's inlet
+    var hose = new T.CatmullRomCurve3([new T.Vector3(46, 200, 55), new T.Vector3(70, 230, 90), new T.Vector3(90, 330, 110), new T.Vector3(98, 395, 120)]);
+    g.add(mesh(new T.TubeGeometry(hose, 24, 5, 8, false), new T.MeshStandardMaterial({ color: 0xb9bcbd, metalness: 0.7, roughness: 0.45 }), true));
+  })();
+
   // ---------- toilet roll holder (Rainco TBB00021) on the short wall beside the shower glass, left of the pan ----------
   (function () {
     var g = fixture(EDGES["C-D"], 130, 0); // 130 from the glass corner, clear of the ledge

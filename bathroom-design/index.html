@@ -542,6 +542,7 @@
           <tr><td>Bottle trap</td><td>Round bottle trap for 32 mm basin waste</td><td><span class="tag">Brushed brass</span></td><td class="num">—</td><td>Under basin</td></tr>
           <tr><td>Shaving cabinet</td><td>Zure Newport, Woodland Oak, soft-square, 3 mirrored doors, body ≈ 1350 × 600 × 128; LED backlight (LED version)</td><td>Mirror, Woodland Oak, LED 2700 K</td><td class="num">1500 × 750 @ 1200</td><td>Wall A, centred</td></tr>
           <tr><td>Robe hooks</td><td>Rainco robe hook × 2 (BB00015)</td><td><span class="tag">Brushed brass</span></td><td class="num">≈ 1600 / 1700</td><td>Right of basin; back of entry door</td></tr>
+          <tr><td>Smart lid water</td><td>Mini stop tap (cistern/bidet stop) with braided hose, for a Tidaloo smart lid; cold water feed run inside the ledge</td><td><span class="tag">Brushed brass</span></td><td class="num">≈ 200 AFFL</td><td>Ledge front, left of the pan</td></tr>
           <tr><td>Toilet roll holder</td><td>Rainco toilet roll holder (TBB00021)</td><td><span class="tag">Brushed brass</span></td><td class="num">≈ 700</td><td>Short wall beside the shower glass, left of the pan</td></tr>
           <tr><td>Shower</td><td>Rainco Haven Minimal diverter wall mixer (BB00025); hand shower wand on a wall bracket (BB00008); overhead rose on a wall arm</td><td><span class="tag">Brushed brass</span></td><td class="num">Arm ≈ 2010, mixer 1000, diverter 1180, wand bracket 1560</td><td>Wall B</td></tr>
           <tr><td>Niche</td><td>Recessed, waterproofed, lined in olive tile, sill falls inward; 12 tiles × 2 rows (two sheets), edges on grout lines</td><td>Olive tile</td><td class="num">600 × 300 @ 1300</td><td>Wall C, shower side</td></tr>
@@ -587,6 +588,7 @@
       <li><div><b>Basin and tap.</b> <span>The quoted 590 basin has one tap hole on its rear deck, so the mixer mounts on the basin. Check the mixer spout reaches the middle of the bowl, and confirm basin and pan heights before rough-in.</span></div></li>
       <li><div><b>Newport cabinet version.</b> <span>The render shows the 1500 Newport with a warm LED glow behind it, as on the Otti LED Newport. If you're buying the non-LED version, there's no glow; check which one the link is, and where its power and driver go.</span></div></li>
       <li><div><b>Kalkstone slip rating.</b> <span>The TFO tag leaves the slip rating blank. Ask for the rating before ordering: a shower floor needs P3 or better, and some matt porcelains are only P2.</span></div></li>
+      <li><div><b>Tidaloo smart lid.</b> <span>The lid needs a cold water tap and a power point. Ask the plumber for the stop tap on the ledge front left of the pan, and ask the electrician for a GPO within the lid's cord length, kept out of the wet zone (inside the ledge behind an access panel is neat). Check the Tidaloo model fits the Norton99's 440 seat length and 150 mm hinge spacing.</span></div></li>
       <li><div><b>Door stop on the door.</b> <span>Rainco lists the Lombardy as a floor stop. Check it can be screwed to the door face, or pick their door-mounted version, and set it so it meets the right-hand wall before the handle does.</span></div></li>
       <li><div><b>Towel pole height and spacing.</b> <span>Drawn 1200 tall, 300 apart. Check they clear the door swing and the door handle.</span></div></li>
     </ul>
@@ -719,6 +721,9 @@
 
     // WC: flush plate on ledge face, back-to-wall floor pan (595 x 360 x 410) with slim seat
     var wx = 450;
+    // mini stop tap for the smart lid, ledge front left of the pan
+    c += '<circle cx="175" cy="' + (CEIL - 200) + '" r="22" fill="url(#brass)" stroke="#7a6333" stroke-width="3"/>';
+    c += '<rect x="168" y="' + (CEIL - 245) + '" width="14" height="45" rx="5" fill="url(#brass)" stroke="#7a6333" stroke-width="2"/>';
     c += '<rect x="' + (wx - 110) + '" y="' + (CEIL - 950) + '" width="220" height="145" rx="8" fill="url(#brass)" stroke="#7a6333" stroke-width="3"/>';
     c += '<line x1="' + wx + '" y1="' + (CEIL - 945) + '" x2="' + wx + '" y2="' + (CEIL - 810) + '" stroke="#7a6333" stroke-width="3"/>';
     c += '<path d="M' + (wx - 153) + " " + CEIL + " L" + (wx + 153) + " " + CEIL + " L" + (wx + 178) + " " + (CEIL - 330) +
@@ -752,6 +757,7 @@
     x += dimV(cy0, cy1, W + 90, "750", "r");
     x += dimV(0, cy0, W + 200, "1200 AFFL", "r");
     x += txt(wx, CEIL - 220, "BACK-TO-WALL", { size: 38, weight: 600, fill: "#44504b", ls: 1 }) + txt(wx, CEIL - 172, "RIMLESS WC", { size: 38, weight: 600, fill: "#44504b", ls: 1 });
+    x += txt(175, CEIL - 120, "STOP TAP", { size: 30, weight: 600, fill: "#6e5323", ls: 1 });
     x += txt(wx, CEIL - 740, "FLUSH PLATE", { size: 40, weight: 600, fill: "#6e5323", ls: 1 });
     x += callout(bx + 150, CEIL - 790, W + 290, CEIL - 700, "590 BASIN", "start");
     x += callout(bx + 20, CEIL - 960, W + 290, CEIL - 1080, "MIXER ON BASIN", "start");
