@@ -555,11 +555,12 @@
   // ---------- wall-hung WC with smart seat ----------
   (function () {
     var g = fixture(WALL_A, 450, 200);
-    // Zure Norton99 wall-faced pan, matt white, 570 long x 360 wide x 410 high: straight sides, soft squared nose
+    // Zure Norton99 wall-faced pan, matt white, 570 long x 360 wide x 410 high, per the spec sheet
     function panShape(k) {
       var sh = new T.Shape();
-      sh.moveTo(-148 * k, 0); sh.lineTo(148 * k, 0); sh.lineTo(150 * k, -400 * k);
-      sh.bezierCurveTo(150 * k, -590 * k, -150 * k, -590 * k, -150 * k, -400 * k); sh.closePath();
+      // spec sheet: straight sides, full half-round front (r = 180 incl. the 28 bevel), 570 overall
+      sh.moveTo(-152 * k, 0); sh.lineTo(152 * k, 0); sh.lineTo(152 * k, -390 * k);
+      sh.absarc(0, -390 * k, 152 * k, 0, -Math.PI, true); sh.closePath();
       return sh;
     }
     function solid(shape, depth, bevel) {
@@ -569,8 +570,9 @@
     }
     var panGeo = solid(panShape(1), 318, 28), pos = panGeo.attributes.position;
     for (var i = 0; i < pos.count; i++) { // skirted pan: slightly narrower at the floor
-      var yy = pos.getY(i), t = Math.min(1, Math.max(0, (yy + 28) / 374)), k = 0.86 + 0.14 * Math.pow(t, 0.8);
-      pos.setX(i, pos.getX(i) * k); pos.setZ(i, (pos.getZ(i)) * (0.93 + 0.07 * t));
+      // narrows towards the floor: front view tapers to about 280 wide, side view curves back to about 430 deep
+      var yy = pos.getY(i), t = Math.min(1, Math.max(0, (yy + 28) / 374)), k = 0.78 + 0.22 * Math.pow(t, 0.7);
+      pos.setX(i, pos.getX(i) * k); pos.setZ(i, pos.getZ(i) * (0.75 + 0.25 * Math.pow(t, 0.55)));
     }
     panGeo.computeVertexNormals();
     var body = mesh(panGeo, M.matteWhite, true); body.position.set(0, 28, 0); g.add(body); // sits on the floor, 0 to 374
