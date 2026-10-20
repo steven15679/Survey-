@@ -85,10 +85,11 @@
     <button type="button" id="t-shower" data-tile="shower" aria-pressed="false">Olive shower only</button>
     <button type="button" id="t-zellige" data-tile="zellige" aria-pressed="false">Palma Green zellige</button>
     <button type="button" id="t-sagefull" data-tile="sagefull" aria-pressed="false">Beaumont sage floor to ceiling</button>
+    <button type="button" id="t-celadon" data-tile="celadon" aria-pressed="false">Origin Celadon</button>
   </div>
   <div class="views" role="group" aria-label="Vanity">
     <button type="button" data-vanity="none" aria-pressed="true">No vanity</button>
-    <button type="button" data-vanity="walnut" aria-pressed="false">Walnut vanity + D basin</button>
+    <button type="button" data-vanity="walnut" aria-pressed="false">Ravello mocha oak vanity</button>
     <button type="button" data-vanity="white" aria-pressed="false">White vanity + D basin</button>
     <button type="button" data-vanity="moon" aria-pressed="false">Otti Moonlight 600</button>
   </div>
@@ -261,6 +262,13 @@
     palette: [[60, 70, 62], [72, 82, 74], [52, 62, 56], [80, 88, 80], [64, 74, 66], [88, 96, 88], [56, 66, 60], [74, 84, 76]],
     rough: [8, 40], grout: "#b7bab4", edge: 0.78, blooms: 12, bloomLight: "rgba(170,186,172,0.16)", bloomDark: "rgba(30,40,34,0.22)", cracks: 0, wavy: 6, speckle: 22
   });
+  // Showtile Origin Celadon, 51 x 161 gloss, handmade look: soft jade / grey-green, slight edge variation
+  var ct = makeTile({
+    w: 49, h: 159, g: 2, cols: 16, rows: 6,
+    palette: [[146, 162, 148], [136, 154, 142], [154, 168, 154], [128, 146, 134], [160, 172, 158], [142, 158, 146], [132, 150, 138], [150, 164, 150]],
+    rough: [10, 34], grout: "#d8dad3", edge: 0.84, blooms: 8, bloomLight: "rgba(230,240,228,0.18)", bloomDark: "rgba(80,104,88,0.16)", cracks: 0, wavy: 3, speckle: 0
+  });
+  var celMap = ct[0], celBump = ct[1], CEL_MW = ct[2], CEL_MH = ct[3], celRough = ct[4];
   var zelMap = zt[0], zelBump = zt[1], ZEL_MW = zt[2], ZEL_MH = zt[3], zelRough = zt[4];
 
 
@@ -332,6 +340,7 @@
   // ---------- materials ----------
   var M = {
     green: new T.MeshStandardMaterial({ map: greenMap, bumpMap: greenBump, bumpScale: 0.016, roughness: 1, roughnessMap: greenRough, metalness: 0, envMapIntensity: 0.65 }),
+    celadon: new T.MeshStandardMaterial({ map: celMap, bumpMap: celBump, bumpScale: 0.016, roughness: 1, roughnessMap: celRough, metalness: 0, envMapIntensity: 0.75 }),
     zellige: new T.MeshStandardMaterial({ map: zelMap, bumpMap: zelBump, bumpScale: 0.016, roughness: 1, roughnessMap: zelRough, metalness: 0, envMapIntensity: 0.8 }),
     sage: new T.MeshStandardMaterial({ map: sageMap, bumpMap: sageBump, bumpScale: 0.014, roughness: 1, roughnessMap: sageRough, metalness: 0, envMapIntensity: 0.5 }),
     // walls: "Silk" finish with a soft sheen; floor and ledge: P4 anti-slip, fully matte
@@ -457,7 +466,10 @@
     var zMap = zelMap.clone(), zBump = zelBump.clone();
     [zMap, zBump].forEach(function (t) { t.needsUpdate = true; t.repeat.set(NICHE_W / ZEL_MW, NICHE_H / ZEL_MH); t.offset.set(0, 0); });
     var zm = M.zellige.clone(); zm.map = zMap; zm.bumpMap = zBump; zm.side = T.BackSide;
-    NICHE = { mesh: box, green: nm, stone: sm, sage: gm, zellige: zm };
+    var cMap = celMap.clone(), cBump = celBump.clone();
+    [cMap, cBump].forEach(function (t) { t.needsUpdate = true; t.repeat.set(NICHE_W / CEL_MW, NICHE_H / CEL_MH); t.offset.set(0, 0); });
+    var cm = M.celadon.clone(); cm.map = cMap; cm.bumpMap = cBump; cm.side = T.BackSide;
+    NICHE = { mesh: box, green: nm, stone: sm, sage: gm, zellige: zm, celadon: cm };
     box.position.y = (NICHE_Y0 + NICHE_Y1) / 2; place(box, e, NICHE_UC, -100); root.add(box);
     var sill = mesh(new T.BoxGeometry(NICHE_W, 12, 100), M.stone); sill.position.y = NICHE_Y0 + 6; place(sill, e, NICHE_UC, -50); root.add(sill);
     var bottle1 = mesh(new T.CylinderGeometry(28, 28, 190, 24), new T.MeshStandardMaterial({ color: 0xe9e2d4, roughness: 0.35 }), true);
@@ -613,27 +625,56 @@
     var flange = mesh(new T.CylinderGeometry(34, 34, 8, 24), M.brass); flange.rotation.x = Math.PI / 2; flange.position.set(0, 520, 4); g.add(flange);
     TRAP = [tail, bottle, arm, flange];
 
-    // ---- vanity option 1: wall-hung walnut vanity, finely fluted drawer front, white stone top (650 W x 460 D, 300 high + 20 top)
+    // ---- vanity option 1: Lukka Ravello wall-hung vanity, Mocha Oak plywood, curved front corners, 600 W x 460 D,
+    //      450 high overall incl. stone top (top at 730), matt white fluted round basin, tap hole at 12 o'clock
     var wc = document.createElement("canvas"); wc.width = 256; wc.height = 512;
-    var wg = wc.getContext("2d"); wg.fillStyle = "#6c4a33"; wg.fillRect(0, 0, 256, 512); // warm walnut, as in the showroom sample
-    for (var gi = 0; gi < 90; gi++) { // long vertical grain with gentle waves
-      var gx = rnd() * 256, ga = 0.05 + rnd() * 0.14, gw = 0.6 + rnd() * 2.2;
-      wg.strokeStyle = rnd() > 0.5 ? "rgba(44,26,14," + (ga * 1.4) + ")" : "rgba(168,120,84," + ga + ")"; wg.lineWidth = gw;
+    var wg = wc.getContext("2d"); wg.fillStyle = "#5a4232"; wg.fillRect(0, 0, 256, 512); // mocha oak
+    for (var gi = 0; gi < 110; gi++) { // oak: straight grain with the odd ray fleck
+      var gx = rnd() * 256, ga = 0.05 + rnd() * 0.13, gw = 0.5 + rnd() * 1.8;
+      wg.strokeStyle = rnd() > 0.5 ? "rgba(52,34,22," + (ga * 1.3) + ")" : "rgba(170,136,104," + ga + ")"; wg.lineWidth = gw;
       wg.beginPath(); wg.moveTo(gx, 0);
-      for (var gy = 0; gy <= 512; gy += 32) wg.lineTo(gx + Math.sin(gy / 70 + gi) * (2 + rnd() * 3), gy);
+      for (var gy = 0; gy <= 512; gy += 32) wg.lineTo(gx + Math.sin(gy / 90 + gi) * (1 + rnd() * 2), gy);
       wg.stroke();
     }
     var wt = new T.CanvasTexture(wc); wt.encoding = T.sRGBEncoding; wt.wrapS = wt.wrapT = T.RepeatWrapping; wt.anisotropy = maxAniso;
-    var wood = new T.MeshStandardMaterial({ map: wt, bumpMap: wt, bumpScale: 0.002, roughness: 0.55, envMapIntensity: 0.6 });
+    var wood = new T.MeshStandardMaterial({ map: wt, bumpMap: wt, bumpScale: 0.002, roughness: 0.6, envMapIntensity: 0.55 });
     var quartz = new T.MeshStandardMaterial({ color: 0xf2f1ec, roughness: 0.25, envMapIntensity: 0.7 });
     var VW = new T.Group(); VW.visible = false; g.add(VW); VANITIES.walnut = VW;
-    var wCase = mesh(rbox(650, 300, 452, 3), wood, true); wCase.position.set(0, 560, 226); VW.add(wCase);
-    var wTop = mesh(rbox(660, 20, 470, 3), quartz, true); wTop.position.set(0, 720, 235); VW.add(wTop);
-    var wRail = mesh(new T.BoxGeometry(644, 22, 6), wood, true); wRail.position.set(0, 697, 455); VW.add(wRail);
-    var wGap = mesh(new T.BoxGeometry(644, 4, 8), M.gap); wGap.position.set(0, 684, 456); VW.add(wGap);
-    var wPanel = mesh(new T.BoxGeometry(646, 268, 14), wood, true); wPanel.position.set(0, 548, 459); VW.add(wPanel);
-    var reedGeo = new T.CylinderGeometry(5, 5, 266, 12, 1, false, -Math.PI / 2, Math.PI); // fine half-round reeds, 10 mm pitch
-    for (var fx = -318; fx <= 318; fx += 10) { var reed = mesh(reedGeo, wood, false); reed.position.set(fx, 548, 466); VW.add(reed); }
+    // Ravello body per the product photo: rounded front corners, plain oak doors, stone top with rounded front corners
+    var wCase = mesh(slab(curvedPlan(600, 440, 90), 430, 0), wood, true); wCase.position.y = 280; VW.add(wCase);
+    var stoneTex = (function () {
+      var c = document.createElement("canvas"); c.width = c.height = 256; var x = c.getContext("2d");
+      x.fillStyle = "#ece9e3"; x.fillRect(0, 0, 256, 256);
+      for (var v = 0; v < 14; v++) { x.strokeStyle = "rgba(160,156,150," + (0.06 + rnd() * 0.1).toFixed(2) + ")"; x.lineWidth = 1 + rnd() * 3;
+        var a0 = rnd() * 256, b0 = rnd() * 256; x.beginPath(); x.moveTo(a0, b0); for (var k2 = 0; k2 < 5; k2++) { a0 += (rnd() - 0.3) * 70; b0 += (rnd() - 0.5) * 50; x.lineTo(a0, b0); } x.stroke(); }
+      var t = new T.CanvasTexture(c); t.encoding = T.sRGBEncoding; return t;
+    })();
+    var wTop = mesh(slab(curvedPlan(604, 460, 70), 18, 2), new T.MeshStandardMaterial({ map: stoneTex, roughness: 0.3, envMapIntensity: 0.7 }), true); wTop.position.y = 710; VW.add(wTop);
+    // shadow lines: under the top, and the two door joints on the flat front
+    var wShadow = mesh(new T.BoxGeometry(560, 6, 6), M.gap); wShadow.position.set(0, 704, 441); VW.add(wShadow);
+    [-100, 100].forEach(function (x) { var gp = mesh(new T.BoxGeometry(4, 420, 6), M.gap); gp.position.set(x, 495, 441); VW.add(gp); });
+    // matt white fluted round vessel basin, 380 dia x 120 high, centred on the top
+    var BR = 190, outPts = [], NPT = 240;
+    for (var pi2 = 0; pi2 < NPT; pi2++) {
+      var an = pi2 / NPT * Math.PI * 2, rr2 = BR + 2.8 * (0.5 + 0.5 * Math.cos(an * 60));
+      outPts.push(new T.Vector2(Math.cos(an) * rr2, Math.sin(an) * rr2));
+    }
+    var rShape = new T.Shape(outPts), rHole = new T.Path(); rHole.absarc(0, 0, BR - 10, 0, Math.PI * 2, true); rShape.holes.push(rHole);
+    var rGeo = new T.ExtrudeGeometry(rShape, { depth: 120, bevelEnabled: false, curveSegments: 48 }); rGeo.rotateX(-Math.PI / 2);
+    var mattBasin = new T.MeshStandardMaterial({ color: 0xf3f3ef, roughness: 0.62, envMapIntensity: 0.5, side: T.DoubleSide });
+    var rBowl = new T.Group(); rBowl.position.set(0, 730, 250); VW.add(rBowl);
+    rBowl.add(mesh(rGeo, mattBasin, true));
+    var rLip = new T.Mesh(new T.TorusGeometry(BR - 4, 5, 8, 64), mattBasin); rLip.rotation.x = Math.PI / 2; rLip.position.y = 120; rBowl.add(rLip);
+    var rFloorGeo = new T.CircleGeometry(BR - 10, 48); rFloorGeo.rotateX(-Math.PI / 2);
+    rBowl.add(mesh(rFloorGeo, new T.MeshStandardMaterial({ color: 0xebebe7, roughness: 0.6 }), false)); rBowl.children[2].position.y = 14;
+    var rWaste = mesh(new T.CylinderGeometry(26, 28, 8, 32), M.brass, true); rWaste.position.y = 18; rBowl.add(rWaste);
+    // tall vessel mixer at 12 o'clock, centred behind the basin, spout straight forward
+    var rm = new T.Group(); rm.position.set(0, 730, 36); VW.add(rm);
+    rm.add(mesh(new T.CylinderGeometry(24, 24, 8, 32), M.brass, true)); rm.children[0].position.y = 4;
+    var rmB = mesh(new T.CylinderGeometry(18, 18, 300, 32), M.brass, true); rmB.position.y = 158; rm.add(rmB);
+    var rmS = mesh(new T.CylinderGeometry(10, 10, 175, 24), M.brass, true); rmS.rotation.x = Math.PI / 2; rmS.position.set(0, 270, 88); rm.add(rmS);
+    var rmT = mesh(new T.CylinderGeometry(10, 10, 22, 24), M.brass, true); rmT.position.set(0, 260, 170); rm.add(rmT);
+    var rmL = mesh(new T.CylinderGeometry(4, 4, 65, 12), M.brass, true); rmL.rotation.z = Math.PI / 2; rmL.position.set(30, 296, 0); rm.add(rmL);
 
     // ---- vanity option 2: white curved vanity with a shaker drawer, marble-look top, round vessel basin and tall mixer
     var satin = new T.MeshStandardMaterial({ color: 0xefede7, roughness: 0.42, envMapIntensity: 0.6 });
@@ -1038,10 +1079,11 @@
     // shower: olive floor to ceiling inside the shower only, stone-look everywhere else
     // zellige: Palma Green zellige on every wall, floor to ceiling
     // sagefull: Beaumont sage on every wall, floor to ceiling; the bench front under the vanity stays stone
-    var top = (mode === "sage" || mode === "sagefull") ? M.sage : mode === "zellige" ? M.zellige : M.green;
-    LOWER.forEach(function (w) { w.mesh.material = mode === "zellige" ? M.zellige : mode === "sagefull" ? M.sage : (mode === "full" || (mode === "feature" && w.feature) || (mode === "shower" && w.shower)) ? M.green : M.stone; });
-    UPPER.forEach(function (w) { w.mesh.material = (mode === "split" || mode === "sage" || mode === "full" || mode === "zellige" || mode === "sagefull" || (mode === "feature" && w.feature) || (mode === "shower" && w.shower)) ? top : M.stone; });
-    NICHE.mesh.material = (mode === "sage" || mode === "sagefull") ? NICHE.sage : mode === "zellige" ? NICHE.zellige : (mode === "split" || mode === "full" || mode === "shower") ? NICHE.green : NICHE.stone;
+    // celadon: Origin Celadon on every wall, floor to ceiling; bench front stays stone
+    var top = (mode === "sage" || mode === "sagefull") ? M.sage : mode === "zellige" ? M.zellige : mode === "celadon" ? M.celadon : M.green;
+    LOWER.forEach(function (w) { w.mesh.material = mode === "zellige" ? M.zellige : mode === "sagefull" ? M.sage : mode === "celadon" ? M.celadon : (mode === "full" || (mode === "feature" && w.feature) || (mode === "shower" && w.shower)) ? M.green : M.stone; });
+    UPPER.forEach(function (w) { w.mesh.material = (mode === "split" || mode === "sage" || mode === "full" || mode === "zellige" || mode === "sagefull" || mode === "celadon" || (mode === "feature" && w.feature) || (mode === "shower" && w.shower)) ? top : M.stone; });
+    NICHE.mesh.material = (mode === "sage" || mode === "sagefull") ? NICHE.sage : mode === "zellige" ? NICHE.zellige : mode === "celadon" ? NICHE.celadon : (mode === "split" || mode === "full" || mode === "shower") ? NICHE.green : NICHE.stone;
     LEDGE_FRONT.material = mode === "feature" ? M.green : M.stoneFloor;
     document.querySelectorAll("[data-tile]").forEach(function (bt) { bt.setAttribute("aria-pressed", String(bt.dataset.tile === mode)); });
     dirty = true;
@@ -1056,7 +1098,7 @@
     VANITIES.white.visible = mode === "white";
     TRAP.forEach(function (m) { m.visible = mode === "none"; });
     VANITIES.moon.visible = mode === "moon";
-    VANITIES.vessel.visible = mode === "walnut" || mode === "white";
+    VANITIES.vessel.visible = mode === "white";
     BASIN_RECT.forEach(function (m) { m.visible = mode === "none"; });
     document.querySelectorAll("[data-vanity]").forEach(function (bt) { bt.setAttribute("aria-pressed", String(bt.dataset.vanity === mode)); });
     dirty = true;
@@ -1065,7 +1107,7 @@
   // deep link: #view[-tiles][-vanity|-white], e.g. #door, #door-full, #sink-split-vanity, #sink-split-white
   var hash = (location.hash || "").replace("#", "").split("-");
   setView(VIEWS[hash[0]] ? hash[0] : "basin");
-  setTile(["full", "feature", "stone", "sage", "shower", "zellige", "sagefull"].indexOf(hash[1]) >= 0 ? hash[1] : "split");
+  setTile(["full", "feature", "stone", "sage", "shower", "zellige", "sagefull", "celadon"].indexOf(hash[1]) >= 0 ? hash[1] : "split");
   setVanity(hash.indexOf("vanity", 1) >= 0 ? "walnut" : hash.indexOf("white", 1) >= 0 ? "white" : hash.indexOf("moon", 1) >= 0 ? "moon" : "none");
 
   (function loop() {
