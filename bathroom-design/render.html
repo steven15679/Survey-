@@ -44,6 +44,8 @@
   }
   .views button[aria-pressed="true"] { background: var(--chip-on); color: var(--chip-on-ink); border-color: var(--chip-on); }
   .views button:focus-visible { outline: 2px solid var(--chip-on); outline-offset: 2px; }
+  .views .dim { display: flex; align-items: center; gap: 8px; font: 600 13px/1 "Barlow Condensed", "Arial Narrow", sans-serif; letter-spacing: 1px; text-transform: uppercase; color: var(--ink); background: var(--chip); border: 1px solid rgba(255, 255, 255, 0.18); padding: 4px 12px; border-radius: 999px; backdrop-filter: blur(6px); }
+  .views .dim input { width: 110px; accent-color: var(--chip-on); }
   .hint {
     position: fixed; left: 16px; right: 16px; bottom: calc(env(safe-area-inset-bottom, 0px) + 14px);
     font-size: 12px; color: var(--muted); text-shadow: 0 1px 2px #000; pointer-events: none;
@@ -87,6 +89,14 @@
     <button type="button" id="t-sagefull" data-tile="sagefull" aria-pressed="false">Beaumont sage floor to ceiling</button>
     <button type="button" id="t-celadon" data-tile="celadon" aria-pressed="false">Origin Celadon</button>
     <button type="button" id="t-celadonH" data-tile="celadonH" aria-pressed="false">Origin Celadon horizontal</button>
+    <button type="button" id="t-celadonL" data-tile="celadonL" aria-pressed="false">Origin Celadon 65×200</button>
+  </div>
+  <div class="views" role="group" aria-label="Lighting">
+    <button type="button" data-light="warm" aria-pressed="true">Warm 2700K</button>
+    <button type="button" data-light="neutral" aria-pressed="false">Neutral 4000K</button>
+    <button type="button" data-light="day" aria-pressed="false">Daylight 5000K</button>
+    <button type="button" data-light="mood" aria-pressed="false">Mirror glow only</button>
+    <label class="dim">Brightness <input type="range" id="bright" min="40" max="160" value="100" step="5" aria-label="Brightness"></label>
   </div>
   <div class="views" role="group" aria-label="Vanity">
     <button type="button" data-vanity="none" aria-pressed="true">590 wall basin</button>
@@ -280,6 +290,12 @@
     palette: [[140, 154, 138], [146, 158, 140], [154, 166, 146], [148, 162, 146], [134, 150, 144], [140, 156, 150], [130, 146, 140], [144, 158, 142]],
     rough: [8, 30], grout: "#d2d4cc", edge: 0.9, blooms: 12, bloomLight: "rgba(222,232,218,0.14)", bloomDark: "rgba(90,104,92,0.12)", cracks: 0, wavy: 4, speckle: 7
   });
+  // larger Origin Celadon, 65 x 200, stacked vertically, same glaze
+  var cl = makeTile({
+    w: 63, h: 198, g: 2, cols: 12, rows: 5,
+    palette: [[140, 154, 138], [146, 158, 140], [154, 166, 146], [148, 162, 146], [134, 150, 144], [140, 156, 150], [130, 146, 140], [144, 158, 142]],
+    rough: [8, 30], grout: "#d2d4cc", edge: 0.9, blooms: 12, bloomLight: "rgba(222,232,218,0.14)", bloomDark: "rgba(90,104,92,0.12)", cracks: 0, wavy: 4, speckle: 7
+  });
   var zelMap = zt[0], zelBump = zt[1], ZEL_MW = zt[2], ZEL_MH = zt[3], zelRough = zt[4];
 
 
@@ -352,6 +368,7 @@
   var M = {
     green: new T.MeshStandardMaterial({ map: greenMap, bumpMap: greenBump, bumpScale: 0.016, roughness: 1, roughnessMap: greenRough, metalness: 0, envMapIntensity: 0.65 }),
     celadonH: new T.MeshStandardMaterial({ map: ch[0], bumpMap: ch[1], bumpScale: 0.016, roughness: 1, roughnessMap: ch[4], metalness: 0, envMapIntensity: 0.75 }),
+    celadonL: new T.MeshStandardMaterial({ map: cl[0], bumpMap: cl[1], bumpScale: 0.016, roughness: 1, roughnessMap: cl[4], metalness: 0, envMapIntensity: 0.75 }),
     celadon: new T.MeshStandardMaterial({ map: celMap, bumpMap: celBump, bumpScale: 0.016, roughness: 1, roughnessMap: celRough, metalness: 0, envMapIntensity: 0.75 }),
     zellige: new T.MeshStandardMaterial({ map: zelMap, bumpMap: zelBump, bumpScale: 0.016, roughness: 1, roughnessMap: zelRough, metalness: 0, envMapIntensity: 0.8 }),
     sage: new T.MeshStandardMaterial({ map: sageMap, bumpMap: sageBump, bumpScale: 0.014, roughness: 1, roughnessMap: sageRough, metalness: 0, envMapIntensity: 0.5 }),
@@ -484,7 +501,10 @@
     var hMap = ch[0].clone(), hBump = ch[1].clone();
     [hMap, hBump].forEach(function (t) { t.needsUpdate = true; t.repeat.set(NICHE_W / ch[2], NICHE_H / ch[3]); t.offset.set(0, 0); });
     var hm = M.celadonH.clone(); hm.map = hMap; hm.bumpMap = hBump; hm.side = T.BackSide;
-    NICHE = { mesh: box, green: nm, stone: sm, sage: gm, zellige: zm, celadon: cm, celadonH: hm };
+    var lMap = cl[0].clone(), lBump = cl[1].clone();
+    [lMap, lBump].forEach(function (t) { t.needsUpdate = true; t.repeat.set(NICHE_W / cl[2], NICHE_H / cl[3]); t.offset.set(0, 0); });
+    var lm = M.celadonL.clone(); lm.map = lMap; lm.bumpMap = lBump; lm.side = T.BackSide;
+    NICHE = { mesh: box, green: nm, stone: sm, sage: gm, zellige: zm, celadon: cm, celadonH: hm, celadonL: lm };
     box.position.y = (NICHE_Y0 + NICHE_Y1) / 2; place(box, e, NICHE_UC, -100); root.add(box);
     var sill = mesh(new T.BoxGeometry(NICHE_W, 12, 100), M.stone); sill.position.y = NICHE_Y0 + 6; place(sill, e, NICHE_UC, -50); root.add(sill);
     var bottle1 = mesh(new T.CylinderGeometry(28, 28, 190, 24), new T.MeshStandardMaterial({ color: 0xe9e2d4, roughness: 0.35 }), true);
@@ -1056,9 +1076,10 @@
   })();
 
   // ---------- lights ----------
-  scene.add(new T.HemisphereLight(0xffe2bf, 0x6b5a46, 0.85));
+  var HEMI = new T.HemisphereLight(0xffe2bf, 0x6b5a46, 0.85); scene.add(HEMI);
   // soft bounce from the pale floor and walls, lighting the ceiling gently
-  (function () { var f = new T.PointLight(0xffd7a8, 1.5, 0, 2); f.position.set(1.5, 0.9, -0.9); scene.add(f); })();
+  var BOUNCE = new T.PointLight(0xffd7a8, 1.5, 0, 2); BOUNCE.position.set(1.5, 0.9, -0.9); scene.add(BOUNCE);
+  var DOWN = [], HALO;
   function downlight(x, z, cd, shadow) {
     var disc = new T.Mesh(new T.CircleGeometry(45, 32), new T.MeshBasicMaterial({ color: 0xf2dcc0 }));
     disc.rotation.x = Math.PI / 2; disc.position.set(x, CEIL - 2, z); root.add(disc);
@@ -1068,7 +1089,7 @@
     l.position.set(x / 1000, (CEIL - 30) / 1000, z / 1000);
     l.target.position.set(x / 1000, 0, z / 1000); scene.add(l.target);
     if (shadow) { l.castShadow = true; l.shadow.mapSize.set(2048, 2048); l.shadow.bias = -0.0015; l.shadow.radius = 9; l.shadow.camera.near = 0.05; }
-    scene.add(l);
+    scene.add(l); DOWN.push({ light: l, disc: disc, base: cd });
   }
   downlight(2150, -900, 5.2, true);
   downlight(450, -450, 3.0, true);
@@ -1076,7 +1097,7 @@
   // LED halo light near the cabinet
   (function () {
     var p = new T.Vector3(); var g = new T.Group(); place(g, WALL_A, 1000, 60); g.position.y = 1575;
-    var l = new T.PointLight(0xffbf78, 2.4, 1.6, 2);
+    var l = new T.PointLight(0xffbf78, 2.4, 1.6, 2); HALO = l;
     l.position.set(g.position.x / 1000, 1.99, g.position.z / 1000); scene.add(l);
   })();
   // exhaust fan
@@ -1138,10 +1159,10 @@
     // zellige: Palma Green zellige on every wall, floor to ceiling
     // sagefull: Beaumont sage on every wall, floor to ceiling; the bench front under the vanity stays stone
     // celadon: Origin Celadon on every wall, floor to ceiling; bench front stays stone
-    var top = (mode === "sage" || mode === "sagefull") ? M.sage : mode === "zellige" ? M.zellige : mode === "celadon" ? M.celadon : mode === "celadonH" ? M.celadonH : M.green;
-    LOWER.forEach(function (w) { w.mesh.material = mode === "zellige" ? M.zellige : mode === "sagefull" ? M.sage : mode === "celadon" ? M.celadon : mode === "celadonH" ? M.celadonH : (mode === "full" || (mode === "feature" && w.feature) || (mode === "shower" && w.shower)) ? M.green : M.stone; });
-    UPPER.forEach(function (w) { w.mesh.material = (mode === "split" || mode === "sage" || mode === "full" || mode === "zellige" || mode === "sagefull" || mode === "celadon" || mode === "celadonH" || (mode === "feature" && w.feature) || (mode === "shower" && w.shower)) ? top : M.stone; });
-    NICHE.mesh.material = (mode === "sage" || mode === "sagefull") ? NICHE.sage : mode === "zellige" ? NICHE.zellige : mode === "celadon" ? NICHE.celadon : mode === "celadonH" ? NICHE.celadonH : (mode === "split" || mode === "full" || mode === "shower") ? NICHE.green : NICHE.stone;
+    var top = (mode === "sage" || mode === "sagefull") ? M.sage : mode === "zellige" ? M.zellige : mode === "celadon" ? M.celadon : mode === "celadonH" ? M.celadonH : mode === "celadonL" ? M.celadonL : M.green;
+    LOWER.forEach(function (w) { w.mesh.material = mode === "zellige" ? M.zellige : mode === "sagefull" ? M.sage : mode === "celadon" ? M.celadon : mode === "celadonH" ? M.celadonH : mode === "celadonL" ? M.celadonL : (mode === "full" || (mode === "feature" && w.feature) || (mode === "shower" && w.shower)) ? M.green : M.stone; });
+    UPPER.forEach(function (w) { w.mesh.material = (mode === "split" || mode === "sage" || mode === "full" || mode === "zellige" || mode === "sagefull" || mode === "celadon" || mode === "celadonH" || mode === "celadonL" || (mode === "feature" && w.feature) || (mode === "shower" && w.shower)) ? top : M.stone; });
+    NICHE.mesh.material = (mode === "sage" || mode === "sagefull") ? NICHE.sage : mode === "zellige" ? NICHE.zellige : mode === "celadon" ? NICHE.celadon : mode === "celadonH" ? NICHE.celadonH : mode === "celadonL" ? NICHE.celadonL : (mode === "split" || mode === "full" || mode === "shower") ? NICHE.green : NICHE.stone;
     LEDGE_FRONT.material = mode === "feature" ? M.green : M.stoneFloor;
     document.querySelectorAll("[data-tile]").forEach(function (bt) { bt.setAttribute("aria-pressed", String(bt.dataset.tile === mode)); });
     dirty = true;
@@ -1164,10 +1185,32 @@
     dirty = true;
   }
   document.querySelectorAll("[data-vanity]").forEach(function (bt) { bt.addEventListener("click", function () { setVanity(bt.dataset.vanity); }); });
+  // lighting presets: colour temperature of the downlights and the light bouncing round the room,
+  // plus a brightness multiplier. warm is the default 2700K; mood switches the downlights off and leaves the mirror glow
+  var LIGHTS = {
+    warm:    { spot: 0xffc98c, disc: 0xf2dcc0, sky: 0xffe2bf, gnd: 0x6b5a46, hemi: 0.85, bounce: 0xffd7a8, b: 1.5, halo: 2.4, down: 1, exp: 0.8 },
+    neutral: { spot: 0xffeedd, disc: 0xf8f2ea, sky: 0xfaf4ec, gnd: 0x67615b, hemi: 0.9, bounce: 0xfff1e4, b: 1.5, halo: 2.4, down: 1, exp: 0.78 },
+    day:     { spot: 0xf4f6ff, disc: 0xfafbff, sky: 0xeef2ff, gnd: 0x62625f, hemi: 1.0, bounce: 0xf8f8fa, b: 1.6, halo: 2.4, down: 1.1, exp: 0.76 },
+    mood:    { spot: 0xffc98c, disc: 0xd8d2ca, sky: 0xffd9b0, gnd: 0x4a3c2e, hemi: 0.22, bounce: 0xffcf98, b: 0.45, halo: 4.2, down: 0, exp: 0.8 }
+  };
+  var lightMode = "warm", bright = 1;
+  function setLight(mode) {
+    var L = LIGHTS[mode]; lightMode = mode;
+    DOWN.forEach(function (d) { d.light.color.setHex(L.spot); d.light.intensity = d.base * L.down * bright; d.disc.material.color.setHex(L.down ? L.disc : 0xd8d2ca); });
+    HEMI.color.setHex(L.sky); HEMI.groundColor.setHex(L.gnd); HEMI.intensity = L.hemi * bright;
+    BOUNCE.color.setHex(L.bounce); BOUNCE.intensity = L.b * bright;
+    HALO.intensity = L.halo * (mode === "mood" ? bright : 1);
+    renderer.toneMappingExposure = L.exp;
+    document.querySelectorAll("[data-light]").forEach(function (bt) { bt.setAttribute("aria-pressed", String(bt.dataset.light === mode)); });
+    dirty = true;
+  }
+  document.querySelectorAll("[data-light]").forEach(function (bt) { bt.addEventListener("click", function () { setLight(bt.dataset.light); }); });
+  document.getElementById("bright").addEventListener("input", function (e) { bright = e.target.value / 100; setLight(lightMode); });
   // deep link: #view[-tiles][-vanity|-white], e.g. #door, #door-full, #sink-split-vanity, #sink-split-white
   var hash = (location.hash || "").replace("#", "").split("-");
   setView(VIEWS[hash[0]] ? hash[0] : "basin");
-  setTile(["full", "feature", "stone", "sage", "shower", "zellige", "sagefull", "celadon", "celadonH"].indexOf(hash[1]) >= 0 ? hash[1] : "split");
+  setTile(["full", "feature", "stone", "sage", "shower", "zellige", "sagefull", "celadon", "celadonH", "celadonL"].indexOf(hash[1]) >= 0 ? hash[1] : "split");
+  ["neutral", "day", "mood"].forEach(function (m) { if (hash.indexOf(m, 1) >= 0) setLight(m); });
   setVanity(hash.indexOf("vanity", 1) >= 0 ? "walnut" : hash.indexOf("white", 1) >= 0 ? "white" : hash.indexOf("moon", 1) >= 0 ? "moon" : hash.indexOf("dwall", 1) >= 0 ? "dwall" : hash.indexOf("semiped", 1) >= 0 ? "semiped" : "none");
 
   (function loop() {
