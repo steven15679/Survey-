@@ -88,10 +88,12 @@
     <button type="button" id="t-celadon" data-tile="celadon" aria-pressed="false">Origin Celadon</button>
   </div>
   <div class="views" role="group" aria-label="Vanity">
-    <button type="button" data-vanity="none" aria-pressed="true">No vanity</button>
+    <button type="button" data-vanity="none" aria-pressed="true">590 wall basin</button>
     <button type="button" data-vanity="walnut" aria-pressed="false">Ravello mocha oak vanity</button>
     <button type="button" data-vanity="white" aria-pressed="false">White vanity + D basin</button>
     <button type="button" data-vanity="moon" aria-pressed="false">Otti Moonlight 600</button>
+    <button type="button" data-vanity="dwall" aria-pressed="false">D basin + wall mixer</button>
+    <button type="button" data-vanity="semiped" aria-pressed="false">Basin + half pedestal</button>
   </div>
   </div>
 </div>
@@ -776,7 +778,50 @@
     var moonPull = mesh(new T.CylinderGeometry(42, 42, 6, 32, 1, false, Math.PI / 2, Math.PI), M.brass, true);
     moonPull.rotation.x = Math.PI / 2; moonPull.position.set(0, 580, 464); VM.add(moonPull);
 
-    [VW, VH, VV, VM].forEach(function (grp) { grp.position.x = 100; }); // vanity sits 100 right of the mirror centre
+    function extrudeUp(shape, h, bevel) {
+      var geo = new T.ExtrudeGeometry(shape, { depth: h, bevelEnabled: bevel > 0, bevelThickness: bevel, bevelSize: bevel, bevelSegments: 4, curveSegments: 48 });
+      geo.rotateX(-Math.PI / 2); return geo;
+    }
+    function bottleTrap(grp, z, yTop) { // brushed brass bottle trap with an arm back into the ledge
+      var a = mesh(new T.CylinderGeometry(16, 16, 110, 20), M.brass, true); a.position.set(0, yTop - 55, z); grp.add(a);
+      var b = mesh(new T.CylinderGeometry(30, 30, 120, 24), M.brass, true); b.position.set(0, yTop - 170, z); grp.add(b);
+      var c = mesh(new T.CylinderGeometry(15, 15, z, 20), M.brass, true); c.rotation.x = Math.PI / 2; c.position.set(0, yTop - 150, z / 2); grp.add(c);
+      var d = mesh(new T.CylinderGeometry(32, 32, 8, 24), M.brass); d.rotation.x = Math.PI / 2; d.position.set(0, yTop - 150, 4); grp.add(d);
+    }
+    // ---- basin option A: matt white D-shaped wall-hung basin 500 W x 370 D x 140 H (rim 850), brass wall mixer, exposed trap
+    var VD = new T.Group(); VD.visible = false; g.add(VD); VANITIES.dwall = VD;
+    var dOuter = dShape(500, 120, 0); dOuter.holes.push(dShape(500, 120, 14));
+    VD.add(mesh(extrudeUp(dOuter, 140, 3), M.matteWhite, true)); VD.children[0].position.y = 710;
+    var dBase = mesh(extrudeUp(dShape(500, 120, 2), 30, 0), M.matteWhite, true); dBase.position.y = 710; VD.add(dBase);
+    var dFloorGeo = new T.ShapeGeometry(dShape(500, 120, 14), 48); dFloorGeo.rotateX(-Math.PI / 2);
+    var dFloor = mesh(dFloorGeo, new T.MeshStandardMaterial({ color: 0xe8e8e3, roughness: 0.6 }), false); dFloor.position.y = 741; VD.add(dFloor);
+    var dWaste = mesh(new T.CylinderGeometry(25, 27, 6, 32), M.brass, true); dWaste.position.set(0, 744, 200); VD.add(dWaste);
+    // wall-mounted mixer set on the ledge front: brass backplate, spout over the bowl, lever to the right
+    var wp = mesh(rbox(210, 70, 8, 4), M.brass, true); wp.position.set(0, 950, 4); VD.add(wp);
+    var wsp = mesh(rbox(26, 20, 190, 6), M.brass, true); wsp.position.set(-45, 950, 100); VD.add(wsp);
+    var wtip = mesh(rbox(26, 30, 26, 6), M.brass, true); wtip.position.set(-45, 935, 182); VD.add(wtip);
+    var wlv = mesh(new T.CylinderGeometry(20, 20, 50, 24), M.brass, true); wlv.rotation.x = Math.PI / 2; wlv.position.set(60, 950, 30); VD.add(wlv);
+    var wlh = mesh(rbox(16, 70, 14, 6), M.brass, true); wlh.position.set(60, 922, 58); VD.add(wlh);
+    bottleTrap(VD, 200, 710);
+
+    // ---- basin option B: matt white wall-hung basin with a half pedestal hiding the plumbing (520 W x 420 D, rim 850)
+    var VP = new T.Group(); VP.visible = false; g.add(VP); VANITIES.semiped = VP;
+    var pOuter = rrect(520, 420, 90, 0, -210); pOuter.holes.push(rrect(420, 290, 80, 0, -240));
+    VP.add(mesh(extrudeUp(pOuter, 150, 4), M.matteWhite, true)); VP.children[0].position.y = 700;
+    var pBase = mesh(extrudeUp(rrect(516, 416, 88, 0, -210), 30, 0), M.matteWhite, true); pBase.position.y = 700; VP.add(pBase);
+    var pFloorGeo = new T.ShapeGeometry(rrect(420, 290, 80, 0, -240), 32); pFloorGeo.rotateX(-Math.PI / 2);
+    var pFloor = mesh(pFloorGeo, new T.MeshStandardMaterial({ color: 0xe8e8e3, roughness: 0.6 }), false); pFloor.position.y = 731; VP.add(pFloor);
+    var pWaste = mesh(new T.CylinderGeometry(25, 27, 6, 32), M.brass, true); pWaste.position.set(0, 734, 250); VP.add(pWaste);
+    var pShroud = new T.Shape(); pShroud.moveTo(-95, 0); pShroud.lineTo(95, 0); pShroud.lineTo(95, -110); pShroud.absarc(0, -110, 95, 0, -Math.PI, true); pShroud.closePath();
+    var pPed = mesh(extrudeUp(pShroud, 300, 6), M.matteWhite, true); pPed.position.y = 400; VP.add(pPed);
+    // deck mixer at 12 o'clock on the rear deck
+    var pm = new T.Group(); pm.position.set(0, 850, 48); VP.add(pm);
+    var pmB = mesh(new T.CylinderGeometry(20, 21, 150, 32), M.brass, true); pmB.position.y = 75; pm.add(pmB);
+    var pmS = mesh(new T.CylinderGeometry(9, 9, 150, 20), M.brass, true); pmS.rotation.x = Math.PI / 2; pmS.position.set(0, 128, 75); pm.add(pmS);
+    var pmT = mesh(new T.CylinderGeometry(9, 9, 18, 20), M.brass, true); pmT.position.set(0, 120, 148); pm.add(pmT);
+    var pmL = mesh(new T.CylinderGeometry(4, 4, 55, 12), M.brass, true); pmL.rotation.z = Math.PI / 2; pmL.position.set(28, 140, 0); pm.add(pmL);
+
+    [VW, VH, VV, VM, VD, VP].forEach(function (grp) { grp.position.x = 100; }); // vanity sits 100 right of the mirror centre
     vessel.position.set(-20, 730, 70); VV.add(vessel); // flat back 70 off the wall, front at about 430
     var vWaste = mesh(new T.CylinderGeometry(27, 29, 10, 32), M.brass, true); vWaste.position.set(-20, 747, 70 + 200); VV.add(vWaste); // brushed gold pop-up plug
     // tall brushed brass vessel mixer at the back corner, spout reaching over the bowl
@@ -1098,6 +1143,8 @@
     VANITIES.white.visible = mode === "white";
     TRAP.forEach(function (m) { m.visible = mode === "none"; });
     VANITIES.moon.visible = mode === "moon";
+    VANITIES.dwall.visible = mode === "dwall";
+    VANITIES.semiped.visible = mode === "semiped";
     VANITIES.vessel.visible = mode === "white";
     BASIN_RECT.forEach(function (m) { m.visible = mode === "none"; });
     document.querySelectorAll("[data-vanity]").forEach(function (bt) { bt.setAttribute("aria-pressed", String(bt.dataset.vanity === mode)); });
@@ -1108,7 +1155,7 @@
   var hash = (location.hash || "").replace("#", "").split("-");
   setView(VIEWS[hash[0]] ? hash[0] : "basin");
   setTile(["full", "feature", "stone", "sage", "shower", "zellige", "sagefull", "celadon"].indexOf(hash[1]) >= 0 ? hash[1] : "split");
-  setVanity(hash.indexOf("vanity", 1) >= 0 ? "walnut" : hash.indexOf("white", 1) >= 0 ? "white" : hash.indexOf("moon", 1) >= 0 ? "moon" : "none");
+  setVanity(hash.indexOf("vanity", 1) >= 0 ? "walnut" : hash.indexOf("white", 1) >= 0 ? "white" : hash.indexOf("moon", 1) >= 0 ? "moon" : hash.indexOf("dwall", 1) >= 0 ? "dwall" : hash.indexOf("semiped", 1) >= 0 ? "semiped" : "none");
 
   (function loop() {
     requestAnimationFrame(loop);
