@@ -96,7 +96,7 @@
   </div>
   <div class="views" role="group" aria-label="Window">
     <button type="button" data-window="off" aria-pressed="true">No window</button>
-    <button type="button" data-window="on" aria-pressed="false">200 window on side wall</button>
+    <button type="button" data-window="on" aria-pressed="false">550 window in corner</button>
   </div>
   <div class="views" role="group" aria-label="Lighting">
     <button type="button" data-light="warm" aria-pressed="true">Warm 2700K</button>
@@ -132,10 +132,10 @@
 
   // ---------- plan (mm). x = east, z = south; polygon order gives inward normals ----------
   var P = {
-    A: [0, 0], B: [0, -620], C: [910, -1183], D: [847, -1639], E: [2729, -2313], // wall A (D-E) measured 2000 on site
-    F: [2878, -1763], G: [2878, 90], I: [2380, 90], J2: [1600, 90], J: [1600, 0]
+    A: [0, 0], B: [0, -620], C: [910, -1183], D: [847, -1639], E: [2918, -2381], // wall A (D-E) 2200, as drawn
+    G: [2878, 90], I: [2380, 90], J2: [1600, 90], J: [1600, 0] // E-G: one diagonal right wall from the vanity-wall corner to the door wall
   };
-  var ORDER = ["A", "B", "C", "D", "E", "F", "G", "I", "J2", "J"];
+  var ORDER = ["A", "B", "C", "D", "E", "G", "I", "J2", "J"];
   var DOOR_EDGE = "I-J2";
   var GLASS_X = 915, GLASS_Z0 = -1183, GLASS_Z1 = -583;
 
@@ -442,10 +442,9 @@
   var NICHE_W = NICHE_U1 - NICHE_U0, NICHE_H = NICHE_Y1 - NICHE_Y0, NICHE_UC = (NICHE_U0 + NICHE_U1) / 2;
   var LEDGE_FRONT = null; // turns green in the feature-wall option so the vanity wall reads floor to ceiling
   var UPPER = []; // upper wall bands as { mesh, feature } where feature marks the feature wall
-  var FEATURE_WALL = "D-E"; // the 2000 vanity wall behind the ledge and mirror cabinet
-  // small window on the side wall E-F, just round the corner to the right of the cabinet:
-  // 200 wide, same height as the cabinet (1200 to 1950), 60 in from the corner
-  var WIN_WALL = "E-F", WIN_U0 = 60, WIN_U1 = 260, WIN_Y0 = 1200, WIN_Y1 = 1950, WIN_FILL = [];
+  var FEATURE_WALL = "D-E"; // the 2200 vanity wall behind the ledge and mirror cabinet
+  // window on the diagonal right wall, starting in the corner with the vanity wall: 550 wide, floor to ceiling
+  var WIN_WALL = "E-G", WIN_U0 = 0, WIN_U1 = 550, WIN_Y0 = 0, WIN_Y1 = CEIL, WIN_FILL = [], WIN_AO = null;
   var SHOWER_WALLS = ["A-B", "B-C"]; // tap wall and angled wall inside the shower, plus J-A up to the glass
   var SHOWER_U = 1600 - GLASS_X; // distance along J-A (from x = 1600) where the shower starts
   for (var i = 0; i < ORDER.length; i++) {
@@ -456,7 +455,8 @@
       bands = [[rectShape(0, 2040, e.L, CEIL), M.green]];
     } else {
       // the door-side wall is split at the glass line so its shower part can be tiled separately
-      var segs = key === "J-A" ? [[0, SHOWER_U, false], [SHOWER_U, e.L, true]] : [[0, e.L, SHOWER_WALLS.indexOf(key) >= 0]];
+      // the window wall is split too, so its first 550 can be swapped for the window
+      var segs = key === "J-A" ? [[0, SHOWER_U, false], [SHOWER_U, e.L, true]] : key === WIN_WALL ? [[0, WIN_U1, false, true], [WIN_U1, e.L, false]] : [[0, e.L, SHOWER_WALLS.indexOf(key) >= 0]];
       bands = [];
       segs.forEach(function (sg) {
         var up = rectShape(sg[0], DATUM, sg[1], CEIL);
@@ -466,14 +466,7 @@
           h.moveTo(u0, NICHE_Y0); h.lineTo(u0, NICHE_Y1); h.lineTo(u1, NICHE_Y1); h.lineTo(u1, NICHE_Y0); h.closePath();
           up.holes.push(h);
         }
-        if (key === WIN_WALL) {
-          var wh = new T.Path();
-          wh.moveTo(WIN_U0, WIN_Y0); wh.lineTo(WIN_U0, WIN_Y1); wh.lineTo(WIN_U1, WIN_Y1); wh.lineTo(WIN_U1, WIN_Y0); wh.closePath();
-          up.holes.push(wh);
-          // same tile filling the opening when the window is off; shape coords keep the tile pattern continuous
-          bands.push([rectShape(WIN_U0, WIN_Y0, WIN_U1, WIN_Y1), M.green, false, true]);
-        }
-        bands.push([rectShape(sg[0], 0, sg[1], DATUM), M.stone, sg[2]], [up, M.green, sg[2]]);
+        bands.push([rectShape(sg[0], 0, sg[1], DATUM), M.stone, sg[2], sg[3]], [up, M.green, sg[2], sg[3]]);
       });
     }
     bands.forEach(function (bd) {
@@ -510,6 +503,7 @@
     edgeShade(ctx, w, h, "r", 26, 0.3);
     var m = new T.Mesh(new T.PlaneGeometry(e.L, CEIL), aoMat(c));
     m.position.y = CEIL / 2; place(m, e, e.L / 2, 1); m.renderOrder = 1; root.add(m);
+    if (key === WIN_WALL) WIN_AO = m;
   });
 
   // floor and ceiling
@@ -564,11 +558,16 @@
 
   // ---------- ledge (clad in floor tile) ----------
   var WALL_A = EDGES["D-E"];
+  // the ledge runs into the corner, its end cut along the diagonal right wall: LEDGE_U is where its front edge stops
+  var LEDGE_U = (function () {
+    var r = EDGES[WIN_WALL], du = r.d[0] * WALL_A.d[0] + r.d[1] * WALL_A.d[1], dn = r.d[0] * WALL_A.n[0] + r.d[1] * WALL_A.n[1];
+    return WALL_A.L + 200 * du / dn;
+  })();
   (function () {
     var g = new T.Group();
-    var front = mesh(new T.ShapeGeometry(rectShape(0, 0, 2000, 1000)), M.stoneFloor); front.position.z = 200; g.add(front);
+    var front = mesh(new T.ShapeGeometry(rectShape(0, 0, LEDGE_U, 1000)), M.stoneFloor); front.position.z = 200; g.add(front);
     LEDGE_FRONT = front;
-    var topS = new T.Shape(); topS.moveTo(0, 0); topS.lineTo(2000, 0); topS.lineTo(2000, -200); topS.lineTo(0, -200); topS.closePath();
+    var topS = new T.Shape(); topS.moveTo(0, 0); topS.lineTo(WALL_A.L, 0); topS.lineTo(LEDGE_U, -200); topS.lineTo(0, -200); topS.closePath();
     var top = mesh(new T.ShapeGeometry(topS), M.stoneFloor); top.rotation.x = -Math.PI / 2; top.position.y = 1000; g.add(top);
     place(g, WALL_A, 0, 0); root.add(g);
   })();
@@ -578,12 +577,12 @@
     var c = document.createElement("canvas"); c.width = 220; c.height = 100;
     var ctx = c.getContext("2d");
     edgeShade(ctx, 220, 100, "b", 18, 0.38); edgeShade(ctx, 220, 100, "l", 10, 0.2); edgeShade(ctx, 220, 100, "r", 10, 0.2);
-    var m = new T.Mesh(new T.PlaneGeometry(2000, 1000), aoMat(c));
-    m.position.y = 500; place(m, WALL_A, 1000, 201); m.renderOrder = 1; root.add(m);
+    var m = new T.Mesh(new T.PlaneGeometry(LEDGE_U, 1000), aoMat(c));
+    m.position.y = 500; place(m, WALL_A, LEDGE_U / 2, 201); m.renderOrder = 1; root.add(m);
   })();
   // floor and ceiling shading along the walls, the ledge and under the WC
   (function () {
-    var x0 = 0, z0 = -2380, W = 3066, H = 2850, k = 0.1;
+    var x0 = 0, z0 = -2400, W = 3066, H = 2870, k = 0.1;
     function build(strength, extras) {
       var c = document.createElement("canvas"); c.width = Math.round(W * k); c.height = Math.round(H * k);
       var ctx = c.getContext("2d");
@@ -596,7 +595,7 @@
         ctx.stroke();
         if (extras) {
           var a = WALL_A, px = function (u) { return [(a.p[0] + a.d[0] * u + a.n[0] * 200 - x0) * k, (a.p[1] + a.d[1] * u + a.n[1] * 200 - z0) * k]; };
-          var s0 = px(0), s1 = px(2000);
+          var s0 = px(0), s1 = px(LEDGE_U);
           ctx.beginPath(); ctx.moveTo(s0[0], s0[1]); ctx.lineTo(s1[0], s1[1]); ctx.stroke();
           ctx.beginPath();
           ORDER.forEach(function (key, j) { var p = P[key]; var x = (p[0] - x0) * k, y = (p[1] - z0) * k; if (j) ctx.lineTo(x, y); else ctx.moveTo(x, y); });
@@ -956,29 +955,29 @@
     var capT = mesh(new T.SphereGeometry(14, 20, 10), M.brass, true); capT.position.set(0, y + 34, z0 + 55); g.add(capT);
     var capB = mesh(new T.SphereGeometry(14, 20, 10), M.brass, true); capB.position.set(0, y - 6, z0 + 55); g.add(capB);
   }
-  var HOOK = fixture(WALL_A, 1875, 0); robeHook(HOOK, 1600, 0); // in the 250 gap right of the cabinet
+  var HOOK = fixture(WALL_A, 1875, 0); robeHook(HOOK, 1600, 0); // in the gap right of the cabinet
 
-  // ---------- small window in the 250 gap right of the cabinet (optional) ----------
+  // ---------- window in the corner of the diagonal right wall, floor to ceiling (optional) ----------
   var WINDOW = (function () {
     var WE = EDGES[WIN_WALL], g = fixture(WE, 0, 0), D = 150; // 150 wall thickness
-    var W = WIN_U1 - WIN_U0, H = WIN_Y1 - WIN_Y0, uc = (WIN_U0 + WIN_U1) / 2, yc = (WIN_Y0 + WIN_Y1) / 2;
+    var W = WIN_U1 - WIN_U0, H = WIN_Y1 - WIN_Y0, uc = (WIN_U0 + WIN_U1) / 2, yc = (WIN_Y0 + WIN_Y1) / 2, TR = 1000;
     var reveal = new T.MeshStandardMaterial({ color: 0xeeece6, roughness: 0.9, envMapIntensity: 0.4 });
     [[WIN_U0 + 4, 8, H], [WIN_U1 - 4, 8, H]].forEach(function (r) { var m = mesh(new T.BoxGeometry(r[1], r[2], D), reveal, true); m.position.set(r[0], yc, -D / 2); g.add(m); });
     var head = mesh(new T.BoxGeometry(W, 8, D), reveal, true); head.position.set(uc, WIN_Y1 - 4, -D / 2); g.add(head);
-    var sill = mesh(new T.BoxGeometry(W, 12, D + 10), M.stone, true); sill.position.set(uc, WIN_Y0 + 6, -D / 2 + 5); g.add(sill);
-    // white aluminium awning sash with obscure glass, set back in the opening
+    var sill = mesh(new T.BoxGeometry(W, 12, D), M.stone, true); sill.position.set(uc, WIN_Y0 + 6, -D / 2); g.add(sill);
+    // white aluminium frame: fixed obscure pane below, awning sash above, transom level with the ledge top
     var alu = new T.MeshStandardMaterial({ color: 0xf2f2ef, roughness: 0.4, metalness: 0.1, envMapIntensity: 0.6 });
-    var fz = -D + 40, f = 28;
-    [[uc, WIN_Y1 - 12 - f / 2, W - 16, f], [uc, WIN_Y0 + 12 + f / 2, W - 16, f], [WIN_U0 + 8 + f / 2, yc, f, H - 24], [WIN_U1 - 8 - f / 2, yc, f, H - 24], [uc, WIN_Y0 + 12 + H * 0.38, W - 16, 22]].forEach(function (b) {
+    var fz = -D + 40, f = 32;
+    [[uc, WIN_Y1 - 8 - f / 2, W - 16, f], [uc, WIN_Y0 + 12 + f / 2, W - 16, f], [WIN_U0 + 8 + f / 2, yc, f, H - 20], [WIN_U1 - 8 - f / 2, yc, f, H - 20], [uc, TR, W - 16, 40]].forEach(function (b) {
       var m = mesh(new T.BoxGeometry(b[2], b[3], 40), alu, true); m.position.set(b[0], b[1], fz); g.add(m);
     });
     var glass = new T.MeshStandardMaterial({ color: 0xc9d3d8, emissive: 0xbcc9d2, emissiveIntensity: 1, roughness: 0.6, envMapIntensity: 0.3 });
-    var pane = mesh(new T.PlaneGeometry(W - 16, H - 24), glass); pane.position.set(uc, yc, fz - 5); g.add(pane);
-    var handle = mesh(new T.BoxGeometry(14, 60, 16), alu, true); handle.position.set(uc, WIN_Y0 + 12 + H * 0.38 - 30, fz + 28); g.add(handle);
+    var pane = mesh(new T.PlaneGeometry(W - 16, H - 20), glass); pane.position.set(uc, yc, fz - 5); g.add(pane);
+    var handle = mesh(new T.BoxGeometry(70, 14, 16), alu, true); handle.position.set(uc, TR + 50, fz + 28); g.add(handle);
     // soft daylight spilling in from the window
-    var lp = new T.Group(); place(lp, WE, uc, 40); lp.position.y = yc;
+    var lp = new T.Group(); place(lp, WE, uc, 40);
     var l = new T.SpotLight(0xe4ecff, 1.8, 0, Math.PI * 0.32, 1, 2);
-    l.position.set(lp.position.x / 1000, yc / 1000, lp.position.z / 1000);
+    l.position.set(lp.position.x / 1000, 1.6, lp.position.z / 1000);
     var tp = new T.Group(); place(tp, WE, uc, 1500);
     l.target.position.set(tp.position.x / 1000, 0, tp.position.z / 1000); scene.add(l.target); scene.add(l);
     return { group: g, light: l, glass: glass, on: false };
@@ -986,7 +985,7 @@
 
   // ---------- Newport shaving cabinet with LED halo ----------
   (function () {
-    var g = fixture(WALL_A, 1000, 0); // cabinet centred on the 2000 wall: 250 each side
+    var g = fixture(WALL_A, 1000, 0); // cabinet 250 from the left corner, 450 clear of the right corner
     // Zure Newport shaving cabinet, Woodland Oak, 1500 x 750 soft-square mirror front, 3 doors, oak body 1350 x 600 x 128
     var oc = document.createElement("canvas"); oc.width = 512; oc.height = 256;
     var og = oc.getContext("2d"); og.fillStyle = "#b08a5c"; og.fillRect(0, 0, 512, 256);
@@ -1286,7 +1285,7 @@
     dirty = true;
   }
   function setWindow(on) {
-    WINDOW.on = on; WINDOW.group.visible = on;
+    WINDOW.on = on; WINDOW.group.visible = on; WIN_AO.visible = !on;
     WIN_FILL.forEach(function (m) { m.visible = !on; });
     document.querySelectorAll("[data-window]").forEach(function (bt) { bt.setAttribute("aria-pressed", String((bt.dataset.window === "on") === on)); });
     setLight(lightMode);
