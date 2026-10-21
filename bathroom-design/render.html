@@ -91,11 +91,12 @@
     <button type="button" id="t-celadonH" data-tile="celadonH" aria-pressed="false">Origin Celadon horizontal</button>
     <button type="button" id="t-celadonS" data-tile="celadonS" aria-pressed="false">Origin Celadon above ledge</button>
     <button type="button" id="t-celadonB" data-tile="celadonB" aria-pressed="false">Origin Celadon staggered</button>
+    <button type="button" id="t-celadonHB" data-tile="celadonHB" aria-pressed="false">Origin Celadon horizontal staggered</button>
     <button type="button" id="t-celadonL" data-tile="celadonL" aria-pressed="false">Origin Celadon 65×200</button>
   </div>
   <div class="views" role="group" aria-label="Window">
     <button type="button" data-window="off" aria-pressed="true">No window</button>
-    <button type="button" data-window="on" aria-pressed="false">200 window right of cabinet</button>
+    <button type="button" data-window="on" aria-pressed="false">200 window on side wall</button>
   </div>
   <div class="views" role="group" aria-label="Lighting">
     <button type="button" data-light="warm" aria-pressed="true">Warm 2700K</button>
@@ -205,10 +206,16 @@
     var greens = o.palette;
     for (var cx = 0; cx < GCOLS; cx++) {
       for (var ry = 0; ry < GROWS; ry++) {
-        var x = (cx * (GW + GG) + GG / 2) * s, y0 = (ry * (GH + GG) + GG / 2) * s, tw = GW * s, th = GH * s;
-        // stagger: every other column drops by part of a tile; the last tile wraps to the top so the texture still tiles
-        var off = o.stagger && cx % 2 ? Math.round((GH + GG) * o.stagger) * s : 0, s0 = seed;
-        (off && ry === GROWS - 1 ? [y0 + off, y0 + off - h] : [y0 + off]).forEach(function (y) {
+        var x0 = (cx * (GW + GG) + GG / 2) * s, y0 = (ry * (GH + GG) + GG / 2) * s, tw = GW * s, th = GH * s;
+        // stagger: each column drops by a further fraction of a tile (staggerX: each row shifts sideways);
+        // the last tile wraps round to the other edge so the texture still tiles
+        var off = o.stagger ? Math.round((GH + GG) * ((cx * o.stagger) % 1)) * s : 0, s0 = seed;
+        var offX = o.staggerX ? Math.round((GW + GG) * ((ry * o.staggerX) % 1)) * s : 0;
+        var spots = [[x0 + offX, y0 + off]];
+        if (off && ry === GROWS - 1) spots.push([x0, y0 + off - h]);
+        if (offX && cx === GCOLS - 1) spots.push([x0 + offX - w, y0]);
+        spots.forEach(function (pt) {
+        var x = pt[0], y = pt[1];
         seed = s0;
         var base = greens[Math.floor(rnd() * greens.length)];
         // glaze pools darker at the edges, lighter through the middle
@@ -301,9 +308,15 @@
     palette: [[140, 154, 138], [146, 158, 140], [154, 166, 146], [148, 162, 146], [134, 150, 144], [140, 156, 150], [130, 146, 140], [144, 158, 142]],
     rough: [8, 30], grout: "#d2d4cc", edge: 0.9, blooms: 12, bloomLight: "rgba(222,232,218,0.14)", bloomDark: "rgba(90,104,92,0.12)", cracks: 0, wavy: 4, speckle: 7
   });
-  // Origin Celadon 51 x 161, vertical, every other column dropped by half a tile
+  // Origin Celadon 51 x 161, vertical, each column dropped by a third of a tile
   var cb = makeTile({
-    w: 49, h: 159, g: 2, cols: 16, rows: 6, stagger: 0.5,
+    w: 49, h: 159, g: 2, cols: 15, rows: 6, stagger: 1 / 3, // 15 columns so the 1/3 step repeats cleanly
+    palette: [[140, 154, 138], [146, 158, 140], [154, 166, 146], [148, 162, 146], [134, 150, 144], [140, 156, 150], [130, 146, 140], [144, 158, 142]],
+    rough: [8, 30], grout: "#d2d4cc", edge: 0.9, blooms: 12, bloomLight: "rgba(222,232,218,0.14)", bloomDark: "rgba(90,104,92,0.12)", cracks: 0, wavy: 4, speckle: 7
+  });
+  // Origin Celadon 51 x 161 laid horizontally, each row shifted by a third of a tile
+  var chb = makeTile({
+    w: 159, h: 49, g: 2, cols: 6, rows: 15, staggerX: 1 / 3,
     palette: [[140, 154, 138], [146, 158, 140], [154, 166, 146], [148, 162, 146], [134, 150, 144], [140, 156, 150], [130, 146, 140], [144, 158, 142]],
     rough: [8, 30], grout: "#d2d4cc", edge: 0.9, blooms: 12, bloomLight: "rgba(222,232,218,0.14)", bloomDark: "rgba(90,104,92,0.12)", cracks: 0, wavy: 4, speckle: 7
   });
@@ -386,6 +399,7 @@
     green: new T.MeshStandardMaterial({ map: greenMap, bumpMap: greenBump, bumpScale: 0.016, roughness: 1, roughnessMap: greenRough, metalness: 0, envMapIntensity: 0.65 }),
     celadonH: new T.MeshStandardMaterial({ map: ch[0], bumpMap: ch[1], bumpScale: 0.016, roughness: 1, roughnessMap: ch[4], metalness: 0, envMapIntensity: 0.75 }),
     celadonB: new T.MeshStandardMaterial({ map: cb[0], bumpMap: cb[1], bumpScale: 0.016, roughness: 1, roughnessMap: cb[4], metalness: 0, envMapIntensity: 0.75 }),
+    celadonHB: new T.MeshStandardMaterial({ map: chb[0], bumpMap: chb[1], bumpScale: 0.016, roughness: 1, roughnessMap: chb[4], metalness: 0, envMapIntensity: 0.75 }),
     celadonL: new T.MeshStandardMaterial({ map: cl[0], bumpMap: cl[1], bumpScale: 0.016, roughness: 1, roughnessMap: cl[4], metalness: 0, envMapIntensity: 0.75 }),
     celadon: new T.MeshStandardMaterial({ map: celMap, bumpMap: celBump, bumpScale: 0.016, roughness: 1, roughnessMap: celRough, metalness: 0, envMapIntensity: 0.75 }),
     zellige: new T.MeshStandardMaterial({ map: zelMap, bumpMap: zelBump, bumpScale: 0.016, roughness: 1, roughnessMap: zelRough, metalness: 0, envMapIntensity: 0.8 }),
@@ -429,8 +443,9 @@
   var LEDGE_FRONT = null; // turns green in the feature-wall option so the vanity wall reads floor to ceiling
   var UPPER = []; // upper wall bands as { mesh, feature } where feature marks the feature wall
   var FEATURE_WALL = "D-E"; // the 2000 vanity wall behind the ledge and mirror cabinet
-  // small window in the 250 gap right of the cabinet: 200 wide, same height as the cabinet (1200 to 1950), 25 clear each side
-  var WIN_U0 = 1775, WIN_U1 = 1975, WIN_Y0 = 1200, WIN_Y1 = 1950, WIN_FILL = [];
+  // small window on the side wall E-F, just round the corner to the right of the cabinet:
+  // 200 wide, same height as the cabinet (1200 to 1950), 60 in from the corner
+  var WIN_WALL = "E-F", WIN_U0 = 60, WIN_U1 = 260, WIN_Y0 = 1200, WIN_Y1 = 1950, WIN_FILL = [];
   var SHOWER_WALLS = ["A-B", "B-C"]; // tap wall and angled wall inside the shower, plus J-A up to the glass
   var SHOWER_U = 1600 - GLASS_X; // distance along J-A (from x = 1600) where the shower starts
   for (var i = 0; i < ORDER.length; i++) {
@@ -451,7 +466,7 @@
           h.moveTo(u0, NICHE_Y0); h.lineTo(u0, NICHE_Y1); h.lineTo(u1, NICHE_Y1); h.lineTo(u1, NICHE_Y0); h.closePath();
           up.holes.push(h);
         }
-        if (key === FEATURE_WALL) {
+        if (key === WIN_WALL) {
           var wh = new T.Path();
           wh.moveTo(WIN_U0, WIN_Y0); wh.lineTo(WIN_U0, WIN_Y1); wh.lineTo(WIN_U1, WIN_Y1); wh.lineTo(WIN_U1, WIN_Y0); wh.closePath();
           up.holes.push(wh);
@@ -532,10 +547,13 @@
     var lMap = cl[0].clone(), lBump = cl[1].clone();
     [lMap, lBump].forEach(function (t) { t.needsUpdate = true; t.repeat.set(NICHE_W / cl[2], NICHE_H / cl[3]); t.offset.set(0, 0); });
     var lm = M.celadonL.clone(); lm.map = lMap; lm.bumpMap = lBump; lm.side = T.BackSide;
+    var xMap = chb[0].clone(), xBump = chb[1].clone();
+    [xMap, xBump].forEach(function (t) { t.needsUpdate = true; t.repeat.set(NICHE_W / chb[2], NICHE_H / chb[3]); t.offset.set(0, 0); });
+    var xm = M.celadonHB.clone(); xm.map = xMap; xm.bumpMap = xBump; xm.side = T.BackSide;
     var bMap = cb[0].clone(), bBump = cb[1].clone();
     [bMap, bBump].forEach(function (t) { t.needsUpdate = true; t.repeat.set(NICHE_W / cb[2], NICHE_H / cb[3]); t.offset.set(0, 0); });
     var bm = M.celadonB.clone(); bm.map = bMap; bm.bumpMap = bBump; bm.side = T.BackSide;
-    NICHE = { mesh: box, green: nm, stone: sm, sage: gm, zellige: zm, celadon: cm, celadonH: hm, celadonL: lm, celadonB: bm };
+    NICHE = { mesh: box, green: nm, stone: sm, sage: gm, zellige: zm, celadon: cm, celadonH: hm, celadonL: lm, celadonB: bm, celadonHB: xm };
     box.position.y = (NICHE_Y0 + NICHE_Y1) / 2; place(box, e, NICHE_UC, -100); root.add(box);
     var sill = mesh(new T.BoxGeometry(NICHE_W, 12, 100), M.stone); sill.position.y = NICHE_Y0 + 6; place(sill, e, NICHE_UC, -50); root.add(sill);
     var bottle1 = mesh(new T.CylinderGeometry(28, 28, 190, 24), new T.MeshStandardMaterial({ color: 0xe9e2d4, roughness: 0.35 }), true);
@@ -942,7 +960,7 @@
 
   // ---------- small window in the 250 gap right of the cabinet (optional) ----------
   var WINDOW = (function () {
-    var g = fixture(WALL_A, 0, 0), D = 150; // 150 wall thickness
+    var WE = EDGES[WIN_WALL], g = fixture(WE, 0, 0), D = 150; // 150 wall thickness
     var W = WIN_U1 - WIN_U0, H = WIN_Y1 - WIN_Y0, uc = (WIN_U0 + WIN_U1) / 2, yc = (WIN_Y0 + WIN_Y1) / 2;
     var reveal = new T.MeshStandardMaterial({ color: 0xeeece6, roughness: 0.9, envMapIntensity: 0.4 });
     [[WIN_U0 + 4, 8, H], [WIN_U1 - 4, 8, H]].forEach(function (r) { var m = mesh(new T.BoxGeometry(r[1], r[2], D), reveal, true); m.position.set(r[0], yc, -D / 2); g.add(m); });
@@ -958,10 +976,10 @@
     var pane = mesh(new T.PlaneGeometry(W - 16, H - 24), glass); pane.position.set(uc, yc, fz - 5); g.add(pane);
     var handle = mesh(new T.BoxGeometry(14, 60, 16), alu, true); handle.position.set(uc, WIN_Y0 + 12 + H * 0.38 - 30, fz + 28); g.add(handle);
     // soft daylight spilling in from the window
-    var lp = new T.Group(); place(lp, WALL_A, uc, 40); lp.position.y = yc;
+    var lp = new T.Group(); place(lp, WE, uc, 40); lp.position.y = yc;
     var l = new T.SpotLight(0xe4ecff, 1.8, 0, Math.PI * 0.32, 1, 2);
     l.position.set(lp.position.x / 1000, yc / 1000, lp.position.z / 1000);
-    var tp = new T.Group(); place(tp, WALL_A, uc, 1500);
+    var tp = new T.Group(); place(tp, WE, uc, 1500);
     l.target.position.set(tp.position.x / 1000, 0, tp.position.z / 1000); scene.add(l.target); scene.add(l);
     return { group: g, light: l, glass: glass, on: false };
   })();
@@ -1218,10 +1236,11 @@
     // celadon: Origin Celadon on every wall, floor to ceiling; bench front stays stone
     // celadonS: Origin Celadon 51 x 161 above the 1000 ledge only, stone below
     // celadonB: Origin Celadon 51 x 161 floor to ceiling, vertical, half-tile stagger
-    var top = (mode === "sage" || mode === "sagefull") ? M.sage : mode === "zellige" ? M.zellige : (mode === "celadon" || mode === "celadonS") ? M.celadon : mode === "celadonH" ? M.celadonH : mode === "celadonL" ? M.celadonL : mode === "celadonB" ? M.celadonB : M.green;
-    LOWER.forEach(function (w) { w.mesh.material = mode === "zellige" ? M.zellige : mode === "sagefull" ? M.sage : mode === "celadon" ? M.celadon : mode === "celadonH" ? M.celadonH : mode === "celadonL" ? M.celadonL : mode === "celadonB" ? M.celadonB : (mode === "full" || (mode === "feature" && w.feature) || (mode === "shower" && w.shower)) ? M.green : M.stone; });
-    UPPER.forEach(function (w) { w.mesh.material = (mode === "split" || mode === "sage" || mode === "full" || mode === "zellige" || mode === "sagefull" || mode === "celadon" || mode === "celadonH" || mode === "celadonL" || mode === "celadonS" || mode === "celadonB" || (mode === "feature" && w.feature) || (mode === "shower" && w.shower)) ? top : M.stone; });
-    NICHE.mesh.material = (mode === "sage" || mode === "sagefull") ? NICHE.sage : mode === "zellige" ? NICHE.zellige : (mode === "celadon" || mode === "celadonS") ? NICHE.celadon : mode === "celadonH" ? NICHE.celadonH : mode === "celadonL" ? NICHE.celadonL : mode === "celadonB" ? NICHE.celadonB : (mode === "split" || mode === "full" || mode === "shower") ? NICHE.green : NICHE.stone;
+    // celadonHB: the same tile horizontal, brick bond
+    var top = (mode === "sage" || mode === "sagefull") ? M.sage : mode === "zellige" ? M.zellige : (mode === "celadon" || mode === "celadonS") ? M.celadon : mode === "celadonH" ? M.celadonH : mode === "celadonL" ? M.celadonL : mode === "celadonB" ? M.celadonB : mode === "celadonHB" ? M.celadonHB : M.green;
+    LOWER.forEach(function (w) { w.mesh.material = mode === "zellige" ? M.zellige : mode === "sagefull" ? M.sage : mode === "celadon" ? M.celadon : mode === "celadonH" ? M.celadonH : mode === "celadonL" ? M.celadonL : mode === "celadonB" ? M.celadonB : mode === "celadonHB" ? M.celadonHB : (mode === "full" || (mode === "feature" && w.feature) || (mode === "shower" && w.shower)) ? M.green : M.stone; });
+    UPPER.forEach(function (w) { w.mesh.material = (mode === "split" || mode === "sage" || mode === "full" || mode === "zellige" || mode === "sagefull" || mode === "celadon" || mode === "celadonH" || mode === "celadonL" || mode === "celadonS" || mode === "celadonB" || mode === "celadonHB" || (mode === "feature" && w.feature) || (mode === "shower" && w.shower)) ? top : M.stone; });
+    NICHE.mesh.material = (mode === "sage" || mode === "sagefull") ? NICHE.sage : mode === "zellige" ? NICHE.zellige : (mode === "celadon" || mode === "celadonS") ? NICHE.celadon : mode === "celadonH" ? NICHE.celadonH : mode === "celadonL" ? NICHE.celadonL : mode === "celadonB" ? NICHE.celadonB : mode === "celadonHB" ? NICHE.celadonHB : (mode === "split" || mode === "full" || mode === "shower") ? NICHE.green : NICHE.stone;
     LEDGE_FRONT.material = mode === "feature" ? M.green : M.stoneFloor;
     document.querySelectorAll("[data-tile]").forEach(function (bt) { bt.setAttribute("aria-pressed", String(bt.dataset.tile === mode)); });
     dirty = true;
@@ -1267,7 +1286,7 @@
     dirty = true;
   }
   function setWindow(on) {
-    WINDOW.on = on; WINDOW.group.visible = on; HOOK.visible = !on;
+    WINDOW.on = on; WINDOW.group.visible = on;
     WIN_FILL.forEach(function (m) { m.visible = !on; });
     document.querySelectorAll("[data-window]").forEach(function (bt) { bt.setAttribute("aria-pressed", String((bt.dataset.window === "on") === on)); });
     setLight(lightMode);
@@ -1278,7 +1297,7 @@
   // deep link: #view[-tiles][-vanity|-white], e.g. #door, #door-full, #sink-split-vanity, #sink-split-white
   var hash = (location.hash || "").replace("#", "").split("-");
   setView(VIEWS[hash[0]] ? hash[0] : "basin");
-  setTile(["full", "feature", "stone", "sage", "shower", "zellige", "sagefull", "celadon", "celadonH", "celadonL", "celadonS", "celadonB"].indexOf(hash[1]) >= 0 ? hash[1] : "split");
+  setTile(["full", "feature", "stone", "sage", "shower", "zellige", "sagefull", "celadon", "celadonH", "celadonL", "celadonS", "celadonB", "celadonHB"].indexOf(hash[1]) >= 0 ? hash[1] : "split");
   ["neutral", "day", "mood"].forEach(function (m) { if (hash.indexOf(m, 1) >= 0) setLight(m); });
   setWindow(hash.indexOf("win", 1) >= 0);
   setVanity(hash.indexOf("vanity", 1) >= 0 ? "walnut" : hash.indexOf("white", 1) >= 0 ? "white" : hash.indexOf("moon", 1) >= 0 ? "moon" : hash.indexOf("dwall", 1) >= 0 ? "dwall" : hash.indexOf("semiped", 1) >= 0 ? "semiped" : "none");
