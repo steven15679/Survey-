@@ -90,6 +90,7 @@
     <button type="button" id="t-celadon" data-tile="celadon" aria-pressed="false">Origin Celadon</button>
     <button type="button" id="t-celadonH" data-tile="celadonH" aria-pressed="false">Origin Celadon horizontal</button>
     <button type="button" id="t-celadonS" data-tile="celadonS" aria-pressed="false">Origin Celadon above ledge</button>
+    <button type="button" id="t-celadonLS" data-tile="celadonLS" aria-pressed="false">Origin Celadon 65×200 above ledge</button>
     <button type="button" id="t-celadonB" data-tile="celadonB" aria-pressed="false">Origin Celadon staggered</button>
     <button type="button" id="t-celadonHB" data-tile="celadonHB" aria-pressed="false">Origin Celadon horizontal staggered</button>
     <button type="button" id="t-celadonL" data-tile="celadonL" aria-pressed="false">Origin Celadon 65×200</button>
@@ -1234,12 +1235,13 @@
     // sagefull: Beaumont sage on every wall, floor to ceiling; the bench front under the vanity stays stone
     // celadon: Origin Celadon on every wall, floor to ceiling; bench front stays stone
     // celadonS: Origin Celadon 51 x 161 above the 1000 ledge only, stone below
+    // celadonLS: Origin Celadon 65 x 200 above the 1000 ledge only, stone below
     // celadonB: Origin Celadon 51 x 161 floor to ceiling, vertical, half-tile stagger
     // celadonHB: the same tile horizontal, brick bond
-    var top = (mode === "sage" || mode === "sagefull") ? M.sage : mode === "zellige" ? M.zellige : (mode === "celadon" || mode === "celadonS") ? M.celadon : mode === "celadonH" ? M.celadonH : mode === "celadonL" ? M.celadonL : mode === "celadonB" ? M.celadonB : mode === "celadonHB" ? M.celadonHB : M.green;
+    var top = (mode === "sage" || mode === "sagefull") ? M.sage : mode === "zellige" ? M.zellige : (mode === "celadon" || mode === "celadonS") ? M.celadon : mode === "celadonH" ? M.celadonH : (mode === "celadonL" || mode === "celadonLS") ? M.celadonL : mode === "celadonB" ? M.celadonB : mode === "celadonHB" ? M.celadonHB : M.green;
     LOWER.forEach(function (w) { w.mesh.material = mode === "zellige" ? M.zellige : mode === "sagefull" ? M.sage : mode === "celadon" ? M.celadon : mode === "celadonH" ? M.celadonH : mode === "celadonL" ? M.celadonL : mode === "celadonB" ? M.celadonB : mode === "celadonHB" ? M.celadonHB : (mode === "full" || (mode === "feature" && w.feature) || (mode === "shower" && w.shower)) ? M.green : M.stone; });
-    UPPER.forEach(function (w) { w.mesh.material = (mode === "split" || mode === "sage" || mode === "full" || mode === "zellige" || mode === "sagefull" || mode === "celadon" || mode === "celadonH" || mode === "celadonL" || mode === "celadonS" || mode === "celadonB" || mode === "celadonHB" || (mode === "feature" && w.feature) || (mode === "shower" && w.shower)) ? top : M.stone; });
-    NICHE.mesh.material = (mode === "sage" || mode === "sagefull") ? NICHE.sage : mode === "zellige" ? NICHE.zellige : (mode === "celadon" || mode === "celadonS") ? NICHE.celadon : mode === "celadonH" ? NICHE.celadonH : mode === "celadonL" ? NICHE.celadonL : mode === "celadonB" ? NICHE.celadonB : mode === "celadonHB" ? NICHE.celadonHB : (mode === "split" || mode === "full" || mode === "shower") ? NICHE.green : NICHE.stone;
+    UPPER.forEach(function (w) { w.mesh.material = (mode === "split" || mode === "sage" || mode === "full" || mode === "zellige" || mode === "sagefull" || mode === "celadon" || mode === "celadonH" || mode === "celadonL" || mode === "celadonS" || mode === "celadonB" || mode === "celadonHB" || mode === "celadonLS" || (mode === "feature" && w.feature) || (mode === "shower" && w.shower)) ? top : M.stone; });
+    NICHE.mesh.material = (mode === "sage" || mode === "sagefull") ? NICHE.sage : mode === "zellige" ? NICHE.zellige : (mode === "celadon" || mode === "celadonS") ? NICHE.celadon : mode === "celadonH" ? NICHE.celadonH : (mode === "celadonL" || mode === "celadonLS") ? NICHE.celadonL : mode === "celadonB" ? NICHE.celadonB : mode === "celadonHB" ? NICHE.celadonHB : (mode === "split" || mode === "full" || mode === "shower") ? NICHE.green : NICHE.stone;
     LEDGE_FRONT.material = mode === "feature" ? M.green : M.stoneFloor;
     document.querySelectorAll("[data-tile]").forEach(function (bt) { bt.setAttribute("aria-pressed", String(bt.dataset.tile === mode)); });
     dirty = true;
@@ -1296,7 +1298,7 @@
   // deep link: #view[-tiles][-vanity|-white], e.g. #door, #door-full, #sink-split-vanity, #sink-split-white
   var hash = (location.hash || "").replace("#", "").split("-");
   setView(VIEWS[hash[0]] ? hash[0] : "basin");
-  setTile(["full", "feature", "stone", "sage", "shower", "zellige", "sagefull", "celadon", "celadonH", "celadonL", "celadonS", "celadonB", "celadonHB"].indexOf(hash[1]) >= 0 ? hash[1] : "split");
+  setTile(["full", "feature", "stone", "sage", "shower", "zellige", "sagefull", "celadon", "celadonH", "celadonL", "celadonS", "celadonB", "celadonHB", "celadonLS"].indexOf(hash[1]) >= 0 ? hash[1] : "split");
   ["neutral", "day", "mood"].forEach(function (m) { if (hash.indexOf(m, 1) >= 0) setLight(m); });
   setWindow(hash.indexOf("win", 1) >= 0);
   setVanity(hash.indexOf("vanity", 1) >= 0 ? "walnut" : hash.indexOf("white", 1) >= 0 ? "white" : hash.indexOf("moon", 1) >= 0 ? "moon" : hash.indexOf("dwall", 1) >= 0 ? "dwall" : hash.indexOf("semiped", 1) >= 0 ? "semiped" : "none");
