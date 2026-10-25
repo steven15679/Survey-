@@ -430,8 +430,8 @@
       <figure><img src="img/render-basin-celadonhb.jpg" alt="3D render from the basin with horizontal staggered celadon tiles." loading="lazy"><figcaption>From the basin</figcaption></figure>
     </div>
 
-    <h3>Window preview · please confirm</h3>
-    <p class="muted">The right-hand wall is now one diagonal from the vanity-wall corner down to the door wall, and the vanity wall runs 2200 (as on the Rev 07 plan) so the ledge goes right into the corner, its end cut on the angle. The window starts in that corner on the diagonal wall: 550 wide, glass from floor to ceiling, white aluminium frame with a fixed obscure pane below a transom at ledge height (1000) and an awning sash above. The ledge butts into the glass. The cabinet, toilet and basin stay where they were, so there is now 450 between the cabinet and the corner. Shown with Option L4. Once you confirm, I'll redo every option with this wall shape and window.</p>
+    <h3>Corner window and diagonal right wall</h3>
+    <p class="muted">The right-hand wall is one diagonal from the vanity-wall corner down to the door wall, and the vanity wall runs 2200, so the ledge goes right into the corner with its end cut on the angle. The window starts in that corner: 550 wide, glass from floor to ceiling, white aluminium frame with a fixed obscure pane below a transom at ledge height (1000) and an awning sash above. The mirror cabinet is centred on the 2200 wall (350 each side) and the basins sit off its centre as before. Every render on this page now includes the window.</p>
     <div class="renders">
       <figure class="lead"><img src="img/render-back-window.jpg" alt="Wide 3D render from the doorway showing a 550 wide floor-to-ceiling window in the corner of the diagonal right wall, with the ledge running into it."><figcaption>From the doorway</figcaption></figure>
       <figure><img src="img/render-vanity-window.jpg" alt="3D render of the vanity wall with the narrow window on the side wall beside the mirror cabinet." loading="lazy"><figcaption>Vanity wall</figcaption></figure>
@@ -587,10 +587,10 @@
     </div>
 
     <figure class="sheet" style="margin:0">
-      <div class="fig-head"><b>A · Vanity and WC wall</b><span>2000 wide × 2150 high</span></div>
+      <div class="fig-head"><b>A · Vanity and WC wall</b><span>2200 wide × 2150 high</span></div>
       <div class="scroller"><div id="elevA" style="min-width:620px"></div></div>
       <div class="fig-notes"><ul>
-        <li>Zure Newport shaving cabinet, 1500 × 750 soft-square mirror front in Woodland Oak, leaving 250 each side on the 2000 wall and 200 to the ceiling. The LED glow spills into those gaps.</li>
+        <li>Zure Newport shaving cabinet, 1500 × 750 soft-square mirror front in Woodland Oak, leaving 350 each side on the 2200 wall and 200 to the ceiling. The LED glow spills into those gaps.</li>
         <li>In-wall cistern sits inside the ledge; brass flush plate on the ledge front above the pan.</li>
         <li>Robe hook on the green tile to the right of the basin, clear of the cabinet door swing.</li>
       </ul></div>
@@ -616,7 +616,7 @@
     </div>
 
     <figure class="sheet" style="margin:0">
-      <div class="fig-head"><b>D · Long right wall</b><span>2300 wide</span></div>
+      <div class="fig-head"><b>D · Diagonal right wall</b><span>approx. 2470 wide · verify</span></div>
       <div class="scroller"><div id="elevD" style="min-width:620px"></div></div>
       <div class="fig-notes"><ul>
         <li>Towel rail removed; the wall is left clear so the tile does the work.</li>
@@ -691,6 +691,7 @@
       <h2 id="confirm-h">To confirm before ordering</h2>
     </div>
     <ul class="confirm">
+      <li><div><b>Right wall and window.</b> <span>The model has the vanity wall at 2200 and the right wall as one straight diagonal to the door corner (about 2470 long). Measure that wall and the window's actual width, frame and how it opens, and check whether the window head reaches the ceiling or stops below it.</span></div></li>
       <li><div><b>Olive tile size.</b> <span>The quote lists 50 × 150 tiles on 300 × 300 sheets, so the niche is 600 × 300 (two sheets) with its sill on the row line at 1300. The olive photo you sent earlier looked longer than 50 × 150, so check with Beaumont that it's the same tile.</span></div></li>
       <li><div><b>Niche wall construction.</b> <span>The door-side wall needs a stud cavity with no pipes or cables at the niche position. If it's masonry or a common wall, the niche needs strata sign-off or a new location.</span></div></li>
       <li><div><b>Glass fixing with clamps only.</b> <span>Ask the glazier to confirm a 600 panel is rigid on wall and floor clamps alone, and whether the floor clamps need to be set before or after the tiles go down. If it needs more support, a brass clamp to the ceiling is less visible than a bar across the entry.</span></div></li>
@@ -816,11 +817,11 @@
 
   // ---------- Elevation A: vanity & WC ----------
   (function () {
-    var W = 2000, c = "";
+    var W = 2200, c = "";
     // ledge top, clad in the floor tile
     c += '<rect x="0" y="' + (CEIL - DATUM - 22) + '" width="' + W + '" height="24" fill="#d3cdc3" stroke="#b3ac9f" stroke-width="2"/>';
     // Newport cabinet halo + soft-square mirror front (1500 x 750 @ 1200)
-    var cx0 = 250, cx1 = 1750, cy0 = 1200, cy1 = 1950;
+    var cx0 = 350, cx1 = 1850, cy0 = 1200, cy1 = 1950;
     c += '<rect x="' + (cx0 - 30) + '" y="' + (CEIL - cy1 - 30) + '" width="' + (cx1 - cx0 + 60) + '" height="' + (cy1 - cy0 + 60) + '" fill="#ffe2a0" opacity=".95" filter="url(#halo)"/>';
     c += '<rect x="' + cx0 + '" y="' + (CEIL - cy1) + '" width="' + (cx1 - cx0) + '" height="' + (cy1 - cy0) + '" rx="110" fill="url(#mirror)" stroke="#6f7b76" stroke-width="4"/>';
     for (var i = 1; i < 3; i++) { var dx = cx0 + i * (cx1 - cx0) / 3; c += '<line x1="' + dx + '" y1="' + (CEIL - cy1) + '" x2="' + dx + '" y2="' + (CEIL - cy0) + '" stroke="#8e9b98" stroke-width="3"/>'; }
@@ -843,7 +844,7 @@
     c += '<rect x="' + (wx - 172) + '" y="' + (CEIL - 410) + '" width="344" height="18" rx="9" fill="#fafaf8" stroke="#6d736f" stroke-width="3"/>';
 
     // basin + tap + trap
-    var bx = 1000; // basin centred under the mirror cabinet
+    var bx = 1100; // basin centred under the mirror cabinet
     // basin mixer mounted on the basin's rear tap deck
     c += '<rect x="' + (bx - 20) + '" y="' + (CEIL - 1030) + '" width="40" height="180" rx="6" fill="url(#brass)" stroke="#7a6333" stroke-width="3"/>';
     c += '<rect x="' + (bx - 66) + '" y="' + (CEIL - 1005) + '" width="46" height="16" rx="6" fill="url(#brass)" stroke="#7a6333" stroke-width="2"/>';
@@ -856,13 +857,13 @@
     c += '<line x1="' + (bx - 285) + '" y1="' + (CEIL - 838) + '" x2="' + (bx + 285) + '" y2="' + (CEIL - 838) + '" stroke="#d9d9d4" stroke-width="4"/>';
 
     // robe hook
-    var hx = 1875, hy = 1600;
+    var hx = 2025, hy = 1600;
     c += '<circle cx="' + hx + '" cy="' + (CEIL - hy) + '" r="26" fill="url(#brass)" stroke="#7a6333" stroke-width="3"/>';
     c += '<path d="M' + hx + " " + (CEIL - hy) + " l0 60 q0 26 26 26" + '" fill="none" stroke="#a88d57" stroke-width="16" stroke-linecap="round"/>';
 
     var x = "";
     x += dimH(cx0, cx1, -60, "1500");
-    x += dimH(0, cx0, -60, "250") + dimH(cx1, W, -60, "250");
+    x += dimH(0, cx0, -60, "350") + dimH(cx1, W, -60, "350");
     x += dimV(cy1, CEIL, W + 90, "200", "r");
     x += dimV(cy0, cy1, W + 90, "750", "r");
     x += dimV(0, cy0, W + 200, "1200 AFFL", "r");
@@ -927,18 +928,26 @@
     document.getElementById("elevC").innerHTML = wallShell(W, c, x, { id: "C", seed: 37, right: 360, bottom: 230, label: "Elevation C: door-side wall with niche and heated towel poles" });
   })();
 
-  // ---------- Elevation D: long right wall 2300 ----------
+  // ---------- Elevation D: diagonal right wall, about 2470, window in the corner with the vanity wall ----------
   (function () {
-    var W = 2300;
-    var x = txt(W / 2, CEIL - 1500, "CLEAR WALL", { size: 56, weight: 600, fill: "#f3f1e8", ls: 3 });
-    document.getElementById("elevD").innerHTML = wallShell(W, "", x, { id: "D", seed: 53, right: 140, label: "Elevation D: long right wall, tiled with no fittings" });
+    var W = 2470, ww = 550, c = "";
+    // 550 floor-to-ceiling window at the right-hand end, against the vanity-wall corner: fixed obscure pane, transom at 1000, awning above
+    c += '<rect x="' + (W - ww) + '" y="0" width="' + ww + '" height="' + CEIL + '" fill="#dfe6ea" stroke="#9aa3a6" stroke-width="6"/>';
+    c += '<rect x="' + (W - ww + 30) + '" y="30" width="' + (ww - 60) + '" height="' + (CEIL - 60) + '" fill="#cbd6dc" stroke="#f2f2ef" stroke-width="22"/>';
+    c += '<rect x="' + (W - ww + 20) + '" y="' + (CEIL - DATUM - 20) + '" width="' + (ww - 40) + '" height="40" fill="#f2f2ef" stroke="#9aa3a6" stroke-width="3"/>';
+    c += '<rect x="' + (W - ww / 2 - 35) + '" y="' + (CEIL - DATUM - 70) + '" width="70" height="14" rx="4" fill="#f2f2ef" stroke="#9aa3a6" stroke-width="2"/>';
+    var x = txt((W - ww) / 2, CEIL - 1500, "CLEAR WALL", { size: 56, weight: 600, fill: "#f3f1e8", ls: 3 });
+    x += txt(W - ww / 2, CEIL - 1500, "WINDOW", { size: 44, weight: 600, fill: "#44504b", ls: 2 });
+    x += txt(W - ww / 2, CEIL - 1440, "550 · floor to ceiling", { size: 34, fill: "#5d685e" });
+    x += dimH(W - ww, W, -60, "550");
+    document.getElementById("elevD").innerHTML = wallShell(W, c, x, { id: "D", seed: 53, right: 140, label: "Elevation D: diagonal right wall with a 550 floor-to-ceiling window in the corner" });
   })();
 
   // ---------- Floor plan (shape traced from Rev 07, NTS) ----------
   (function () {
-    var P = { A: [135, 600], B: [135, 395], C: [302, 292], D: [290, 205], E: [673, 68], F: [700, 168], G: [700, 636], I: [592, 636], J2: [444, 636], J: [444, 600] };
+    var P = { A: [135, 600], B: [135, 395], C: [302, 292], D: [290, 205], E: [712, 54], G: [700, 636], I: [592, 636], J2: [444, 636], J: [444, 600] };
     function pt(k) { return P[k].join(","); }
-    var room = ["A", "B", "C", "D", "E", "F", "G", "I", "J2", "J"].map(pt).join(" ");
+    var room = ["A", "B", "C", "D", "E", "G", "I", "J2", "J"].map(pt).join(" ");
     var s = '<svg viewBox="40 10 790 720" role="img" aria-label="Proposed floor plan">';
     s += '<clipPath id="roomClip"><polygon points="' + room + '"/></clipPath>';
     s += '<polygon points="' + room + '" fill="url(#stonePlan)"/>';
@@ -948,27 +957,30 @@
     for (var gy = 40; gy < 720; gy += 111) s += '<line x1="0" y1="' + gy + '" x2="820" y2="' + gy + '"/>';
     s += "</g>";
 
-    // Wall A group: local mm coordinates along the 2000 wall (measured), y into the room
+    // Wall A group: local mm coordinates along the 2200 wall, y into the room; ledge end cut on the diagonal right wall
     s += '<g clip-path="url(#roomClip)"><g transform="translate(290,205) rotate(-19.7) scale(0.2035)">';
-    s += '<rect x="0" y="0" width="2000" height="200" fill="#d6d0c5" stroke="#243029" stroke-width="7"/>';
-    s += '<rect x="250" y="-10" width="1500" height="150" fill="none" stroke="#243029" stroke-width="6" stroke-dasharray="30 20"/>';
+    s += '<polygon points="0,0 2200,0 2123,200 0,200" fill="#d6d0c5" stroke="#243029" stroke-width="7"/>';
+    s += '<rect x="350" y="-10" width="1500" height="150" fill="none" stroke="#243029" stroke-width="6" stroke-dasharray="30 20"/>';
     // cistern in ledge
     s += '<rect x="250" y="30" width="400" height="150" fill="none" stroke="#7d887f" stroke-width="5" stroke-dasharray="14 10"/>';
     // back-to-wall WC pan, 360 wide x 595 long from the ledge face
     s += '<path d="M272 200 L628 200 L630 530 Q630 795 450 795 Q270 795 270 530 Z" fill="#ffffff" stroke="#243029" stroke-width="6"/>';
     s += '<path d="M302 236 L598 236 L598 525 Q598 762 450 762 Q302 762 302 525 Z" fill="none" stroke="#7d887f" stroke-width="5"/>';
     // basin
-    s += '<rect x="705" y="200" width="590" height="430" rx="18" fill="#ffffff" stroke="#243029" stroke-width="6"/>';
-    s += '<rect x="719" y="295" width="562" height="321" rx="12" fill="none" stroke="#7d887f" stroke-width="5"/>';
-    s += '<circle cx="1000" cy="455" r="22" fill="#b89d66" stroke="#243029" stroke-width="4"/>';
-    s += '<circle cx="1000" cy="247" r="26" fill="url(#brass)" stroke="#7a6333" stroke-width="5"/>';
-    s += '<rect x="988" y="247" width="24" height="160" fill="url(#brass)" stroke="#7a6333" stroke-width="4"/>';
+    s += '<rect x="805" y="200" width="590" height="430" rx="18" fill="#ffffff" stroke="#243029" stroke-width="6"/>';
+    s += '<rect x="819" y="295" width="562" height="321" rx="12" fill="none" stroke="#7d887f" stroke-width="5"/>';
+    s += '<circle cx="1100" cy="455" r="22" fill="#b89d66" stroke="#243029" stroke-width="4"/>';
+    s += '<circle cx="1100" cy="247" r="26" fill="url(#brass)" stroke="#7a6333" stroke-width="5"/>';
+    s += '<rect x="1088" y="247" width="24" height="160" fill="url(#brass)" stroke="#7a6333" stroke-width="4"/>';
     // robe hook
-    s += '<rect x="1845" y="200" width="60" height="45" fill="url(#brass)" stroke="#7a6333" stroke-width="5"/>';
+    s += '<rect x="1995" y="200" width="60" height="45" fill="url(#brass)" stroke="#7a6333" stroke-width="5"/>';
     s += "</g></g>";
 
     // walls
-    s += '<polyline points="' + ["J2", "J", "A", "B", "C", "D", "E", "F", "G", "I"].map(pt).join(" ") + '" fill="none" stroke="#243029" stroke-width="8" stroke-linejoin="miter"/>';
+    s += '<polyline points="' + ["J2", "J", "A", "B", "C", "D", "E", "G", "I"].map(pt).join(" ") + '" fill="none" stroke="#243029" stroke-width="8" stroke-linejoin="miter"/>';
+    // 550 floor-to-ceiling window on the diagonal right wall, starting in the corner
+    s += '<line x1="712" y1="54" x2="710" y2="166" stroke="#5a8f95" stroke-width="9"/>';
+    s += '<line x1="712" y1="54" x2="710" y2="166" stroke="#dff0f1" stroke-width="3"/>';
 
     // toilet roll holder on the short wall beside the shower glass
     s += '<rect x="298" y="252" width="7" height="22" fill="url(#brass)" stroke="#7a6333" stroke-width="1.2"/>';
@@ -1003,14 +1015,14 @@
     s += L(378, 572, "HEATED POLES", { size: 11, fill: "#7a6333", a: "middle" });
     s += L(544, 460, "TILE INSERT", { size: 10, fill: "#7a6333", a: "middle" }) + L(544, 472, "FLOOR WASTE", { size: 10, fill: "#7a6333", a: "middle" });
     s += L(400, 380, "BACK-TO-WALL WC", { size: 11, a: "middle" }) + L(400, 393, "cistern in ledge", { size: 10, w: 400, fill: "#5d685e", a: "middle" });
-    s += L(548, 278, "590 BASIN", { size: 11, a: "middle" });
+    s += L(568, 270, "590 BASIN", { size: 11, a: "middle" });
     s += L(452, 182, "LEDGE 1000 H × 200 D", { size: 9.5, fill: "#3d4740", a: "middle", rot: -19.7 });
-    s += L(672, 142, "HOOK", { size: 10, fill: "#7a6333", a: "middle" });
+    s += L(680, 132, "HOOK", { size: 10, fill: "#7a6333", a: "middle" });
     s += L(518, 662, "ENTRY", { size: 12, fill: "#5d685e", a: "middle" });
     // outside dims (from Rev 07)
-    s += L(470, 118, "2000", { size: 14, fill: "#5d685e", a: "middle", rot: -19.7 });
-    s += L(716, 110, "570", { size: 13, fill: "#5d685e" });
-    s += L(716, 400, "2300", { size: 14, fill: "#5d685e", rot: 90 });
+    s += L(490, 112, "2200", { size: 14, fill: "#5d685e", a: "middle", rot: -19.7 });
+    s += L(722, 100, "WINDOW 550", { size: 11, fill: "#3f7a80" });
+    s += L(716, 400, "≈2470 · verify", { size: 14, fill: "#5d685e", rot: 90 });
     s += L(290, 668, "1600", { size: 14, fill: "#5d685e", a: "middle" });
     s += L(110, 500, "620", { size: 13, fill: "#5d685e", a: "middle", rot: -90 });
     s += L(200, 322, "1070", { size: 13, fill: "#5d685e", a: "middle", rot: -31 });

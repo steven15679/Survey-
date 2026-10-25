@@ -96,8 +96,8 @@
     <button type="button" id="t-celadonL" data-tile="celadonL" aria-pressed="false">Origin Celadon 65×200</button>
   </div>
   <div class="views" role="group" aria-label="Window">
-    <button type="button" data-window="off" aria-pressed="true">No window</button>
-    <button type="button" data-window="on" aria-pressed="false">550 window in corner</button>
+    <button type="button" data-window="on" aria-pressed="true">550 window in corner</button>
+    <button type="button" data-window="off" aria-pressed="false">No window</button>
   </div>
   <div class="views" role="group" aria-label="Lighting">
     <button type="button" data-light="warm" aria-pressed="true">Warm 2700K</button>
@@ -559,6 +559,7 @@
 
   // ---------- ledge (clad in floor tile) ----------
   var WALL_A = EDGES["D-E"];
+  var CAB_U = WALL_A.L / 2; // mirror cabinet centre along the vanity wall; basin and vanities key off it
   // the ledge runs into the corner, its end cut along the diagonal right wall: LEDGE_U is where its front edge stops
   var LEDGE_U = (function () {
     var r = EDGES[WIN_WALL], du = r.d[0] * WALL_A.d[0] + r.d[1] * WALL_A.d[1], dn = r.d[0] * WALL_A.n[0] + r.d[1] * WALL_A.n[1];
@@ -655,7 +656,7 @@
 
   // ---------- matte white basin, brass mixer, bottle trap ----------
   (function () {
-    var g = fixture(WALL_A, 1000, 200); // centred under the mirror cabinet
+    var g = fixture(WALL_A, CAB_U, 200); // centred under the mirror cabinet
     function rrect(w, d, r, cx, cy) {
       var s = new T.Shape(), x0 = cx - w / 2, y0 = cy - d / 2;
       s.moveTo(x0 + r, y0); s.lineTo(x0 + w - r, y0); s.quadraticCurveTo(x0 + w, y0, x0 + w, y0 + r);
@@ -920,7 +921,7 @@
   // ---------- everyday things: plant and soap on the ledge ----------
   (function () {
     // plant in a speckled stone pot at the right end of the ledge
-    var g = fixture(WALL_A, 1820, 95);
+    var g = fixture(WALL_A, CAB_U + 820, 95);
     var prof = [new T.Vector2(0, 0), new T.Vector2(52, 0), new T.Vector2(56, 6), new T.Vector2(66, 120), new T.Vector2(62, 124), new T.Vector2(58, 112), new T.Vector2(0, 112)];
     var pot = mesh(new T.LatheGeometry(prof, 40), new T.MeshStandardMaterial({ color: 0xe4ddd0, roughness: 0.85 }), true);
     pot.position.y = 1000; g.add(pot);
@@ -942,7 +943,7 @@
       stem.position.set(lm.position.x * 0.5, 1105 + (h - 1105) / 2, lm.position.z * 0.5); g.add(stem);
     }
     // amber glass soap pump to the left of the tap
-    var sg = fixture(WALL_A, 790, 100);
+    var sg = fixture(WALL_A, CAB_U - 210, 100);
     var amber = mesh(new T.CylinderGeometry(30, 30, 130, 32), new T.MeshStandardMaterial({ color: 0x5a3212, roughness: 0.06, metalness: 0, transparent: true, opacity: 0.82, envMapIntensity: 1.5 }), true);
     amber.position.y = 1065; sg.add(amber);
     var neck = mesh(new T.CylinderGeometry(11, 14, 22, 20), M.brass, true); neck.position.y = 1141; sg.add(neck);
@@ -956,7 +957,7 @@
     var capT = mesh(new T.SphereGeometry(14, 20, 10), M.brass, true); capT.position.set(0, y + 34, z0 + 55); g.add(capT);
     var capB = mesh(new T.SphereGeometry(14, 20, 10), M.brass, true); capB.position.set(0, y - 6, z0 + 55); g.add(capB);
   }
-  var HOOK = fixture(WALL_A, 1875, 0); robeHook(HOOK, 1600, 0); // in the gap right of the cabinet
+  var HOOK = fixture(WALL_A, CAB_U + 925, 0); robeHook(HOOK, 1600, 0); // in the 350 gap right of the cabinet
 
   // ---------- window in the corner of the diagonal right wall, floor to ceiling (optional) ----------
   var WINDOW = (function () {
@@ -986,7 +987,7 @@
 
   // ---------- Newport shaving cabinet with LED halo ----------
   (function () {
-    var g = fixture(WALL_A, 1000, 0); // cabinet 250 from the left corner, 450 clear of the right corner
+    var g = fixture(WALL_A, CAB_U, 0); // cabinet centred on the 2200 wall: 350 each side
     // Zure Newport shaving cabinet, Woodland Oak, 1500 x 750 soft-square mirror front, 3 doors, oak body 1350 x 600 x 128
     var oc = document.createElement("canvas"); oc.width = 512; oc.height = 256;
     var og = oc.getContext("2d"); og.fillStyle = "#b08a5c"; og.fillRect(0, 0, 512, 256);
@@ -1171,7 +1172,7 @@
   downlight(1850, -150, 2.8, false);
   // LED halo light near the cabinet
   (function () {
-    var p = new T.Vector3(); var g = new T.Group(); place(g, WALL_A, 1000, 60); g.position.y = 1575;
+    var p = new T.Vector3(); var g = new T.Group(); place(g, WALL_A, CAB_U, 60); g.position.y = 1575;
     var l = new T.PointLight(0xffbf78, 2.4, 1.6, 2); HALO = l;
     l.position.set(g.position.x / 1000, 1.99, g.position.z / 1000); scene.add(l);
   })();
@@ -1300,7 +1301,7 @@
   setView(VIEWS[hash[0]] ? hash[0] : "basin");
   setTile(["full", "feature", "stone", "sage", "shower", "zellige", "sagefull", "celadon", "celadonH", "celadonL", "celadonS", "celadonB", "celadonHB", "celadonLS"].indexOf(hash[1]) >= 0 ? hash[1] : "split");
   ["neutral", "day", "mood"].forEach(function (m) { if (hash.indexOf(m, 1) >= 0) setLight(m); });
-  setWindow(hash.indexOf("win", 1) >= 0);
+  setWindow(hash.indexOf("nowin", 1) < 0);
   setVanity(hash.indexOf("vanity", 1) >= 0 ? "walnut" : hash.indexOf("white", 1) >= 0 ? "white" : hash.indexOf("moon", 1) >= 0 ? "moon" : hash.indexOf("dwall", 1) >= 0 ? "dwall" : hash.indexOf("semiped", 1) >= 0 ? "semiped" : "none");
 
   (function loop() {
