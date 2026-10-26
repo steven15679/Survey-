@@ -673,7 +673,7 @@
           <tr><td>Robe hooks</td><td>Rainco robe hook × 2 (BB00015)</td><td><span class="tag">Brushed brass</span></td><td class="num">≈ 1600 / 1700</td><td>Right of basin; back of entry door</td></tr>
           <tr><td>Smart lid water</td><td>Mini stop tap (cistern/bidet stop) with braided hose, for a Tidaloo smart lid; cold water feed run inside the ledge</td><td><span class="tag">Brushed brass</span></td><td class="num">≈ 200 AFFL</td><td>Ledge front, left of the pan</td></tr>
           <tr><td>Toilet roll holder</td><td>Rainco toilet roll holder (TBB00021)</td><td><span class="tag">Brushed brass</span></td><td class="num">≈ 700</td><td>Short wall beside the shower glass, left of the pan</td></tr>
-          <tr><td>Shower</td><td>Rainco Haven Minimal diverter wall mixer (BB00025); hand shower wand on a wall bracket (BB00008); overhead rose on a wall arm</td><td><span class="tag">Brushed brass</span></td><td class="num">Arm ≈ 2010, mixer 1000, diverter 1180, wand bracket 1560</td><td>Wall B</td></tr>
+          <tr><td>Shower</td><td>Rainco Haven Minimal diverter wall mixer (BB00025); hand shower wand on a wall bracket (BB00008); overhead rose on a wall arm</td><td><span class="tag">Brushed brass</span></td><td class="num">Arm ≈ 2010, mixer 1150 (clear above the 1000 tile line), diverter 1330, hose outlet 1300, wand bracket 1560</td><td>Wall B</td></tr>
           <tr><td>Niche</td><td>Recessed, waterproofed, lined in olive tile, sill falls inward; 12 tiles × 2 rows (two sheets), edges on grout lines</td><td>Olive tile</td><td class="num">600 × 300 @ 1300</td><td>Wall C, shower side</td></tr>
           <tr><td>Shower screen</td><td>10 mm toughened fixed panel, 3 wall clamps + 2 floor clamps, no channels or overhead bar</td><td>Clear <span class="tag">Brass hardware</span></td><td class="num">600 W × 2000 H</td><td>Existing glass line</td></tr>
           <tr><td>Entry door</td><td>Existing door and frame repainted, satin enamel</td><td>Greige to match the floor tile</td><td class="num">—</td><td>Entry</td></tr>
@@ -903,19 +903,19 @@
     c += '<rect x="' + (mx - 11) + '" y="' + (CEIL - 2010) + '" width="22" height="40" fill="url(#brass)" stroke="#7a6333" stroke-width="2"/>';
     c += '<rect x="' + (mx - 125) + '" y="' + (CEIL - 1970) + '" width="250" height="12" rx="5" fill="url(#brass)" stroke="#7a6333" stroke-width="3"/>';
     // Haven Minimal diverter wall mixer: round plate, slim pin lever; small diverter plate above
-    c += '<circle cx="' + mx + '" cy="' + (CEIL - 1000) + '" r="78" fill="url(#brass)" stroke="#7a6333" stroke-width="3"/>';
-    c += '<rect x="' + (mx - 7) + '" y="' + (CEIL - 1000) + '" width="14" height="95" rx="7" fill="#c7ad75" stroke="#7a6333" stroke-width="2"/>';
-    c += '<circle cx="' + mx + '" cy="' + (CEIL - 1000) + '" r="16" fill="#b89d66" stroke="#7a6333" stroke-width="2"/>';
-    c += '<circle cx="' + mx + '" cy="' + (CEIL - 1180) + '" r="30" fill="url(#brass)" stroke="#7a6333" stroke-width="3"/>';
-    c += '<circle cx="' + mx + '" cy="' + (CEIL - 1180) + '" r="9" fill="#b89d66" stroke="#7a6333" stroke-width="2"/>';
+    c += '<circle cx="' + mx + '" cy="' + (CEIL - 1150) + '" r="78" fill="url(#brass)" stroke="#7a6333" stroke-width="3"/>';
+    c += '<rect x="' + (mx - 7) + '" y="' + (CEIL - 1150) + '" width="14" height="95" rx="7" fill="#c7ad75" stroke="#7a6333" stroke-width="2"/>';
+    c += '<circle cx="' + mx + '" cy="' + (CEIL - 1150) + '" r="16" fill="#b89d66" stroke="#7a6333" stroke-width="2"/>';
+    c += '<circle cx="' + mx + '" cy="' + (CEIL - 1330) + '" r="30" fill="url(#brass)" stroke="#7a6333" stroke-width="3"/>';
+    c += '<circle cx="' + mx + '" cy="' + (CEIL - 1330) + '" r="9" fill="#b89d66" stroke="#7a6333" stroke-width="2"/>';
     // hand shower wand on a fixed wall bracket, hose to a wall outlet
-    c += '<circle cx="' + hx + '" cy="' + (CEIL - 1150) + '" r="22" fill="url(#brass)" stroke="#7a6333" stroke-width="3"/>';
-    c += '<path d="M' + hx + " " + (CEIL - 1535) + " C" + (hx + 40) + " " + (CEIL - 1400) + ", " + (hx + 40) + " " + (CEIL - 1240) + ", " + hx + " " + (CEIL - 1150) + '" fill="none" stroke="#a88d57" stroke-width="10"/>';
+    c += '<circle cx="' + hx + '" cy="' + (CEIL - 1300) + '" r="22" fill="url(#brass)" stroke="#7a6333" stroke-width="3"/>';
+    c += '<path d="M' + hx + " " + (CEIL - 1535) + " C" + (hx + 40) + " " + (CEIL - 1460) + ", " + (hx + 40) + " " + (CEIL - 1370) + ", " + hx + " " + (CEIL - 1300) + '" fill="none" stroke="#a88d57" stroke-width="10"/>';
     c += '<circle cx="' + hx + '" cy="' + (CEIL - 1560) + '" r="20" fill="url(#brass)" stroke="#7a6333" stroke-width="3"/>';
     c += '<rect x="' + (hx - 15) + '" y="' + (CEIL - 1785) + '" width="30" height="250" rx="13" fill="url(#brass)" stroke="#7a6333" stroke-width="3"/>';
     var x = "";
-    x += dimV(1000, 2010, W + 80, "2010 ROSE ARM", "r");
-    x += dimV(0, 1000, W + 80, "1000 MIXER", "r");
+    x += dimV(1150, 2010, W + 80, "2010 ROSE ARM", "r");
+    x += dimV(0, 1150, W + 80, "1150 MIXER", "r");
     document.getElementById("elevB").innerHTML = wallShell(W, c, x, { id: "B", seed: 23, right: 240, bottom: 200, label: "Elevation B: shower wall with diverter mixer, hand shower wand and overhead rose" });
   })();
 

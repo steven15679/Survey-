@@ -1048,19 +1048,21 @@
     var arm = mesh(new T.CylinderGeometry(11, 11, 380, 20), M.brass, true); arm.rotation.x = Math.PI / 2; arm.position.set(0, 2010, 190); g.add(arm);
     var drop = mesh(new T.CylinderGeometry(11, 11, 50, 20), M.brass, true); drop.position.set(0, 1990, 370); g.add(drop);
     var rose = mesh(new T.CylinderGeometry(125, 125, 10, 64), M.brass, true); rose.position.set(0, 1962, 370); g.add(rose);
-    // Haven Minimal diverter mixer: round plate with a slim pin lever; small round diverter plate above it
-    var mixer = mesh(new T.CylinderGeometry(78, 78, 8, 48), M.brass, true); mixer.rotation.x = Math.PI / 2; mixer.position.set(0, 1000, 4); g.add(mixer);
-    var mh = mesh(new T.CylinderGeometry(16, 16, 40, 24), M.brass, true); mh.rotation.x = Math.PI / 2; mh.position.set(0, 1000, 28); g.add(mh);
-    var ml = mesh(new T.CylinderGeometry(6, 6, 95, 16), M.brass, true); ml.position.set(0, 950, 46); g.add(ml);
-    var dv = mesh(new T.CylinderGeometry(30, 30, 8, 32), M.brass, true); dv.rotation.x = Math.PI / 2; dv.position.set(0, 1180, 4); g.add(dv);
-    var dk = mesh(new T.CylinderGeometry(9, 9, 28, 16), M.brass, true); dk.rotation.x = Math.PI / 2; dk.position.set(0, 1180, 20); g.add(dk);
+    // Haven Minimal diverter mixer: round plate with a slim pin lever; small round diverter plate above it.
+    // centred at 1150 so the plate and lever sit clear above the 1000 tile line
+    var MY = 1150;
+    var mixer = mesh(new T.CylinderGeometry(78, 78, 8, 48), M.brass, true); mixer.rotation.x = Math.PI / 2; mixer.position.set(0, MY, 4); g.add(mixer);
+    var mh = mesh(new T.CylinderGeometry(16, 16, 40, 24), M.brass, true); mh.rotation.x = Math.PI / 2; mh.position.set(0, MY, 28); g.add(mh);
+    var ml = mesh(new T.CylinderGeometry(6, 6, 95, 16), M.brass, true); ml.position.set(0, MY - 50, 46); g.add(ml);
+    var dv = mesh(new T.CylinderGeometry(30, 30, 8, 32), M.brass, true); dv.rotation.x = Math.PI / 2; dv.position.set(0, MY + 180, 4); g.add(dv);
+    var dk = mesh(new T.CylinderGeometry(9, 9, 28, 16), M.brass, true); dk.rotation.x = Math.PI / 2; dk.position.set(0, MY + 180, 20); g.add(dk);
     // hand shower wand (Rainco BB00008): wall outlet, fixed bracket, slim cylindrical wand and hose
     var wx = 170;
-    var outlet = mesh(new T.CylinderGeometry(22, 22, 30, 24), M.brass, true); outlet.rotation.x = Math.PI / 2; outlet.position.set(wx, 1150, 15); g.add(outlet);
+    var outlet = mesh(new T.CylinderGeometry(22, 22, 30, 24), M.brass, true); outlet.rotation.x = Math.PI / 2; outlet.position.set(wx, 1300, 15); g.add(outlet);
     var bracket = mesh(new T.CylinderGeometry(20, 20, 45, 24), M.brass, true); bracket.rotation.x = Math.PI / 2; bracket.position.set(wx, 1560, 22); g.add(bracket);
     var cup = mesh(new T.CylinderGeometry(16, 13, 40, 24), M.brass, true); cup.position.set(wx, 1560, 52); g.add(cup);
     var wand = mesh(new T.CylinderGeometry(15, 13, 250, 24), M.brass, true); wand.position.set(wx, 1660, 56); g.add(wand);
-    var hose = new T.CatmullRomCurve3([new T.Vector3(wx, 1535, 56), new T.Vector3(wx + 30, 1400, 75), new T.Vector3(wx + 25, 1240, 60), new T.Vector3(wx, 1150, 30)]);
+    var hose = new T.CatmullRomCurve3([new T.Vector3(wx, 1535, 56), new T.Vector3(wx + 25, 1460, 70), new T.Vector3(wx + 20, 1370, 55), new T.Vector3(wx, 1300, 30)]);
     g.add(mesh(new T.TubeGeometry(hose, 30, 6, 10, false), M.brass, true));
   })();
 
