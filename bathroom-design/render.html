@@ -102,6 +102,10 @@
     <button type="button" data-window="on" aria-pressed="true">550 window in corner</button>
     <button type="button" data-window="off" aria-pressed="false">No window</button>
   </div>
+  <div class="views" role="group" aria-label="Ceiling">
+    <button type="button" data-ceiling="white" aria-pressed="true">White ceiling</button>
+    <button type="button" data-ceiling="celadon" aria-pressed="false">Celadon ceiling</button>
+  </div>
   <div class="views" role="group" aria-label="Lighting">
     <button type="button" data-light="warm" aria-pressed="true">Warm 2700K</button>
     <button type="button" data-light="neutral" aria-pressed="false">Neutral 4000K</button>
@@ -1195,7 +1199,7 @@
   })();
   // exhaust fan
   (function () {
-    var fan = new T.Mesh(new T.CylinderGeometry(110, 110, 8, 40), M.ceiling); fan.position.set(1500, CEIL - 4, -700); root.add(fan);
+    var fan = new T.Mesh(new T.CylinderGeometry(110, 110, 8, 40), M.ceiling.clone()); fan.position.set(1500, CEIL - 4, -700); root.add(fan);
   })();
 
   // material colours are authored as sRGB hex
@@ -1316,6 +1320,14 @@
     document.querySelectorAll("[data-light]").forEach(function (bt) { bt.setAttribute("aria-pressed", String(bt.dataset.light === mode)); });
     dirty = true;
   }
+  // ceiling paint: flat white, or a matt paint matched to the Origin Celadon tile
+  var CEIL_COLOURS = { white: 0xf1f0ec, celadon: 0x7d9c8a };
+  function setCeiling(mode) {
+    M.ceiling.color.setHex(CEIL_COLOURS[mode]);
+    document.querySelectorAll("[data-ceiling]").forEach(function (bt) { bt.setAttribute("aria-pressed", String(bt.dataset.ceiling === mode)); });
+    dirty = true;
+  }
+  document.querySelectorAll("[data-ceiling]").forEach(function (bt) { bt.addEventListener("click", function () { setCeiling(bt.dataset.ceiling); }); });
   function setWindow(on) {
     WINDOW.on = on; WINDOW.group.visible = on; WIN_AO.visible = !on;
     WIN_FILL.forEach(function (m) { m.visible = !on; });
@@ -1331,6 +1343,7 @@
   setTile(["full", "feature", "stone", "sage", "shower", "zellige", "sagefull", "celadon", "celadonH", "celadonL", "celadonS", "celadonB", "celadonHB", "celadonLS", "celadonM", "celadonUnder"].indexOf(hash[1]) >= 0 ? hash[1] : "split");
   ["neutral", "day", "mood"].forEach(function (m) { if (hash.indexOf(m, 1) >= 0) setLight(m); });
   setWindow(hash.indexOf("nowin", 1) < 0);
+  setCeiling(hash.indexOf("cceil", 1) >= 0 ? "celadon" : "white");
   setVanity(hash.indexOf("vanity", 1) >= 0 ? "walnut" : hash.indexOf("white", 1) >= 0 ? "white" : hash.indexOf("moon", 1) >= 0 ? "moon" : hash.indexOf("dwall", 1) >= 0 ? "dwall" : hash.indexOf("semiped", 1) >= 0 ? "semiped" : "none");
 
   (function loop() {
