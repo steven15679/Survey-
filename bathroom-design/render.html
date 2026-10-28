@@ -114,7 +114,7 @@
     <label class="dim">Brightness <input type="range" id="bright" min="40" max="160" value="100" step="5" aria-label="Brightness"></label>
   </div>
   <div class="views" role="group" aria-label="Vanity">
-    <button type="button" data-vanity="none" aria-pressed="true">590 wall basin</button>
+    <button type="button" data-vanity="none" aria-pressed="true">Omvivo Lilli 550 basin</button>
     <button type="button" data-vanity="walnut" aria-pressed="false">Ravello mocha oak vanity</button>
     <button type="button" data-vanity="white" aria-pressed="false">White vanity + D basin</button>
     <button type="button" data-vanity="moon" aria-pressed="false">Otti Moonlight 600</button>
@@ -684,21 +684,34 @@
       s.lineTo(x0, y0 + r); s.quadraticCurveTo(x0, y0, x0 + r, y0);
       return s;
     }
-    var outer = rrect(590, 430, 18, 0, -215); // Beaumont quote: 590 W x 430 D x 120 H
-    var inner = rrect(562, 321, 12, 0, -255.5); // thin 14 mm rim, 95 mm tap deck at the back
+    // Omvivo Lilli 550 wall basin, 1TH, matt white: 550 W x 450 D x 150 H soft oval, rim at 850 (700 to 850),
+    // bowl opening about 488 x 327 centred 273 from the back, tap hole on the back deck 57 from the wall
+    function oval(w, d, n, cy, seg) { // superellipse, shape y runs away from the wall (negative)
+      var sh = new T.Shape();
+      for (var i = 0; i <= seg; i++) {
+        var a = i / seg * Math.PI * 2, c = Math.cos(a), si = Math.sin(a);
+        var x = w / 2 * Math.sign(c) * Math.pow(Math.abs(c), 2 / n), y = cy + d / 2 * Math.sign(si) * Math.pow(Math.abs(si), 2 / n);
+        if (i) sh.lineTo(x, y); else sh.moveTo(x, y);
+      }
+      return sh;
+    }
+    var LB = 850, LH = 150, LW = 273;
+    var outer = oval(544, 444, 3.2, -225, 96);
+    var inner = oval(488, 327, 2.6, -LW, 96);
     outer.holes.push(inner);
-    var bodyGeo = new T.ExtrudeGeometry(outer, { depth: 114, bevelEnabled: true, bevelThickness: 3, bevelSize: 3, bevelSegments: 3, curveSegments: 16 });
+    var bodyGeo = new T.ExtrudeGeometry(outer, { depth: LH - 6, bevelEnabled: true, bevelThickness: 3, bevelSize: 3, bevelSegments: 3, curveSegments: 8 });
     bodyGeo.rotateX(-Math.PI / 2);
-    var body = mesh(bodyGeo, M.matteWhite, true); body.position.y = 733; g.add(body); // 730 to 850
-    // bowl lofted from the basin opening: steep sides easing into a flat bottom, shaded towards the rim
-    var rim = inner.getPoints(24), RINGS = 14, DEPTH = 100, verts = [], cols = [], idx = [];
-    var ccx = 0, ccz = 255.5; // opening centre (shape y maps to z)
-    rim.pop(); // getPoints repeats the first point
+    var body = mesh(bodyGeo, M.matteWhite, true); body.position.y = LB - LH + 3; g.add(body);
+    var capGeo = new T.ShapeGeometry(oval(550, 450, 3.2, -225, 96)); capGeo.rotateX(Math.PI / 2);
+    var cap = mesh(capGeo, M.matteWhite, true); cap.position.y = LB - LH; g.add(cap); // underside
+    // bowl lofted from the opening: gently curved sides into a shallow flat floor, shaded towards the rim
+    var rim = inner.getPoints(), RINGS = 14, DEPTH = 120, verts = [], cols = [], idx = [];
+    var ccx = 0, ccz = LW;
+    rim.pop();
     for (var k = 0; k <= RINGS; k++) {
-      var t = k / RINGS, f = 1 - 0.04 * t - 0.06 * Math.pow(Math.max(0, (t - 0.75) / 0.25), 2), d = DEPTH * t, shade = 0.68 + 0.3 * Math.pow(t, 0.7); // near-vertical sides, flat floor
+      var t = k / RINGS, f = 1 - 0.12 * Math.pow(t, 1.5) - 0.25 * Math.pow(Math.max(0, (t - 0.6) / 0.4), 2), d = DEPTH * Math.sin(t * Math.PI / 2), shade = 0.7 + 0.28 * Math.pow(t, 0.7);
       rim.forEach(function (pt) {
-        var x = pt.x, z = -pt.y; // shape y runs away from the wall
-        verts.push(ccx + (x - ccx) * f, -d, ccz + (z - ccz) * f);
+        verts.push(ccx + (pt.x - ccx) * f, -d, ccz + (-pt.y - ccz) * f);
         cols.push(shade, shade, shade * 0.985);
       });
     }
@@ -713,19 +726,22 @@
     bowlGeo.setAttribute("position", new T.Float32BufferAttribute(verts, 3));
     bowlGeo.setAttribute("color", new T.Float32BufferAttribute(cols, 3));
     bowlGeo.setIndex(idx); bowlGeo.computeVertexNormals();
-    var bowl = mesh(bowlGeo, new T.MeshStandardMaterial({ color: 0xf3f3ef, vertexColors: true, roughness: 0.5, envMapIntensity: 0.5, side: T.DoubleSide }), true);
-    bowl.position.set(0, 849, 0); g.add(bowl);
-    var waste = mesh(new T.SphereGeometry(24, 24, 8, 0, Math.PI * 2, 0, Math.PI / 2.6), M.brass); waste.scale.y = 0.35; waste.position.set(0, 749, 255.5); g.add(waste); // brushed gold pop-up waste
-    // basin mixer on the tap deck at the back of the basin
-    var mx = mesh(new T.CylinderGeometry(20, 22, 150, 32), M.brass, true); mx.position.set(0, 925, 47); g.add(mx);
-    var lever = mesh(new T.BoxGeometry(12, 12, 60), M.brass, true); lever.position.set(0, 987, 12); lever.rotation.x = -0.25; g.add(lever);
-    var curve = new T.CatmullRomCurve3([new T.Vector3(0, 992, 47), new T.Vector3(0, 1035, 80), new T.Vector3(0, 1030, 170), new T.Vector3(0, 985, 235), new T.Vector3(0, 945, 255)]);
-    var spout = mesh(new T.TubeGeometry(curve, 40, 11, 16, false), M.brass, true); g.add(spout);
-    BASIN_RECT = [body, bowl, waste, mx, lever, spout];
-    // bottle trap
-    var tail = mesh(new T.CylinderGeometry(16, 16, 180, 20), M.brass, true); tail.position.set(0, 640, 255); g.add(tail);
-    var bottle = mesh(new T.CylinderGeometry(32, 32, 170, 24), M.brass, true); bottle.position.set(0, 480, 255); g.add(bottle);
-    var arm = mesh(new T.CylinderGeometry(16, 16, 255, 20), M.brass, true); arm.rotation.x = Math.PI / 2; arm.position.set(0, 520, 127); g.add(arm);
+    var bowl = mesh(bowlGeo, new T.MeshStandardMaterial({ color: 0xf3f3ef, vertexColors: true, roughness: 0.6, envMapIntensity: 0.5, side: T.DoubleSide }), true);
+    bowl.position.set(0, LB - 1, 0); g.add(bowl);
+    var waste = mesh(new T.CylinderGeometry(30, 30, 3, 32), M.brass); waste.position.set(0, LB - DEPTH, LW); g.add(waste); // brushed gold waste
+    var slot = mesh(new T.BoxGeometry(46, 7, 4), M.gap); slot.position.set(0, LB - 32, LW - 327 / 2 + 14); slot.rotation.x = -0.35; g.add(slot); // overflow slot at the back of the bowl
+    // basin mixer (your drawing): 55 base, 175 high, spout outlet 90 above the deck and 125 out, pin lever on top
+    var TZ = 57;
+    var tb = mesh(new T.CylinderGeometry(27.5, 27.5, 5, 40), M.brass, true); tb.position.set(0, LB + 2.5, TZ); g.add(tb);
+    var tbody = mesh(new T.CylinderGeometry(22, 22, 170, 32), M.brass, true); tbody.position.set(0, LB + 5 + 85, TZ); g.add(tbody);
+    var tspout = mesh(new T.CylinderGeometry(14, 14, 125, 24), M.brass, true); tspout.rotation.x = Math.PI / 2; tspout.position.set(0, LB + 105, TZ + 62); g.add(tspout);
+    var ttip = mesh(new T.CylinderGeometry(14, 14, 3, 24), M.gap); ttip.position.set(0, LB + 91, TZ + 112); g.add(ttip);
+    var tpin = mesh(new T.CylinderGeometry(4.5, 4.5, 70, 16), M.brass, true); tpin.rotation.x = Math.PI / 2; tpin.position.set(0, LB + 168, TZ + 50); g.add(tpin);
+    BASIN_RECT = [body, cap, bowl, waste, slot, tb, tbody, tspout, ttip, tpin];
+    // exposed brass bottle trap under the waste
+    var tail = mesh(new T.CylinderGeometry(16, 16, 140, 20), M.brass, true); tail.position.set(0, LB - LH - 70, LW); g.add(tail);
+    var bottle = mesh(new T.CylinderGeometry(32, 32, 170, 24), M.brass, true); bottle.position.set(0, 480, LW); g.add(bottle);
+    var arm = mesh(new T.CylinderGeometry(16, 16, LW, 20), M.brass, true); arm.rotation.x = Math.PI / 2; arm.position.set(0, 520, LW / 2); g.add(arm);
     var flange = mesh(new T.CylinderGeometry(34, 34, 8, 24), M.brass); flange.rotation.x = Math.PI / 2; flange.position.set(0, 520, 4); g.add(flange);
     TRAP = [tail, bottle, arm, flange];
 
@@ -1283,8 +1299,8 @@
   document.querySelectorAll("[data-tile]").forEach(function (bt) {
     bt.addEventListener("click", function () { setTile(bt.dataset.tile); });
   });
-  // none: the quoted 590 basin on the wall with an exposed trap
-  // walnut / white: that vanity with the round vessel basin and tall mixer instead of the 590 basin
+  // none: the Omvivo Lilli 550 basin on the wall with an exposed trap
+  // walnut / white: that vanity with the round vessel basin and tall mixer instead of the Lilli basin
   function setVanity(mode) {
     VANITIES.walnut.visible = mode === "walnut";
     VANITIES.white.visible = mode === "white";
