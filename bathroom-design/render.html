@@ -643,7 +643,7 @@
 
   function fixture(e, u, out) { var g = new T.Group(); place(g, e, u, out); root.add(g); return g; }
 
-  // ---------- wall-hung WC with smart seat ----------
+  // ---------- back-to-wall WC: Norton99 wall-faced pan with a Tidaloo Pro Plus smart seat ----------
   (function () {
     var g = fixture(WALL_A, 450, 200);
     // Zure Norton99 wall-faced pan, matt white, 570 long x 360 wide x 410 high, per the spec sheet
@@ -660,15 +660,25 @@
       return geo;
     }
     var panGeo = solid(panShape(1), 318, 28), pos = panGeo.attributes.position;
-    for (var i = 0; i < pos.count; i++) { // skirted pan: slightly narrower at the floor
-      // narrows towards the floor: front view tapers to about 280 wide, side view curves back to about 430 deep
-      var yy = pos.getY(i), t = Math.min(1, Math.max(0, (yy + 28) / 374)), k = 0.78 + 0.22 * Math.pow(t, 0.7);
-      pos.setX(i, pos.getX(i) * k); pos.setZ(i, pos.getZ(i) * (0.75 + 0.25 * Math.pow(t, 0.55)));
+    for (var i = 0; i < pos.count; i++) { // skirted pan, per the Mercio NOWFP drawing
+      // front view: straight sides tapering from 360 at the rim to about 300 at the floor;
+      // side view: front face drops near vertical, then sweeps back to 363 from the wall at the floor
+      var yy = pos.getY(i), t = Math.min(1, Math.max(0, (yy + 28) / 374));
+      var lo = Math.max(0, (0.45 - t) / 0.45); // only the lower part sweeps back
+      pos.setX(i, pos.getX(i) * (0.9 + 0.1 * t)); pos.setZ(i, pos.getZ(i) * (1 - 0.36 * Math.pow(lo, 1.6)));
     }
     panGeo.computeVertexNormals();
     var body = mesh(panGeo, M.matteWhite, true); body.position.set(0, 28, 0); g.add(body); // sits on the floor, 0 to 374
-    var seat = mesh(solid(panShape(1.0), 8, 6), M.matteWhite, true); seat.position.set(0, 381, 6); g.add(seat); // slim soft-close seat
-    var lid = mesh(solid(panShape(0.985), 6, 6), M.matteWhite, true); lid.position.set(0, 399, 10); g.add(lid); // top at about 410
+    // Tidaloo Pro Plus smart seat: rear housing across the back of the pan, heated seat ring and a slim domed lid,
+    // side control panel on the user's right, white hose down to the brass stop tap on the ledge front
+    var white = new T.MeshStandardMaterial({ color: 0xf6f6f3, roughness: 0.35, envMapIntensity: 0.7 });
+    var house = mesh(rbox(372, 84, 150, 36), white, true); house.position.set(0, 381 + 42, 75); g.add(house);
+    var seatRing = mesh(solid(panShape(0.97), 16, 6), white, true); seatRing.position.set(0, 381, 150); seatRing.scale.z = 0.8; g.add(seatRing);
+    var lid = mesh(solid(panShape(0.955), 10, 9), white, true); lid.position.set(0, 404, 154); lid.scale.z = 0.79; g.add(lid);
+    var panel = mesh(rbox(14, 90, 34, 6), white, true); panel.position.set(-192, 400, 110); g.add(panel);
+    [[-200, 410, 92], [-200, 410, 124], [-200, 390, 108]].forEach(function (b) { var k = mesh(new T.CylinderGeometry(6, 6, 4, 16), M.gap); k.rotation.z = Math.PI / 2; k.position.set(b[0], b[1], b[2]); g.add(k); });
+    var hose = new T.CatmullRomCurve3([new T.Vector3(-275, 200, 40), new T.Vector3(-250, 190, 70), new T.Vector3(-200, 260, 60), new T.Vector3(-170, 345, 40)]);
+    g.add(mesh(new T.TubeGeometry(hose, 24, 7, 10, false), white, true));
     var plate = mesh(rbox(220, 145, 8, 3), M.brass, true); plate.position.set(0, 880, 4); g.add(plate);
     var split = mesh(new T.BoxGeometry(3, 140, 2), M.gap); split.position.set(0, 880, 9); g.add(split);
   })();
