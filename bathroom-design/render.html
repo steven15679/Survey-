@@ -78,6 +78,7 @@
     <button type="button" id="v-sink" data-view="sink" aria-pressed="false">Basin</button>
     <button type="button" id="v-back" data-view="back" aria-pressed="false">From doorway</button>
     <button type="button" id="v-window" data-view="window" aria-pressed="false">From window</button>
+    <button type="button" id="v-wc" data-view="wc" aria-pressed="false">Toilet</button>
   </div>
   <div class="views" role="group" aria-label="Wall tile layout">
     <button type="button" id="t-split" data-tile="split" aria-pressed="true">Olive above ledge</button>
@@ -679,7 +680,10 @@
     [[-200, 410, 92], [-200, 410, 124], [-200, 390, 108]].forEach(function (b) { var k = mesh(new T.CylinderGeometry(6, 6, 4, 16), M.gap); k.rotation.z = Math.PI / 2; k.position.set(b[0], b[1], b[2]); g.add(k); });
     var hose = new T.CatmullRomCurve3([new T.Vector3(-275, 200, 40), new T.Vector3(-250, 190, 70), new T.Vector3(-200, 260, 60), new T.Vector3(-170, 345, 40)]);
     g.add(mesh(new T.TubeGeometry(hose, 24, 7, 10, false), white, true));
-    var plate = mesh(rbox(220, 145, 8, 3), M.brass, true); plate.position.set(0, 880, 4); g.add(plate);
+    // flush plate centred on the pan, in the same brushed brass as the tapware; a flat plate catches more of the
+    // warm room than the round taps do, so it is toned down a little to read as the same finish
+    var plateMat = M.brass.clone(); plateMat.color.setHex(0xa8854f); plateMat.roughness = 0.5; plateMat.envMapIntensity = 0.6;
+    var plate = mesh(rbox(220, 145, 8, 3), plateMat, true); plate.position.set(0, 880, 4); g.add(plate);
     var split = mesh(new T.BoxGeometry(3, 140, 2), M.gap); split.position.set(0, 880, 9); g.add(split);
   })();
 
@@ -1249,7 +1253,8 @@
     vanity: { pos: [2300, 1650, -250],  look: [1500, 1150, -2000], fov: 64 },
     sink:   { pos: [2526, 1250, -6],  look: [1928, 640, -1586], fov: 58 },
     back:   { pos: [2150, 1560, 40],   look: [1700, 950, -1950], fov: 80 }, // wide, from the doorway
-    window: { pos: [2860, 1720, -2010], look: [700, 950, -380], fov: 88 } // wide, backed right up to the corner window
+    window: { pos: [2860, 1720, -2010], look: [700, 950, -380], fov: 88 }, // wide, backed right up to the corner window
+    wc:     { pos: [1810, 1150, -284], look: [1300, 640, -1720], fov: 50 } // square on to the toilet and flush plate
   };
   function setView(name) {
     var v = VIEWS[name] || VIEWS.basin;
