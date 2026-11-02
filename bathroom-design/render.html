@@ -103,6 +103,10 @@
     <button type="button" data-window="on" aria-pressed="true">550 window in corner</button>
     <button type="button" data-window="off" aria-pressed="false">No window</button>
   </div>
+  <div class="views" role="group" aria-label="Floor tile">
+    <button type="button" data-floor="white" aria-pressed="true">Kalkstone White floor</button>
+    <button type="button" data-floor="beige" aria-pressed="false">Warmer beige floor</button>
+  </div>
   <div class="views" role="group" aria-label="Ceiling">
     <button type="button" data-ceiling="white" aria-pressed="true">White ceiling</button>
     <button type="button" data-ceiling="celadon" aria-pressed="false">Celadon ceiling</button>
@@ -1351,6 +1355,15 @@
     document.querySelectorAll("[data-light]").forEach(function (bt) { bt.setAttribute("aria-pressed", String(bt.dataset.light === mode)); });
     dirty = true;
   }
+  // floor and lower-wall tile: Kalkstone White as quoted, or the same 600 x 600 stone look in a warmer beige
+  // (tints the floor, lower walls, ledge front and bench top together)
+  function setFloor(mode) {
+    var c = mode === "beige" ? 0xd8bd94 : 0xffffff;
+    M.stone.color.setHex(c); M.stoneFloor.color.setHex(c);
+    document.querySelectorAll("[data-floor]").forEach(function (bt) { bt.setAttribute("aria-pressed", String(bt.dataset.floor === mode)); });
+    dirty = true;
+  }
+  document.querySelectorAll("[data-floor]").forEach(function (bt) { bt.addEventListener("click", function () { setFloor(bt.dataset.floor); }); });
   // ceiling paint: flat white, or a matt paint matched to the Origin Celadon tile
   var CEIL_COLOURS = { white: 0xf1f0ec, celadon: 0x7d9c8a };
   function setCeiling(mode) {
@@ -1375,6 +1388,7 @@
   ["neutral", "day", "mood"].forEach(function (m) { if (hash.indexOf(m, 1) >= 0) setLight(m); });
   setWindow(hash.indexOf("nowin", 1) < 0);
   setCeiling(hash.indexOf("cceil", 1) >= 0 ? "celadon" : "white");
+  setFloor(hash.indexOf("beige", 1) >= 0 ? "beige" : "white");
   setVanity(hash.indexOf("vanity", 1) >= 0 ? "walnut" : hash.indexOf("white", 1) >= 0 ? "white" : hash.indexOf("moon", 1) >= 0 ? "moon" : hash.indexOf("dwall", 1) >= 0 ? "dwall" : hash.indexOf("semiped", 1) >= 0 ? "semiped" : "none");
 
   (function loop() {
