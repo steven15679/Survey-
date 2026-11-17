@@ -80,10 +80,6 @@
     <button type="button" id="v-window" data-view="window" aria-pressed="false">From window</button>
     <button type="button" id="v-wc" data-view="wc" aria-pressed="false">Toilet</button>
   </div>
-  <div class="views" role="group" aria-label="Ceiling">
-    <button type="button" data-ceiling="white" aria-pressed="true">White ceiling</button>
-    <button type="button" data-ceiling="celadon" aria-pressed="false">Celadon ceiling</button>
-  </div>
   <div class="views" role="group" aria-label="Lighting">
     <button type="button" data-light="warm" aria-pressed="true">Warm 2700K</button>
     <button type="button" data-light="neutral" aria-pressed="false">Neutral 4000K</button>
@@ -419,7 +415,7 @@
     gloss: new T.MeshStandardMaterial({ color: 0xf7f7f5, roughness: 0.18, envMapIntensity: 0.9 }),
     cabinet: new T.MeshStandardMaterial({ color: 0xe9e9e4, roughness: 0.5 }),
     gap: new T.MeshStandardMaterial({ color: 0x2b2f2c, roughness: 0.6 }),
-    door: new T.MeshStandardMaterial({ color: 0x9e958a, roughness: 0.36, envMapIntensity: 0.55 }),
+    door: new T.MeshStandardMaterial({ color: 0xc3b89f, roughness: 0.36, envMapIntensity: 0.55 }), // satin enamel matched to the Tivoli Beige
     glass: new T.MeshStandardMaterial({ color: 0xd8ecea, roughness: 0.03, metalness: 0.1, transparent: true, opacity: 0.16, depthWrite: false, envMapIntensity: 1.4 }),
     glassEdge: new T.MeshStandardMaterial({ color: 0x9fc8c2, roughness: 0.1, transparent: true, opacity: 0.55 }),
     grey: new T.MeshStandardMaterial({ color: 0xb9bebd, roughness: 0.4 }),
@@ -1353,7 +1349,7 @@
   }
   document.querySelectorAll("[data-floor]").forEach(function (bt) { bt.addEventListener("click", function () { setFloor(bt.dataset.floor); }); });
   // ceiling paint: flat white, or a matt paint matched to the Origin Celadon tile
-  var CEIL_COLOURS = { white: 0xf1f0ec, celadon: 0x7d9c8a };
+  var CEIL_COLOURS = { white: 0xf1f0ec, celadon: 0x7d9c8a, beige: 0xd6c8ab }; // beige: matt paint matched to the Tivoli Beige
   function setCeiling(mode) {
     M.ceiling.color.setHex(CEIL_COLOURS[mode]);
     document.querySelectorAll("[data-ceiling]").forEach(function (bt) { bt.setAttribute("aria-pressed", String(bt.dataset.ceiling === mode)); });
@@ -1375,7 +1371,7 @@
   setTile(["full", "feature", "stone", "sage", "shower", "zellige", "sagefull", "celadon", "celadonH", "celadonL", "celadonS", "celadonB", "celadonHB", "celadonLS", "celadonM", "celadonUnder"].indexOf(hash[1]) >= 0 ? hash[1] : "celadonS");
   ["neutral", "day", "mood"].forEach(function (m) { if (hash.indexOf(m, 1) >= 0) setLight(m); });
   setWindow(hash.indexOf("nowin", 1) < 0);
-  setCeiling(hash.indexOf("cceil", 1) >= 0 ? "celadon" : "white");
+  setCeiling(hash.indexOf("cceil", 1) >= 0 ? "celadon" : "beige");
   setFloor(hash.indexOf("kalk", 1) >= 0 ? "white" : "beige"); // Tivoli Beige is the final floor
   setVanity(hash.indexOf("vanity", 1) >= 0 ? "walnut" : hash.indexOf("white", 1) >= 0 ? "white" : hash.indexOf("moon", 1) >= 0 ? "moon" : hash.indexOf("dwall", 1) >= 0 ? "dwall" : hash.indexOf("semiped", 1) >= 0 ? "semiped" : "none");
 
