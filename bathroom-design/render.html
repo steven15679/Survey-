@@ -79,6 +79,11 @@
     <button type="button" id="v-back" data-view="back" aria-pressed="false">From doorway</button>
     <button type="button" id="v-window" data-view="window" aria-pressed="false">From window</button>
     <button type="button" id="v-wc" data-view="wc" aria-pressed="false">Toilet</button>
+    <button type="button" id="v-right" data-view="right" aria-pressed="false">Right wall</button>
+  </div>
+  <div class="views" role="group" aria-label="Towel poles">
+    <button type="button" data-poles="left" aria-pressed="true">Towel poles by shower</button>
+    <button type="button" data-poles="right" aria-pressed="false">Towel poles on right wall</button>
   </div>
   <div class="views" role="group" aria-label="Lighting">
     <button type="button" data-light="warm" aria-pressed="true">Warm 2700K</button>
@@ -1154,11 +1159,14 @@
     });
   })();
 
-  // ---------- heated towel poles ----------
+  // ---------- heated towel poles: on the door-side wall by the shower, or on the diagonal right wall ----------
+  // right wall: just past the open door, whose leaf reaches about 780 in from the door wall
+  var POLES = { left: [], right: [] };
   (function () {
-    var e = EDGES["J-A"];
-    [200, 500].forEach(function (u) {
-      var g = fixture(e, u, 0);
+    var R = EDGES[WIN_WALL], zu = function (z) { return (z - P.E[1]) / (P.G[1] - P.E[1]) * R.L; };
+    [["left", EDGES["J-A"], [200, 500]], ["right", R, [zu(-1150), zu(-850)]]].forEach(function (set) {
+    set[2].forEach(function (u) {
+      var g = fixture(set[1], u, 0); POLES[set[0]].push(g);
       var pole = mesh(new T.CylinderGeometry(16, 16, 1200, 24), M.brass, true); pole.position.set(0, 1000, 60); g.add(pole);
       [16, -16].forEach(function (s) {
         var cap = mesh(new T.SphereGeometry(16, 20, 10), M.brass, true); cap.position.set(0, 1000 + s * 37.5, 60); g.add(cap);
@@ -1167,6 +1175,7 @@
         var so = mesh(new T.CylinderGeometry(12, 12, 60, 16), M.brass, true); so.rotation.x = Math.PI / 2; so.position.set(0, y, 30); g.add(so);
         var fl = mesh(new T.CylinderGeometry(28, 28, 8, 20), M.brass); fl.rotation.x = Math.PI / 2; fl.position.set(0, y, 4); g.add(fl);
       });
+    });
     });
   })();
 
@@ -1242,7 +1251,8 @@
     sink:   { pos: [2526, 1250, -6],  look: [1928, 640, -1586], fov: 58 },
     back:   { pos: [2150, 1560, 40],   look: [1700, 950, -1950], fov: 80 }, // wide, from the doorway
     window: { pos: [2680, 1720, -1960], look: [600, 950, -380], fov: 88 }, // wide, backed right up to the corner window
-    wc:     { pos: [1810, 1150, -284], look: [1300, 640, -1720], fov: 50 } // square on to the toilet and flush plate
+    wc:     { pos: [1810, 1150, -284], look: [1300, 640, -1720], fov: 50 }, // square on to the toilet and flush plate
+    right:  { pos: [1150, 1550, -1250], look: [2850, 1000, -700], fov: 72 } // across the room to the diagonal right wall and door
   };
   function setView(name) {
     var v = VIEWS[name] || VIEWS.basin;
@@ -1356,6 +1366,13 @@
     dirty = true;
   }
   document.querySelectorAll("[data-ceiling]").forEach(function (bt) { bt.addEventListener("click", function () { setCeiling(bt.dataset.ceiling); }); });
+  function setPoles(side) {
+    POLES.left.forEach(function (g) { g.visible = side === "left"; });
+    POLES.right.forEach(function (g) { g.visible = side === "right"; });
+    document.querySelectorAll("[data-poles]").forEach(function (bt) { bt.setAttribute("aria-pressed", String(bt.dataset.poles === side)); });
+    dirty = true;
+  }
+  document.querySelectorAll("[data-poles]").forEach(function (bt) { bt.addEventListener("click", function () { setPoles(bt.dataset.poles); }); });
   function setWindow(on) {
     WINDOW.on = on; WINDOW.group.visible = on; WIN_AO.visible = !on;
     WIN_FILL.forEach(function (m) { m.visible = !on; });
@@ -1371,6 +1388,7 @@
   setTile(["full", "feature", "stone", "sage", "shower", "zellige", "sagefull", "celadon", "celadonH", "celadonL", "celadonS", "celadonB", "celadonHB", "celadonLS", "celadonM", "celadonUnder"].indexOf(hash[1]) >= 0 ? hash[1] : "celadonS");
   ["neutral", "day", "mood"].forEach(function (m) { if (hash.indexOf(m, 1) >= 0) setLight(m); });
   setWindow(hash.indexOf("nowin", 1) < 0);
+  setPoles(hash.indexOf("rails", 1) >= 0 ? "right" : "left");
   setCeiling(hash.indexOf("cceil", 1) >= 0 ? "celadon" : "beige");
   setFloor(hash.indexOf("kalk", 1) >= 0 ? "white" : "beige"); // Tivoli Beige is the final floor
   setVanity(hash.indexOf("vanity", 1) >= 0 ? "walnut" : hash.indexOf("white", 1) >= 0 ? "white" : hash.indexOf("moon", 1) >= 0 ? "moon" : hash.indexOf("dwall", 1) >= 0 ? "dwall" : hash.indexOf("semiped", 1) >= 0 ? "semiped" : "none");
