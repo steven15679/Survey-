@@ -74,38 +74,11 @@
     <button type="button" id="v-basin" data-view="basin" aria-pressed="true">From basin</button>
     <button type="button" id="v-door" data-view="door" aria-pressed="false">From door</button>
     <button type="button" id="v-shower" data-view="shower" aria-pressed="false">Shower</button>
-    <button type="button" id="v-vanity" data-view="vanity" aria-pressed="false">Vanity</button>
+    <button type="button" id="v-vanity" data-view="vanity" aria-pressed="false">Vanity wall</button>
     <button type="button" id="v-sink" data-view="sink" aria-pressed="false">Basin</button>
     <button type="button" id="v-back" data-view="back" aria-pressed="false">From doorway</button>
     <button type="button" id="v-window" data-view="window" aria-pressed="false">From window</button>
     <button type="button" id="v-wc" data-view="wc" aria-pressed="false">Toilet</button>
-  </div>
-  <div class="views" role="group" aria-label="Wall tile layout">
-    <button type="button" id="t-split" data-tile="split" aria-pressed="true">Olive above ledge</button>
-    <button type="button" id="t-full" data-tile="full" aria-pressed="false">Olive floor to ceiling</button>
-    <button type="button" id="t-feature" data-tile="feature" aria-pressed="false">Olive vanity wall only</button>
-    <button type="button" id="t-stone" data-tile="stone" aria-pressed="false">All stone-look</button>
-    <button type="button" id="t-sage" data-tile="sage" aria-pressed="false">Beaumont sage above ledge</button>
-    <button type="button" id="t-shower" data-tile="shower" aria-pressed="false">Olive shower only</button>
-    <button type="button" id="t-zellige" data-tile="zellige" aria-pressed="false">Palma Green zellige</button>
-    <button type="button" id="t-sagefull" data-tile="sagefull" aria-pressed="false">Beaumont sage floor to ceiling</button>
-    <button type="button" id="t-celadon" data-tile="celadon" aria-pressed="false">Origin Celadon</button>
-    <button type="button" id="t-celadonH" data-tile="celadonH" aria-pressed="false">Origin Celadon horizontal</button>
-    <button type="button" id="t-celadonS" data-tile="celadonS" aria-pressed="false">Origin Celadon above ledge</button>
-    <button type="button" id="t-celadonM" data-tile="celadonM" aria-pressed="false">Origin Celadon above, matching green below</button>
-    <button type="button" id="t-celadonUnder" data-tile="celadonUnder" aria-pressed="false">Celadon below, pale slim tile above</button>
-    <button type="button" id="t-celadonLS" data-tile="celadonLS" aria-pressed="false">Origin Celadon 65×200 above ledge</button>
-    <button type="button" id="t-celadonB" data-tile="celadonB" aria-pressed="false">Origin Celadon staggered</button>
-    <button type="button" id="t-celadonHB" data-tile="celadonHB" aria-pressed="false">Origin Celadon horizontal staggered</button>
-    <button type="button" id="t-celadonL" data-tile="celadonL" aria-pressed="false">Origin Celadon 65×200</button>
-  </div>
-  <div class="views" role="group" aria-label="Window">
-    <button type="button" data-window="on" aria-pressed="true">550 window in corner</button>
-    <button type="button" data-window="off" aria-pressed="false">No window</button>
-  </div>
-  <div class="views" role="group" aria-label="Floor tile">
-    <button type="button" data-floor="white" aria-pressed="true">Kalkstone White floor</button>
-    <button type="button" data-floor="beige" aria-pressed="false">Tivoli Beige floor</button>
   </div>
   <div class="views" role="group" aria-label="Ceiling">
     <button type="button" data-ceiling="white" aria-pressed="true">White ceiling</button>
@@ -117,14 +90,6 @@
     <button type="button" data-light="day" aria-pressed="false">Daylight 5000K</button>
     <button type="button" data-light="mood" aria-pressed="false">Mirror glow only</button>
     <label class="dim">Brightness <input type="range" id="bright" min="40" max="160" value="100" step="5" aria-label="Brightness"></label>
-  </div>
-  <div class="views" role="group" aria-label="Vanity">
-    <button type="button" data-vanity="none" aria-pressed="true">Omvivo Lilli 550 basin</button>
-    <button type="button" data-vanity="walnut" aria-pressed="false">Ravello mocha oak vanity</button>
-    <button type="button" data-vanity="white" aria-pressed="false">White vanity + D basin</button>
-    <button type="button" data-vanity="moon" aria-pressed="false">Otti Moonlight 600</button>
-    <button type="button" data-vanity="dwall" aria-pressed="false">D basin + wall mixer</button>
-    <button type="button" data-vanity="semiped" aria-pressed="false">Basin + half pedestal</button>
   </div>
   </div>
 </div>
@@ -145,7 +110,7 @@
 
   // ---------- plan (mm). x = east, z = south; polygon order gives inward normals ----------
   var P = {
-    A: [0, 0], B: [0, -620], C: [910, -1183], D: [847, -1639], E: [2918, -2381], // wall A (D-E) 2200, as drawn
+    A: [0, 0], B: [0, -620], C: [910, -1183], D: [847, -1639], E: [2730, -2313], // wall A (D-E) 2000, measured on site
     G: [2878, 90], I: [2380, 90], J2: [1600, 90], J: [1600, 0] // E-G: one diagonal right wall from the vanity-wall corner to the door wall
   };
   var ORDER = ["A", "B", "C", "D", "E", "G", "I", "J2", "J"];
@@ -483,7 +448,7 @@
   var NICHE_W = NICHE_U1 - NICHE_U0, NICHE_H = NICHE_Y1 - NICHE_Y0, NICHE_UC = (NICHE_U0 + NICHE_U1) / 2;
   var LEDGE_FRONT = null; // turns green in the feature-wall option so the vanity wall reads floor to ceiling
   var UPPER = []; // upper wall bands as { mesh, feature } where feature marks the feature wall
-  var FEATURE_WALL = "D-E"; // the 2200 vanity wall behind the ledge and mirror cabinet
+  var FEATURE_WALL = "D-E"; // the 2000 vanity wall behind the ledge and mirror cabinet
   // window on the diagonal right wall, starting in the corner with the vanity wall: 550 wide, floor to ceiling
   var WIN_WALL = "E-G", WIN_U0 = 0, WIN_U1 = 550, WIN_Y0 = 0, WIN_Y1 = CEIL, WIN_FILL = [], WIN_AO = null;
   var SHOWER_WALLS = ["A-B", "B-C"]; // tap wall and angled wall inside the shower, plus J-A up to the glass
@@ -602,7 +567,8 @@
 
   // ---------- ledge (clad in floor tile) ----------
   var WALL_A = EDGES["D-E"];
-  var CAB_U = WALL_A.L / 2; // mirror cabinet centre along the vanity wall; basin and vanities key off it
+  var CAB_U = 150 + 750; // mirror cabinet: 1500 wide, 150 from the shower-side corner, 350 clear of the window corner
+  var BASIN_U = CAB_U + 150; // Lilli basin 150 right of the cabinet centre, clear of the toilet
   // the ledge runs into the corner, its end cut along the diagonal right wall: LEDGE_U is where its front edge stops
   var LEDGE_U = (function () {
     var r = EDGES[WIN_WALL], du = r.d[0] * WALL_A.d[0] + r.d[1] * WALL_A.d[1], dn = r.d[0] * WALL_A.n[0] + r.d[1] * WALL_A.n[1];
@@ -712,7 +678,7 @@
 
   // ---------- matte white basin, brass mixer, bottle trap ----------
   (function () {
-    var g = fixture(WALL_A, CAB_U, 200); // centred under the mirror cabinet
+    var g = fixture(WALL_A, BASIN_U, 200); // under the mirror cabinet, 150 right of its centre
     function rrect(w, d, r, cx, cy) {
       var s = new T.Shape(), x0 = cx - w / 2, y0 = cy - d / 2;
       s.moveTo(x0 + r, y0); s.lineTo(x0 + w - r, y0); s.quadraticCurveTo(x0 + w, y0, x0 + w, y0 + r);
@@ -767,14 +733,17 @@
     bowl.position.set(0, LB - 1, 0); g.add(bowl);
     var waste = mesh(new T.CylinderGeometry(30, 30, 3, 32), M.brass); waste.position.set(0, LB - DEPTH, LW); g.add(waste); // brushed gold waste
     var slot = mesh(new T.BoxGeometry(46, 7, 4), M.gap); slot.position.set(0, LB - 32, LW - 327 / 2 + 14); slot.rotation.x = -0.35; g.add(slot); // overflow slot at the back of the bowl
-    // basin mixer (your drawing): 55 base, 175 high, spout outlet 90 above the deck and 125 out, pin lever on top
-    var TZ = 57;
-    var tb = mesh(new T.CylinderGeometry(27.5, 27.5, 5, 40), M.brass, true); tb.position.set(0, LB + 2.5, TZ); g.add(tb);
-    var tbody = mesh(new T.CylinderGeometry(22, 22, 170, 32), M.brass, true); tbody.position.set(0, LB + 5 + 85, TZ); g.add(tbody);
-    var tspout = mesh(new T.CylinderGeometry(14, 14, 125, 24), M.brass, true); tspout.rotation.x = Math.PI / 2; tspout.position.set(0, LB + 105, TZ + 62); g.add(tspout);
-    var ttip = mesh(new T.CylinderGeometry(14, 14, 3, 24), M.gap); ttip.position.set(0, LB + 91, TZ + 112); g.add(ttip);
-    var tpin = mesh(new T.CylinderGeometry(4.5, 4.5, 70, 16), M.brass, true); tpin.rotation.x = Math.PI / 2; tpin.position.set(0, LB + 168, TZ + 50); g.add(tpin);
-    BASIN_RECT = [body, cap, bowl, waste, slot, tb, tbody, tspout, ttip, tpin];
+    // wall-mounted brushed brass set on the ledge front, as in the Lilli product photo: a spout that comes straight
+    // out of the wall and turns down over the bowl, and a round mixer to its right (no-tap-hole Lilli)
+    var SY = 958;
+    var sfl = mesh(new T.CylinderGeometry(27, 27, 6, 32), M.brass, true); sfl.rotation.x = Math.PI / 2; sfl.position.set(0, SY, 3); g.add(sfl);
+    var spPath = new T.CatmullRomCurve3([new T.Vector3(0, SY, 4), new T.Vector3(0, SY, 120), new T.Vector3(0, SY - 4, 172), new T.Vector3(0, SY - 26, 194), new T.Vector3(0, SY - 52, 198)]);
+    var tspout = mesh(new T.TubeGeometry(spPath, 40, 12, 20, false), M.brass, true); g.add(tspout);
+    var ttip = mesh(new T.CylinderGeometry(12, 12, 2, 20), M.gap); ttip.position.set(0, SY - 52, 198); g.add(ttip);
+    var tb = mesh(new T.CylinderGeometry(30, 30, 6, 40), M.brass, true); tb.rotation.x = Math.PI / 2; tb.position.set(185, SY, 3); g.add(tb);
+    var tbody = mesh(new T.CylinderGeometry(25, 25, 42, 40), M.brass, true); tbody.rotation.x = Math.PI / 2; tbody.position.set(185, SY, 27); g.add(tbody);
+    var tpin = mesh(new T.CylinderGeometry(24, 24, 2, 40), M.gap); tpin.rotation.x = Math.PI / 2; tpin.position.set(185, SY, 46); tpin.scale.set(0.4, 1, 0.4); g.add(tpin);
+    BASIN_RECT = [body, cap, bowl, waste, slot, sfl, tspout, ttip, tb, tbody, tpin];
     // exposed brass bottle trap under the waste
     var tail = mesh(new T.CylinderGeometry(16, 16, 140, 20), M.brass, true); tail.position.set(0, LB - LH - 70, LW); g.add(tail);
     var bottle = mesh(new T.CylinderGeometry(32, 32, 170, 24), M.brass, true); bottle.position.set(0, 480, LW); g.add(bottle);
@@ -1015,7 +984,7 @@
       stem.position.set(lm.position.x * 0.5, 1105 + (h - 1105) / 2, lm.position.z * 0.5); g.add(stem);
     }
     // amber glass soap pump to the left of the tap
-    var sg = fixture(WALL_A, CAB_U - 210, 100);
+    var sg = fixture(WALL_A, BASIN_U - 340, 100);
     var amber = mesh(new T.CylinderGeometry(30, 30, 130, 32), new T.MeshStandardMaterial({ color: 0x5a3212, roughness: 0.06, metalness: 0, transparent: true, opacity: 0.82, envMapIntensity: 1.5 }), true);
     amber.position.y = 1065; sg.add(amber);
     var neck = mesh(new T.CylinderGeometry(11, 14, 22, 20), M.brass, true); neck.position.y = 1141; sg.add(neck);
@@ -1029,7 +998,7 @@
     var capT = mesh(new T.SphereGeometry(14, 20, 10), M.brass, true); capT.position.set(0, y + 34, z0 + 55); g.add(capT);
     var capB = mesh(new T.SphereGeometry(14, 20, 10), M.brass, true); capB.position.set(0, y - 6, z0 + 55); g.add(capB);
   }
-  var HOOK = fixture(WALL_A, CAB_U + 925, 0); robeHook(HOOK, 1600, 0); // in the 350 gap right of the cabinet
+  var HOOK = fixture(WALL_A, CAB_U + 925, 0); robeHook(HOOK, 1600, 0); // centred in the 350 gap right of the cabinet
 
   // ---------- window in the corner of the diagonal right wall, floor to ceiling (optional) ----------
   var WINDOW = (function () {
@@ -1059,7 +1028,7 @@
 
   // ---------- Newport shaving cabinet with LED halo ----------
   (function () {
-    var g = fixture(WALL_A, CAB_U, 0); // cabinet centred on the 2200 wall: 350 each side
+    var g = fixture(WALL_A, CAB_U, 0); // cabinet 150 from the left corner, 350 from the right
     // Zure Newport shaving cabinet, Woodland Oak, 1500 x 750 soft-square mirror front, 3 doors, oak body 1350 x 600 x 128
     var oc = document.createElement("canvas"); oc.width = 512; oc.height = 256;
     var og = oc.getContext("2d"); og.fillStyle = "#b08a5c"; og.fillRect(0, 0, 512, 256);
@@ -1403,11 +1372,11 @@
   // deep link: #view[-tiles][-vanity|-white], e.g. #door, #door-full, #sink-split-vanity, #sink-split-white
   var hash = (location.hash || "").replace("#", "").split("-");
   setView(VIEWS[hash[0]] ? hash[0] : "basin");
-  setTile(["full", "feature", "stone", "sage", "shower", "zellige", "sagefull", "celadon", "celadonH", "celadonL", "celadonS", "celadonB", "celadonHB", "celadonLS", "celadonM", "celadonUnder"].indexOf(hash[1]) >= 0 ? hash[1] : "split");
+  setTile(["full", "feature", "stone", "sage", "shower", "zellige", "sagefull", "celadon", "celadonH", "celadonL", "celadonS", "celadonB", "celadonHB", "celadonLS", "celadonM", "celadonUnder"].indexOf(hash[1]) >= 0 ? hash[1] : "celadonS");
   ["neutral", "day", "mood"].forEach(function (m) { if (hash.indexOf(m, 1) >= 0) setLight(m); });
   setWindow(hash.indexOf("nowin", 1) < 0);
   setCeiling(hash.indexOf("cceil", 1) >= 0 ? "celadon" : "white");
-  setFloor(hash.indexOf("beige", 1) >= 0 ? "beige" : "white");
+  setFloor(hash.indexOf("kalk", 1) >= 0 ? "white" : "beige"); // Tivoli Beige is the final floor
   setVanity(hash.indexOf("vanity", 1) >= 0 ? "walnut" : hash.indexOf("white", 1) >= 0 ? "white" : hash.indexOf("moon", 1) >= 0 ? "moon" : hash.indexOf("dwall", 1) >= 0 ? "dwall" : hash.indexOf("semiped", 1) >= 0 ? "semiped" : "none");
 
   (function loop() {
